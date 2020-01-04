@@ -797,11 +797,13 @@ By stringing all the inequalities together, we complete the proof:
   &= \lvert\Pr[A_*(\DAENCE/)] - \Pr[A_*(U)]\rvert \\
   &\leq \lvert\Pr[A_*(\DAENCE/)] - \Pr[A_*(\DAENCE/_*)]\rvert \\
   &\qquad + \lvert\Pr[A_*(\DAENCE/_*)] - \Pr[A_*(U)]\rvert \\
-  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*) \\
-  &\qquad + \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(\DEUCE/)]\rvert \\
+  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*)
+          + \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(U_1)]\rvert \\
+  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*)
+          + \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(\DEUCE/)]\rvert \\
   &\qquad + \lvert\Pr[A(\DEUCE/)] - \Pr[A(U_1)]\rvert \\
-  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*) \\
-  &\qquad + \Adv^{\muPRF}_{\XSalsa20/}(A') \\
+  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*)
+          + \Adv^{\muPRF}_{\XSalsa20/}(A') \\
   &\qquad + \sum_{u,n}
               \frac{\bigl(E(u,n) + D(u,n)\bigr)^2 + D(u,n) + \binom{E(u,n)}{2}}
                    {2^{192}} \\
