@@ -370,7 +370,7 @@ The corresponding decryption operation is derived similarly.
                        + D(u,n) + \binom{E(u,n)}{2}}
                      {2^{192}} \\
     &\qquad\qquad\qquad
-            + 8\lceil\ell/16\rceil
+            + 64\lceil\ell/16\rceil^2
               \frac{D(u,n) E(u,n) + \binom{E(u,n)}{2}}{2^{212}}.
   \end{align*}
 \end{theorem}
@@ -529,8 +529,10 @@ Note that the string $f(h')$ is a uniform random 192-bit string
  independent of the $t_i$ and $c_i$, except in the event $C_{h'}$ that
  $h'$ coincides with one of the $h_i$.
 
-Let $\collisionbound = 8\lceil\ell/16\rceil/2^{212}$ be a bound on
- the collision probability of $\Poly1305/^2$.
+Let
+ $\collisionbound = (8\lceil\ell/16\rceil/2^{106})^2
+   = 64\lceil\ell/16\rceil^2\!/2^{212}$
+ be a bound on the collision probability of $\Poly1305/^2$.
 Then $h'$ coincides with one of the $h_i$ with probability
 %
 \begin{align*}
@@ -624,7 +626,7 @@ Thus,
           + \frac{D}{2^{192}} + D E \collisionbound
           + \binom{E}{2} \biggl(\collisionbound + \frac{1}{2^{192}}\biggr) \\
   &= \frac{(E + D)^2 + D + \binom{E}{2}}{2^{192}}
-     + 8\lceil\ell/16\rceil \frac{D E + \binom{E}{2}}{2^{212}}.
+     + 64\lceil\ell/16\rceil^2 \frac{D E + \binom{E}{2}}{2^{212}}.
 \end{align*}
 
 \subsection{Extending the idealization to multiple instances}
@@ -650,7 +652,7 @@ Consequently, the multi-instance \DAE/ advantage against \DEUCE/ is at
   &\leq \sum_n \frac{\bigl(E(n) + D(n)\bigr)^2 + D(n) + \binom{E(n)}{2}}
                     {2^{192}} \\
   &\qquad\qquad
-          + 8\lceil\ell/16\rceil
+          + 64\lceil\ell/16\rceil^2
             \frac{D(n) E(n) + \binom{E(n)}{2}}{2^{212}}.
 \end{align*}
 
@@ -805,7 +807,7 @@ By stringing all the inequalities together, we complete the proof:
               \frac{\bigl(E(u,n) + D(u,n)\bigr)^2 + D(u,n) + \binom{E(u,n)}{2}}
                    {2^{192}} \\
   &\qquad\qquad\qquad
-          + 8\lceil\ell/16\rceil
+          + 64\lceil\ell/16\rceil^2
             \frac{D(u,n) E(u,n) + \binom{E(u,n)}{2}}{2^{212}}.
 \end{align*}
 
