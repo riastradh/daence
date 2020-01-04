@@ -126,7 +126,7 @@ crypto_daencebox_salsa20poly1305_open(unsigned char *m,
 	 * Key derivation:
 	 *	k012[0..64] := Salsa20_k(n)
 	 *	k1 @ khut[0..32] := k012[32..48] || 0^16
-	 *	k2 @ khut[0..32] := k012[48..64] || 0^16
+	 *	k2 @ khut[32..64] := k012[48..64] || 0^16
 	 */
 	crypto_core_salsa20(k012, n, k, sigma);
 	memcpy(k1, k012 + 32, 16);
