@@ -351,7 +351,7 @@ The corresponding decryption operation is derived similarly.
        $\sum_{u,n} E(u,n) + D(u,n)$
        different $\ell$-byte inputs; and
     \item a \PRF/ distinguisher algorithm $A'$ making
-       $\bigl(1 + \lfloor\ell/64\rfloor\bigr)
+       $\bigl(1 + \lceil\ell/64\rceil\bigr)
          \sum_{u,n} \bigl(E(u,n) + D(u,n)\bigr)$
        oracle queries and having the cost of $A_*$ plus the cost of
        evaluating $\Poly1305/^2$ and $\oplus$ on
@@ -687,7 +687,7 @@ If $\mathcal O(n,x)$ is an oracle for a collection of function
 \end{enumerate}
 %
 The algorithm $A'$ performs
- $\sum_n (1 + \lfloor\ell/64\rfloor) \bigl(E(n) + D(n)\bigr)$ oracle
+ $\sum_n (1 + \lceil\ell/64\rceil) \bigl(E(n) + D(n)\bigr)$ oracle
  queries, and spends the cost of computing $A$ plus the cost of
  evaluating $\Poly1305/^2$ and $\oplus$ on $\sum_n E(n) + D(n)$
  different $\ell$-byte inputs; and
