@@ -35,12 +35,12 @@ show(const char *name, const unsigned char *buf, size_t len)
 
 void
 crypto_daencebox_salsa20poly1305_test(unsigned char *c,
-    unsigned char v_k0[static restrict 32],
-    unsigned char v_k1[static restrict 16],
-    unsigned char v_k2[static restrict 16],
-    unsigned char v_h1[static restrict 16],
-    unsigned char v_h2[static restrict 16],
-    unsigned char v_u[static restrict 32],
+    unsigned char v_k0[static restrict 32], /* XXX KAT */
+    unsigned char v_k1[static restrict 16], /* XXX KAT */
+    unsigned char v_k2[static restrict 16], /* XXX KAT */
+    unsigned char v_h1[static restrict 16], /* XXX KAT */
+    unsigned char v_h2[static restrict 16], /* XXX KAT */
+    unsigned char v_u[static restrict 32],  /* XXX KAT */
     const unsigned char *m, unsigned long long mlen,
     const unsigned char n[static 16],
     const unsigned char k[static 32])
@@ -63,9 +63,9 @@ crypto_daencebox_salsa20poly1305_test(unsigned char *c,
 	memcpy(k2, k012 + 48, 16);
 	memset(k2 + 16, 0, 16);
 
-	memcpy(v_k0, k0, 32);
-	memcpy(v_k1, k1, 16);
-	memcpy(v_k2, k2, 16);
+	memcpy(v_k0, k0, 32);	/* XXX KAT */
+	memcpy(v_k1, k1, 16);	/* XXX KAT */
+	memcpy(v_k2, k2, 16);	/* XXX KAT */
 
 	/*
 	 * Message compression:
@@ -75,8 +75,8 @@ crypto_daencebox_salsa20poly1305_test(unsigned char *c,
 	crypto_onetimeauth_poly1305(h1, m, mlen, k1);
 	crypto_onetimeauth_poly1305(h2, m, mlen, k2);
 
-	memcpy(v_h1, h1, 16);
-	memcpy(v_h2, h2, 16);
+	memcpy(v_h1, h1, 16);	/* XXX KAT */
+	memcpy(v_h2, h2, 16);	/* XXX KAT */
 
 	/*
 	 * Tag generation:
@@ -86,7 +86,7 @@ crypto_daencebox_salsa20poly1305_test(unsigned char *c,
 	crypto_core_hsalsa20(u, h1, k0, sigma);
 	crypto_core_hsalsa20(t, h2, u, sigma);
 
-	memcpy(v_u, u, 32);
+	memcpy(v_u, u, 32);	/* XXX KAT */
 
 	/* Copy out tag: c[0..24] := t */
 	memcpy(c, t, 24);
