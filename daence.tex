@@ -330,12 +330,10 @@ The corresponding decryption operation is derived similarly.
 \begin{theorem}
   Let $A_*$ be a random decision algorithm with access to encryption
    and decryption oracles for $U$ independent nonce-based
-   authenticated ciphers, such that the oracles choose the nonce for
-   encryption but the adversary chooses the nonce for decryption.
-  Suppose the $u^{\mathit{th}}$ user's oracle reuses each nonce $n$
-   for up to $E(u,n)$ encryptions, and the adversary reuses each nonce
-   $n$ for up to $D(u,n)$ forgery attempts against the
-   $u^{\mathit{th}}$ user.
+   authenticated ciphers with the nonce chosen by the adversary.
+  Suppose the adversary reuses the $u^{\mathit{th}}$ user's nonce $n$
+   in $E(u,n)$ encryption queries and $D(u,n)$ decryption queries
+   (that is, forgery attempts).
   Suppose the queries are limited to messages up to $\ell$ bytes
    long.
   Then there exist
