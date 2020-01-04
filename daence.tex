@@ -405,8 +405,9 @@ For a function $\phi$ yielding bit strings, denote by $\phi_{192}$ the
  that if $\phi = \Salsa20/$ then $\hat\phi = \HSalsa20/$; and denote
  by $\phi_*(t)$ the concatenation
  $\phi(t \concat 0) \concat \phi(t \concat 1) \concat \dotsb$,
- with output understood to be as long as is needed.
-Let $f,g\colon \{0,1\}^{128} \to \{0,1\}^{512}$ be uniform random.
+ with input counter encoded in little-endian, and with output
+ understood to be as long as is needed.
+Let $f,g\colon \{0,1\}^{256} \to \{0,1\}^{512}$ be uniform random.
 Note that $\hat f$, $\hat f_{192}$, $f_*$, and $g_*$ are uniformly
  distributed.
 
@@ -671,7 +672,7 @@ Assume $A$ makes $E(n)$ queries to the $n^{\mathit{th}}$ encryption
  collection of $\DAENCE/_1$ instances from a collection of \DEUCE/
  instances then it can be used in an algorithm $A'$ to distinguish
  a collection of $\XSalsa20/_{k_0}$ instances from a collection of $f$
- instances (recall $f\colon \{0,1\}^{128} \to \{0,1\}^{512}$ is a
+ instances (recall $f\colon \{0,1\}^{256} \to \{0,1\}^{512}$ is a
  uniform random function).
 
 If $\mathcal O(n,x)$ is an oracle for a collection of function
@@ -702,9 +703,10 @@ The algorithm $A'$ performs
 
 \subsection{Multiple users \vs\ multiple nonces under idealized key derivation}
 
-For each user, let $F(n) \in \{0,1\}^{512}$ be an independent uniform
- random key derivation function for the nonce $n$, which will be used
- to generate $(k_0, k_1, k_2)$ for $\DAENCE/_1$.
+For each user, let $F\colon \{0,1\}^{128} \to \{0,1\}^{512}$ be an
+ independent uniform random key derivation function, which will be
+ used to derive subkeys for $\DAENCE/_1$ from a nonce $n$ by
+ $k_0 \concat k_1 \concat k_2 = F(n)$.
 This is obviously equivalent to a single independent uniform random
  key derivation function $F'(u,n) \in \{0,1\}^{512}$ for the user $u$
  and nonce $n$, used for the same purpose---note that the inputs to
