@@ -343,14 +343,14 @@ The corresponding decryption operation is derived similarly.
   Then there exist
 %
   \begin{itemize}
-    \item a \PRF/ distinguisher $A'_*$ making
+    \item a multi-user \PRF/ distinguisher $A'_*$ making
        $\sum_{u,n} E(u,n) + D(u,n)$
        oracle queries and having the cost of $A_*$ plus the cost of
        evaluating $\HXSalsa20/ \mathbin\circ \Poly1305/^2$,
        $\XSalsa20/$, and $\oplus$ on
        $\sum_{u,n} E(u,n) + D(u,n)$
        different $\ell$-byte inputs; and
-    \item a \PRF/ distinguisher algorithm $A'$ making
+    \item a multi-user \PRF/ distinguisher $A'$ making
        $\bigl(1 + \lceil\ell/64\rceil\bigr)
          \sum_{u,n} \bigl(E(u,n) + D(u,n)\bigr)$
        oracle queries and having the cost of $A_*$ plus the cost of
