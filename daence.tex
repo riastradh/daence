@@ -259,7 +259,7 @@ Note the collision probability of $\Poly1305/^2$ under independent
  keys is the square of the collision probability of \Poly1305/.
 
 \paragraph*{\HXSalsa20/.}
-For 32-byte key $k_0$ and 128-bit inputs $i$ and $j$, define
+For 32-byte key $k_0$ and 16-byte inputs $i$ and $j$, define
 \[
   \HXSalsa20/_{k_0}(i \concat j) := \HSalsa20/_{\HSalsa20/_{k_0}(i)}(j).
 \]
