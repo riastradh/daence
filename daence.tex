@@ -407,6 +407,9 @@ Let $f,g\colon \{0,1\}^{128} \to \{0,1\}^{512}$ be uniform random.
 Note that $\hat f$, $\hat f_{192}$, $f_*$, and $g_*$ are uniformly
  distributed.
 
+Define \term{$\DAENCE/_1$} to be as \DAENCE/, but keyed by
+ $(k_0,k_1,k_2)$ directly, with no key derivation or nonce input.
+
 Define \term{\DEUCE/} to be as $\DAENCE/_1$, but with $f$ substituted
  for $\XSalsa20/_{k_0}$:
 %
