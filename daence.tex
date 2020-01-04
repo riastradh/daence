@@ -397,7 +397,7 @@ Outline of proof:
 Let $A$ be a random decision algorithm with access to encryption and
  decryption oracles for a deterministic authenticated cipher.
 Assume $A$ makes $E$ queries to the encryption oracle and $D$ queries
- to the decryption oracle, and let $q = E + D$.
+ to the decryption oracle.
 Assume messages are up to $\ell$ bytes long.
 
 For a function $\phi$ yielding bit strings, denote by $\phi_{192}$ the
@@ -464,13 +464,13 @@ Thus,
 \end{align*}
 
 How often do collisions occur?
-There are at most $q$ distinct values of $h$.
+There are at most $E + D$ distinct values of $h$.
 The values of $t$ are independent uniform random 192-bit strings, and
- there are up to $q$ of them, so
+ there are up to $E + D$ of them, so
 \[
   \Pr[C_{th}]
-  \leq \sum_{i=1}^q \frac{q}{2^{192}}
-  = \frac{q^2}{2^{192}}.
+  \leq \sum_{i=1}^{E + D} \frac{E + D}{2^{192}}
+  = \frac{(E + D)^2}{2^{192}}.
 \]
 
 Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
@@ -478,7 +478,7 @@ Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
 \[
   \lvert\Pr[A(\DEUCE/)] - \Pr[A(\DOOZE/)]\rvert
   \leq \Pr[C_{th}]
-  \leq \frac{q^2}{2^{192}}.
+  \leq \frac{(E + D)^2}{2^{192}}.
 \]
 
 \paragraph*{Distinguishing \DICE/ from \DUNCE/: bounding forgery
