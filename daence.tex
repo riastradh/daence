@@ -702,9 +702,9 @@ The algorithm $A'$ performs
 
 \subsection{Multiple users \vs\ multiple nonces under idealized key derivation}
 
-For each user $u$, let $F_u(n) \in \{0,1\}^{512}$ be an independent
- uniform random key derivation function for the nonce $n$, which will
- be used to generate $(k_0, k_1, k_2)$ for $\DAENCE/_1$.
+For each user, let $F(n) \in \{0,1\}^{512}$ be an independent uniform
+ random key derivation function for the nonce $n$, which will be used
+ to generate $(k_0, k_1, k_2)$ for $\DAENCE/_1$.
 This is obviously equivalent to a single independent uniform random
  key derivation function $F'(u,n) \in \{0,1\}^{512}$ for the user $u$
  and nonce $n$, used for the same purpose---note that the inputs to
@@ -716,7 +716,7 @@ In other words, under an idealization of a key derivation function,
  \emph{nonces}.
 Define the nonce-based authenticated cipher \term{$\DAENCE/_*$} to be
  as \DAENCE/, but with a uniform random function $F$ in the place of
- \Salsa20/ for key derivation:
+ $\Salsa20/_k$ for key derivation:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 := F(n)$
