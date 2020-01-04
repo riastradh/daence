@@ -1,0 +1,20 @@
+# Emacs crud
+*~
+.#*
+
+# tex crud
+*.aux
+*.bbl
+*.blg
+*.brf
+*.dvi
+*.log
+*.out
+*.pdf
+*.ps
+
+# C crud
+*.o
+
+# our crud
+/testvector

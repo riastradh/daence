@@ -1,0 +1,899 @@
+\documentclass{article}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[T1]{fontenc}
+\usepackage[final=true,backref=page,colorlinks=true]{hyperref}[2016/05/21]
+\usepackage{listings}
+
+\title{\DAENCE/:
+  \Salsa20/ and \ChaCha/ in Deterministic Authenticated Encryption with a noNCE}
+\author{}
+
+\bibliographystyle{plain}
+\renewcommand*{\backrefalt}[4]{%
+  \ifcase#1% no citations
+  \or% one citation
+    Cited on p.~#2.%
+  \else% multiple citations
+    Cited on pp.~#2.%
+  \fi%
+}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newcommand{\term}[1]{\textbf{#1}}
+
+\newcommand{\margintodo}[1]{%
+  \leavevmode\marginpar{\leavevmode%
+    \parskip=4pt plus 2pt minus 1pt\relax%
+    \color{red}%
+    TODO: #1%
+  }%
+}
+
+\def\operatorsc#1{{%
+  \ifmmode\let\next=\operatorname\else\let\next=\relax\fi\next{\textsc{#1}}}}
+\def\Salsa#1/{\operatorsc{Salsa#1}}
+\def\ChaCha#1/{\operatorsc{ChaCha#1}}
+\def\HChaCha#1/{\operatorsc{HChaCha#1}}
+\def\HSalsa#1/{\operatorsc{HSalsa#1}}
+\def\XChaCha#1/{\operatorsc{XChaCha#1}}
+\def\XSalsa#1/{\operatorsc{XSalsa#1}}
+\def\HXSalsa#1/{\operatorsc{HXSalsa#1}}
+\def\Poly#1/{\operatorsc{Poly#1}}
+\def\Auth#1/{\operatorsc{Auth#1}}
+\def\DAENCE/{\operatorsc{Daence}}
+\def\DUNCE/{\operatorsc{Dunce}}
+\def\DEUCE/{\operatorsc{Deuce}}
+\def\DOOZE/{\operatorsc{Dooze}}
+\def\DICE/{\operatorsc{Dice}}
+
+\def\CAESAR/{\textsc{Caesar}}
+\def\OCB/{OCB}
+\def\NaCl/{NaCl}
+\def\IETF/{IETF}
+\def\TLS/{TLS}
+\def\IV/{\textsc{iv}}
+\def\AESGCM/{AES\nobreakdash-GCM}
+\def\AESGCMSIV/{AES\nobreakdash-GCM\nobreakdash-SIV}
+\def\naclsecretbox/{crypto\_secretbox\_xsalsa20poly1305}
+\def\naclonetimeauth/{crypto\_onetimeauth\_poly1305}
+\def\libsodium/{libsodium}
+\def\sodiumaead/{crypto\_aead}
+
+\makeatletter
+\def\newlatin#1#2{\def#1{\protect\@latin{#2}}}
+\def\@latin#1{\@ifnextchar.{\@latinfinal{#1}}{\@latinmedial{#1}}}
+\def\@latinfinal#1{\emph{#1}\@}
+\def\@latinmedial#1{\emph{#1.}}
+\makeatother
+\newlatin\eg{e.g}
+\newlatin\etc{etc}
+\newlatin\etseq{et seq}
+\newlatin\ie{i.e}
+\newlatin\vs{vs}
+
+\def\INDCPA{%
+  \ifmmode\def\next{\operatorname{IND-CPA}}%
+    \else\def\next/{\textsc{ind-cpa}}%
+  \fi\expandafter\next}
+
+\def\PRF{%
+  \ifmmode\def\next{\operatorname{PRF}}%
+    \else\def\next/{\textsc{prf}}%
+  \fi\next}
+
+\def\muPRF{%
+  \ifmmode\def\next{\operatorname{mu-PRF}}%
+    \else\def\next/{mu-\textsc{prf}}%
+  \fi\next}
+
+\def\PRG{%
+  \ifmmode\def\next{\operatorname{PRG}}%
+    \else\def\next/{\textsc{prg}}%
+  \fi\next}
+
+\def\SIV{%
+  \ifmmode\def\next{\operatorname{SIV}}%
+    \else\def\next/{\textsc{siv}}%
+  \fi\next}
+
+\def\DAE{%
+  \ifmmode\def\next{\operatorname{DAE}}%
+    \else\def\next/{\textsc{dae}}%
+  \fi\next}
+
+\def\AEAD{%
+  \ifmmode\def\next{\operatorname{AEAD}}%
+    \else\def\next/{\textsc{aead}}%
+  \fi\next}
+
+\def\NMRAE{%
+  \ifmmode\def\next{\operatorname{NMRAE}}%
+    \else\def\next/{\textsc{nmrae}}%
+  \fi\next}
+
+\def\muNMRAE{%
+  \ifmmode\def\next{\operatorname{mu-NMRAE}}%
+    \else\def\next/{mu-\textsc{nmrae}}%
+  \fi\next}
+
+\def\muDAE{%
+  \ifmmode\def\next{\operatorname{mu-DAE}}%
+    \else\def\next/{mu-\textsc{dae}}%
+  \fi\next}
+
+\DeclareMathOperator{\Adv}{Adv}
+\DeclareMathOperator{\DaenceEncrypt}{\textsc{Daence-Encrypt}}
+\DeclareMathOperator{\DaenceDecrypt}{\textsc{Daence-Decrypt}}
+
+\newcommand{\Z}{\mathbb Z}
+
+\newcommand{\concat}{\mathbin\|}
+\newcommand{\given}{\mathrel|}
+
+\newcommand{\maxlength}{\ell}
+\newcommand{\collisionbound}{\varepsilon}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  We present \DAENCE/, a nonce-misuse-resistant authenticated cipher
+   construction based on a 128-bit-to-512-bit pseudorandom function
+   family and a universal hash family with low collision probability.
+  We recommend instantiation using \Salsa20/ or \ChaCha/, and
+   \Poly1305/.
+\end{abstract}
+
+\section{Introduction}
+
+The authenticated cipher crypto\_secretbox\_xsalsa20poly1305
+ in \NaCl/~\cite{bernstein2009naclcrypto}, and the variant
+ \ChaCha//\Poly1305/ defined by the \IETF/~\cite{rfc7539} for
+ \TLS/~\cite{rfc7905}, are widely available in fast software
+ implementations resistant to timing side channels.
+The authenticated cipher \AESGCM/~\cite{nist-sp800-38d} is popular,
+ though fast and resistant to timing side channels only with hardware
+ support.
+
+\naclsecretbox/ and \AESGCM/ fail catastrophically in the face of
+ nonce reuse.
+They are best suited to protocols that are designed to support
+ sequential message numbers, such as the record number in \TLS/.
+Some applications are unable to keep the state needed to maintain a
+ sequential message number, and although they could use an extended
+ nonce like \XSalsa20/ chosen randomly, some environments may not
+ have a reliable entropy source.
+
+The \emph{nonce-misuse-resistant} authenticated cipher
+ \AESGCMSIV/~\cite{rfc8452} was developed to address these use cases,
+ but it carries with it the performance and side channel costs of
+ \AESGCM/---and amplifies the performance cost by deriving fresh keys
+ for each distinct nonce, yet has very narrow security margins.
+
+We propose a nonce-misuse-resistant authenticated cipher \DAENCE/,
+ built out of a deterministic authenticated cipher using \Salsa20/ or
+ \ChaCha/ and the \Poly1305/ universal hash family, with keys derived
+ from a master key and 128-bit nonce.
+The design is based on the \SIV/ construction of Rogaway and
+ Shrimpton~\cite{rogaway-shrimpton2006keywrap}, with a
+ variable-input-PRF made by composing a universal hash family with a
+ fixed-input PRF~%
+  \cite[\S1.5]{bellare-canetti-krawczyk1996cascade}%
+  \cite[\S9, Theorem.~9.1]{bernstein1999hash127}.
+\DAENCE/ is easily implemented in terms of the primitives available in
+ \NaCl/ and \libsodium/.
+
+\section{Security contract}
+
+\DAENCE/ is a nonce-misuse-resistant authenticated cipher.
+This means it consists of two functions:
+%
+\begin{description}
+  \item[\normalfont $c = \DaenceEncrypt(k, n, m)$] takes a 32-byte key
+     $k$, a 16-byte nonce $n$, and a message $m$.
+
+    $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
+     24 bytes longer than $m$.
+
+  \item[\normalfont $m' = \DaenceDecrypt(k, n, c')$] takes a 32-byte
+     key $k$, a 16-byte nonce $n$, and an alleged authenticated
+     ciphertext $c'$.
+
+    \begin{itemize}
+      \item If $c' = \DaenceEncrypt(k, n, m)$, $\DaenceDecrypt$
+         returns $m$.
+      \item If $c'$ is a forgery, $\DaenceDecrypt$ returns $\bot$ with
+         high probability.
+    \end{itemize}
+
+    In practice, a \texttt{crypto\_daencebox\_salsa20poly1305\_open}
+     function in the style of \NaCl/ may return an error code or
+     throw an exception to represent $\bot$.
+\end{description}
+
+\paragraph*{Responsibilities of the user.}
+
+\begin{enumerate}
+  \item You must choose a secret key $k$ uniformly at random.
+  \item If $\DaenceDecrypt$ reports a forgery, you must decline to act
+     on the alleged message content except by immediately dropping it
+     on the floor.
+  \item You must process no more than $2^{80}$ bytes of data with a
+     single key.
+\end{enumerate}
+
+\paragraph*{Security guarantee.}
+
+\begin{enumerate}
+  \item Authenticated encryption, if you use a distinct nonce $n$ for
+     every message.
+
+    XXX Provide detailed safe usage limits here.
+
+  \item Deterministic authenticated encryption, for all messages under
+     any repeated nonce $n$.
+
+    XXX Provide detailed safe usage limits here.
+\end{enumerate}
+
+\break
+
+\section{Definition}
+
+\paragraph*{Double-hashing.}
+For 16-byte $k_1$ and 16-byte $k_2$, define
+\[
+  \Poly1305/^2_{k_1,k_2}(m)
+  := \Poly1305/_{k_1}(m) \concat \Poly1305/_{k_2}(m).
+\]
+Note the collision probability of $\Poly1305/^2$ under independent
+ keys is the square of the collision probability of \Poly1305/.
+
+\paragraph*{\HXSalsa20/.}
+For 32-byte key $k_0$ and 128-bit inputs $i$ and $j$, define
+\[
+  \HXSalsa20/_{k_0}(i \concat j) := \HSalsa20/_{\HSalsa20/_{k_0}(i)}(j).
+\]
+Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
+ choosing the appropriate words of the output and subtracting $j$,
+ just as \HSalsa20/ can be defined in terms of \Salsa20/.
+
+\paragraph*{Encryption.}
+Given
+ a 32-byte key $k$,
+ a 16-byte message number $n$, and
+ a message $m$ of fewer than $2^{70}$ bytes,
+ compute:
+%
+\begin{enumerate}
+  \item $k_0 \concat k_1 \concat k_2 := \Salsa20/_k(n)$
+    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $t \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(m))$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
+      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+\end{enumerate}
+%
+The authenticated ciphertext is $t \concat c$.
+
+\paragraph*{Decryption.}
+Given
+ a 32-byte key $k$,
+ a 16-byte message number $n$, and
+ an alleged authenticated ciphertext $t' \concat c'$ of fewer than
+ $24 + 2^{70}$ bytes, compute:
+%
+\begin{enumerate}
+  \item $k_0 \concat k_1 \concat k_2 := \Salsa20/_k(n)$
+    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $m' := c' \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
+      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+  \item $t' \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(m'))$
+    \hfill (24-byte $t'$)
+\end{enumerate}
+%
+If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
+ forgery.
+
+\paragraph*{Associated data.}
+\DAENCE/ may be extended to support associated data by uniquely
+ encoding it in the input to \Poly1305/.
+We recommend using \ChaCha/ instead of \Salsa20/ in order to take
+ advantage of the components of existing implementations of the
+ \ChaCha//\Poly1305/ authenticated cipher used in \TLS/ and
+ implemented in \libsodium/ \sodiumaead/.
+With associated data $a$ of $\lvert a\rvert < 2^{64}$ bytes,
+ encryption is as above but with length-delimited associated data fed
+ into \Poly1305/:
+%
+\begin{itemize}
+  \item $k_0 \concat k_1 \concat k_2 := \ChaCha/_k(n)$
+    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $t \concat \_ :=
+      \HChaCha/_{k_0}(
+        \Poly1305/^2_{k_1,k_2}(\lvert a\rvert \concat a \concat m))$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
+      \XChaCha20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+\end{itemize}
+%
+The corresponding decryption operation is derived similarly.
+
+\section{Security}
+
+\begin{theorem}
+  Let $A_*$ be a random decision algorithm with access to encryption
+   and decryption oracles for $U$ independent nonce-based
+   authenticated ciphers, such that the oracles choose the nonce for
+   encryption but the adversary chooses the nonce for decryption.
+  Suppose the $u^{\mathit{th}}$ user's oracle reuses each nonce $n$
+   for up to $E(u,n)$ encryptions, and the adversary reuses each nonce
+   $n$ for up to $D(u,n)$ forgery attempts against the
+   $u^{\mathit{th}}$ user.
+  Suppose the queries are limited to messages up to $\ell$ bytes
+   long.
+  Let $N(u)$ be the number of distinct nonces used by the
+   $u^{\mathit{th}}$ user.
+  Then there exist
+%
+  \begin{itemize}
+    \item a \PRF/ distinguisher $A'_*$ making
+       $\sum_{u,n} E(u,n) + D(u,n)$
+       oracle queries and having the cost of $A_*$ plus the cost of
+       evaluating $\HXSalsa20/ \mathbin\circ \Poly1305/^2$,
+       $\XSalsa20/$, and $\oplus$ on
+       $\sum_{u,n} E(u,n) + D(u,n)$
+       different $\ell$-byte inputs; and
+    \item a \PRF/ distinguisher algorithm $A'$ making
+       $\bigl(1 + \lfloor\ell/64\rfloor\bigr)
+         \sum_{u,n} \bigl(E(u,n) + D(u,n)\bigr)$
+       oracle queries and having the cost of $A_*$ plus the cost of
+       evaluating $\Poly1305/^2$ and $\oplus$ on
+       $\sum_{u,n} E(u,n) + D(u,n)$
+       different $\ell$-byte inputs,
+  \end{itemize}
+%
+   such that
+%
+  \begin{align*}
+    \Adv^{\muNMRAE}_{\DAENCE/}(A_*)
+    &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*)
+          + \Adv^{\muPRF}_{\XSalsa20/}(A') \\
+    &\qquad + \sum_{u,n}
+                \frac{\bigl(E(u,n) + D(u,n)\bigr)^2
+                       + D(u,n) + \binom{E(u,n)}{2}}
+                     {2^{192}} \\
+    &\qquad\qquad\qquad
+            + 8\lceil\ell/16\rceil
+              \frac{D(u,n) E(u,n) + \binom{E(u,n)}{2}}{2^{212}}.
+  \end{align*}
+\end{theorem}
+
+\noindent
+Outline of proof:
+
+\begin{enumerate}
+  \item Prove bounds on advantage against an idealization of the
+     deterministic authenticated cipher, with a uniform random
+     function in the place of \XSalsa20/.
+  \item Extend the bound on advantage against the idealized \DAE/ to
+     the multi-instance setting, where each instance has an
+     independent uniform random function.
+  \item Instantiate the idealization with \XSalsa20/, which adds only
+     the multi-instance advantage against \XSalsa20/.
+  \item Show that the multi-\emph{user} setting is equivalent to the
+     multi-\emph{nonce} setting under idealized key derivation.
+  \item Instantiate the idealized key derivation with \Salsa20/, which
+     adds only the multi-instance advantage against \Salsa20/.
+\end{enumerate}
+
+\subsection{Idealizing the cipher}
+
+Let $A$ be a random decision algorithm with access to encryption and
+ decryption oracles for a deterministic authenticated cipher.
+Assume $A$ makes $E$ queries to the encryption oracle and $D$ queries
+ to the decryption oracle, and let $q = E + D$.
+
+Assume messages are up to $\ell$ bytes long.
+For a function $\phi$ yielding bit strings, denote by $\phi_{192}$ the
+ first 192 bits of $\phi$; denote by $\hat\phi$ the transformation so
+ that if $\phi = \Salsa20/$ then $\hat\phi = \HSalsa20/$; and denote
+ by $\phi_*(t)$ the concatenation
+ $\phi(t \concat 0) \concat \phi(t \concat 1) \concat \dotsb$,
+ with output understood to be as long as is needed.
+Let $f,g\colon \{0,1\}^{128} \to \{0,1\}^{512}$ be uniform random.
+Note that $\hat f$, $\hat f_{192}$, $f_*$, and $g_*$ are uniformly
+ distributed.
+
+Define \term{\DEUCE/} to be as $\DAENCE/_1$, but with $f$ substituted
+ for $\XSalsa20/_{k_0}$:
+%
+\begin{enumerate}
+  \item $h := \Poly1305/^2_{k_1,k_2}(m)$
+    \hfill (32-byte $h$)
+  \item $t := \hat f_{192}(h)$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus f_*(t)$
+\end{enumerate}
+
+Define \term{\DICE/} to be as \DEUCE/, but with $g$ substituted for
+ $f$ in the pad:
+%
+\begin{enumerate}
+  \item $h := \Poly1305/^2_{k_1,k_2}(m)$
+    \hfill (32-byte $h$)
+  \item $t := \hat f_{192}(h)$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus g_*(t)$
+\end{enumerate}
+
+Finally, define \term{\DUNCE/} to be as \DICE/, but with the
+ decryption oracle modified to return $\bot$ for every input.
+
+\paragraph*{Distinguishing \DEUCE/ from \DICE/: independent tags and pads.}
+\leavevmode\hfill\break
+\DICE/ is simply \DEUCE/ with two independent functions for deriving a
+ tag $t$ from a hash $h$ for deriving a pad from a tag.
+Only in the event $C_{th}$ of a collision between one of the values of
+ $h$ and one of the values of $t \concat j$ do \DICE/ and \DEUCE/ have
+ different distributions, since if the $h$ do not overlap with the
+ $t \concat j$, then the $f(t \concat j)$ and $g(t \concat j)$ are
+ both uniform random strings independent of the $\hat f_{192}(h)$.
+And since $f(t \concat j)$ does not figure into \DICE/, a collision
+ between a value of $h$ and a value of $t \concat j$ value cannot
+ affect the outcome, so
+ $\Pr[A(\DICE/) \given \lnot C_{th}] = \Pr[A(\DICE/)]$.
+Thus,
+%
+\begin{align*}
+  \Pr[A(\DEUCE/)]
+  &= \Pr[A(\DEUCE/) \given C_{th}] \Pr[C_{th}] \\
+  &\qquad
+     + \Pr[A(\DEUCE/) \given \lnot C_{th}] \Pr[\lnot C_{th}] \\
+  &\leq \Pr[C_{th}] + \Pr[A(\DEUCE/) \given \lnot C_{th}] \\
+  &= \Pr[C_{th}] + \Pr[A(\DICE/) \given \lnot C_{th}] \\
+  &= \Pr[C_{th}] + \Pr[A(\DICE/)].
+\end{align*}
+
+How often do collisions occur?
+There are at most $q$ distinct values of $h$.
+The values of $t$ are independent uniform random 192-bit strings, and
+ there are up to $q$ of them, so
+\[
+  \Pr[C_{th}]
+  \leq \sum_{i=1}^q \frac{q}{2^{192}}
+  = \frac{q^2}{2^{192}}.
+\]
+
+Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
+ we have
+\[
+  \lvert\Pr[A(\DEUCE/)] - \Pr[A(\DOOZE/)]\rvert
+  \leq \Pr[C_{th}]
+  \leq \frac{q^2}{2^{192}}.
+\]
+
+\paragraph*{Distinguishing \DICE/ from \DUNCE/: bounding forgery
+  probability.}
+\leavevmode\hfill\break
+The decryption oracle of \DICE/ returns anything other than
+ $\bot$ only in the event $F$ that $A$ forges a ciphertext not
+ obtained from the encryption oracle.
+Conditional on $\lnot F$, \DICE/ and \DUNCE/ otherwise have the same
+ distribution---the encryption oracle is the same and the decryption
+ oracle always returns $\bot$ in both cases---so
+%
+\begin{align*}
+  \Pr[A(\DICE/)]
+  &= \Pr[A(\DICE/) \given F] \Pr[F]
+     + \Pr[A(\DICE/) \given \lnot F] \Pr[\lnot F] \\
+  &\leq \Pr[F] + \Pr[A(\DICE/) \given \lnot F] \\
+  &= \Pr[F] + \Pr[A(\DUNCE/)],
+\end{align*}
+%
+ and thus
+\[
+  \lvert\Pr[A(\DICE/)] - \Pr[A(\DUNCE/)]\rvert
+  \leq \Pr[F].
+\]
+
+Assume $A$ halts after the first forgery attempt---an adversary that
+ makes $D>1$ forgery attempts can be broken into an adversary that
+ halts after the first forgery attempt, and an adversary that
+ simulates forgery failure for the first attempt before making $D-1$
+ more attempts.
+If the first variant succeeded with probability at most $p$, then by
+ induction the second succeeds with probability at most $(D - 1) p$,
+ so that the original adversary succeeds with probability at most
+ $p + (D - 1) p = D p$.
+
+Suppose $A$ submits distinct encryption queries
+ $m_1, \dotsc, m_E$
+ yielding answers
+ $t_1 \concat c_1, \dotsc, t_E \concat c_E$
+ via intermediate hashes
+ $h_i = \Poly1305/^2_{k_1,k_2}(m_i)$,
+ so that $t_i = f(h_i)$ and $c_i = m_i \oplus g_*(t_i)$.
+Suppose $A$ then attempts a forgery $(t', c')$; let
+ $m' = c' \oplus g_*(t')$
+ and
+ $h' = \Poly1305/^2_{k_1,k_2}(m')$.
+The forgery succeeds if $m' \ne m_i$ for all $i$, and $t' = f(h')$.
+Note that the string $f(h')$ is a uniform random 192-bit string
+ independent of the $t_i$ and $c_i$, except in the event $C_{h'}$ that
+ $h'$ coincides with one of the $h_i$.
+
+Let $\collisionbound = 8\lceil\ell/16\rceil/2^{212}$ be a bound on
+ the collision probability of $\Poly1305/^2$.
+Then $h'$ coincides with one of the $h_i$ with probability
+%
+\begin{align*}
+  \Pr[C_{h'}]
+  &= \Pr[\exists i\colon h' = h_i]
+   \leq \sum_i \Pr[h' = h_i] \\
+  &= \sum_i \Pr[\Poly1305/^2_{k_1,k_2}(m') = \Poly1305/^2_{k_1,k_2}(m_i)] \\
+  &\leq \sum_i \collisionbound
+   = E \collisionbound.
+\end{align*}
+%
+Hence
+%
+\begin{align*}
+  \lvert\Pr[A(\DICE/)] &- \Pr[A(\DUNCE/)]\rvert
+   \leq \Pr[F] \\
+  &\leq D \cdot \Pr\bigl[t' = f(h')
+            \given t_i = f(h_i), c_i = m_i \oplus g_*(t_i)\bigr] \\
+  &\leq D \cdot \bigl(\Pr[t' = f(h') \given \lnot C_{h'}]
+                      + \Pr[C_{h'}]\bigr)
+   \leq \frac{D}{2^{192}} + D E \collisionbound.
+\end{align*}
+
+\paragraph*{Distinguishing \DUNCE/ from uniform random.}
+Recall $U_1$ is a pathological `\DAE/' whose encryption oracle returns
+ an independent uniform random tag and ciphertext for each distinct
+ input, and whose decryption oracle returns $\bot$ for every input.
+Suppose $A$ submits distinct encryption queries
+ $m_1, \dotsc, m_E$
+ yielding answers
+ $t_1 \concat c_1, \dotsc, t_E \concat c_E$.
+If the oracle is \DUNCE/, then all the strings $t_i = f(h_i)$ and
+ $c_i = m_i \oplus g_*(t_i)$ are independent uniform random---and thus
+ the oracle is indistinguishable from $U_1$---except in the event
+ $C_h$ of a collision $h_i = h_j$ for some $i \ne j$, or in the event
+ $C_t$ of a collision $t_i = t_j$ for some $i \ne j$.
+
+First, since $\Poly1305/^2$ has collision probability bounded by
+ $\collisionbound$,
+%
+\begin{align*}
+  \Pr[C_h]
+    &= \Pr[\exists i<j\colon h_i = h_j]
+     \leq \sum_{i<j} \Pr[h_i = h_j] \\
+    &= \sum_{i<j}
+         \Pr[\Poly1305/^2_{k_1,k_2}(m_i) = \Poly1305/^2_{k_1,k_2}(m_j)] \\
+    &\leq \sum_{i<j} \collisionbound
+     = \binom{E}{2} \collisionbound.
+\end{align*}
+%
+Next, assuming the $h_i$ are all distinct, there is a collision among
+ the $t_i$ only with probability
+%
+\begin{align*}
+  \Pr[C_t \given \lnot C_h]
+    &= \Pr[\exists i<j\colon t_i = t_j \given \lnot C_h]
+     \leq \sum_{i<j} \Pr[t_i = t_j \given \lnot C_h] \\
+    &= \sum_{i<j} \Pr[f(h_i) = f(h_j) \given h_i \ne h_j] \\
+    &\leq \sum_{i<j} \frac{1}{2^{192}}
+     = \binom{E}{2} \frac{1}{2^{192}}.
+\end{align*}
+%
+Thus,
+%
+\begin{align*}
+  \Pr[A(\DUNCE/)]
+  &\leq \Pr\bigl[A(\DUNCE/) \given
+            \lnot (C_h \mathrel{\text{or}} C_t)\bigr]
+        + \Pr[C_h \mathrel{\text{or}} C_t] \\
+  &= \Pr[A(U_1)] + \Pr[C_h \mathrel{\text{or}} C_t] \\
+  &\leq \Pr[A(U_1)] + \Pr[C_h] + \Pr[C_t \given \lnot C_h] \\
+  &\leq \Pr[A(U_1)] + \binom{E}{2} \collisionbound
+        + \binom{E}{2} \frac{1}{2^{192}},
+\end{align*}
+%
+ so that
+\[
+  \lvert\Pr[A(\DUNCE/)] - \Pr[A(U_1)]\rvert
+  \leq \binom{E}{2} \biggl(\collisionbound + \frac{1}{2^{192}}\biggr).
+\]
+
+\paragraph*{Summing it up.}
+
+\begin{align*}
+  \Adv^{\DAE}_{\DEUCE/}(A)
+  &= \lvert\Pr[A(\DEUCE/)] - \Pr[A(U_1)]\rvert \\
+  &\leq + \lvert\Pr[A(\DEUCE/)] - \Pr[A(\DICE/)]\rvert \\
+  &\qquad + \lvert\Pr[A(\DICE/)] - \Pr[A(\DUNCE/)]\rvert \\
+  &\qquad + \lvert\Pr[A(\DUNCE/)] - \Pr[A(U_1)]\rvert \\
+  &\leq \frac{(E + D)^2}{2^{192}}
+          + \frac{D}{2^{192}} + D E \collisionbound
+          + \binom{E}{2} \biggl(\collisionbound + \frac{1}{2^{192}}\biggr) \\
+  &= \frac{(E + D)^2 + D + \binom{E}{2}}{2^{192}}
+     + 8\lceil\ell/16\rceil \frac{D E + \binom{E}{2}}{2^{212}}.
+\end{align*}
+
+\subsection{Extending the idealization to multiple instances}
+
+Let $A$ be a random decision algorithm with access to encryption and
+ decryption oracles for a \emph{collection} of deterministic
+ authenticated ciphers.
+Assume $A$ makes $E(n)$ queries to the $n^{\mathit{th}}$ encryption
+ oracle and $D(n)$ queries to the $n^{\mathit{th}}$ decryption oracle.
+
+In the foregoing analysis, the critical events---$C_{th}$, $F$,
+ $C_{h'}$, $C_h$, and $C_t$---can be straightforwardly seen to sum
+ over the instances independently.
+For example, the event $C_{th}$ of a collision in \emph{any one} of
+ the instances each with its own independent function $f$, $k_1$, and
+ $k_2$ is the sum over all instances of $C_{th}$ for that instance
+ separately.
+Consequently, the multi-instance \DAE/ advantage against \DEUCE/ is at
+ most the sum of the single-instance \DAE/ advantages:
+%
+\begin{align*}
+  \Adv^{\muDAE}_{\DEUCE/}(A)
+  &\leq \sum_n \frac{\bigl(E(n) + D(n)\bigr)^2 + D(n) + \binom{E(n)}{2}}
+                    {2^{192}} \\
+  &\qquad\qquad
+          + 8\lceil\ell/16\rceil
+            \frac{D(n) E(n) + \binom{E(n)}{2}}{2^{212}}.
+\end{align*}
+
+\subsection{Instantiating the idealized cipher}
+
+Let $A$ be a random decision algorithm with access to encryption and
+ decryption oracles for a \emph{collection} of deterministic
+ authenticated ciphers.
+Assume $A$ makes $E(n)$ queries to the $n^{\mathit{th}}$ encryption
+ oracle and $D(n)$ queries to the $n^{\mathit{th}}$ decryption oracle.
+
+\DEUCE/ is simply $\DAENCE/_1$ with a uniform random function $f$
+ substituted for $\XSalsa20/_{k_0}$, so if $A$ can distinguish a
+ collection of $\DAENCE/_1$ instances from a collection of \DEUCE/
+ instances then it can be used in an algorithm $A'$ to distinguish
+ a collection of $\XSalsa20/_{k_0}$ instances from a collection of $f$
+ instances (recall $f\colon \{0,1\}^{128} \to \{0,1\}^{512}$ is a
+ uniform function).
+
+If $\mathcal O(n,x)$ is an oracle for a collection of function
+ instances indexed by $n$, define $A'(\mathcal O)$ to run $A$ with
+ oracles for the following \DAE/ under independent uniform random keys
+ $k_1 \concat k_2$ for the $n^{\mathit{th}}$ instance, decryption
+ being defined the obvious way:
+%
+\begin{enumerate}
+  \item $h := \Poly1305/^2_{k_1,k_2}(m)$
+    \hfill (32-byte $h$)
+  \item $t := \hat{\mathcal O}_{192}(n, h)$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus \mathcal O_*(n, t)$
+\end{enumerate}
+%
+The algorithm $A'$ performs
+ $\sum_n (1 + \lfloor\ell/64\rfloor) \bigl(E(n) + D(n)\bigr)$ oracle
+ queries, and spends the cost of computing $A$ plus the cost of
+ evaluating $\Poly1305/^2$ and $\oplus$ on $\sum_n E(n) + D(n)$
+ different $\ell$-byte inputs; and
+%
+\begin{multline*}
+  \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(\DEUCE/)]\rvert
+   = \lvert\Pr[A'(\XSalsa20/_{k_0})] - \Pr[A'(f)]\rvert \\
+   = \Adv^{\muPRF}_{\XSalsa20/}(A').
+\end{multline*}
+
+\subsection{Multiple users \vs\ multiple nonces under idealized key derivation}
+
+For each user $u$, let $F_u(n) \in \{0,1\}^{512}$ be an independent
+ uniform random key derivation function for the nonce $n$, which will
+ be used to generate $(k_0, k_1, k_2)$ for $\DAENCE/_1$.
+This is obviously equivalent to a single independent uniform random
+ key derivation function $F'(u,n) \in \{0,1\}^{512}$ for the user $u$
+ and nonce $n$, used for the same purpose---note that the inputs to
+ $F'$ for two different users never collide even if they use the same
+ nonce.
+
+In other words, under an idealization of a key derivation function,
+ there is no difference between multiple \emph{users} and multiple
+ \emph{nonces}.
+Define the nonce-based authenticated cipher \term{$\DAENCE/_*$} to be
+ as \DAENCE/, but with a uniform random function $F$ in the place of
+ \Salsa20/ for key derivation:
+%
+\begin{enumerate}
+  \item $k_0 \concat k_1 \concat k_2 := F(n)$
+    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $t \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(m))$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
+      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+\end{enumerate}
+
+The multi-\emph{user} security of $\DAENCE/_*$, viewed as a collection
+ of \emph{nonce-based} authenticated ciphers with independent key
+ derivation functions $F$, is obviously the same as the
+ multi-\emph{instance} security of $\DAENCE/_1$, viewed as a
+ collection of \emph{deterministic} authenticated ciphers with
+ independent keys $F'(u,n)$.
+
+Thus, if $A_*$ is a random decision algorithm with oracle access to a
+ collection of \emph{nonce-based} authenticated ciphers $D_*$, then
+ there is a random decision algorithm $A$ with oracle access to a
+ collection of \emph{deterministic} authenticated ciphers $D_1$ having
+ exactly the same cost as $A_*$ such that
+\[
+  \Pr[A_*(D_*)] = \Pr[A(D_1)].
+\]
+This applies equally to the pathological ciphers $U_*$ and $U_1$ and
+ to the $\DAENCE/_*$ and $\DAENCE/_1$, so
+%
+\begin{align*}
+  \Adv^{\muNMRAE}_{\DAENCE/_*}(A_*)
+  &= \lvert\Pr[A_*(\DAENCE/_*)] - \Pr[A_*(U_*)]\rvert \\
+  &= \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(U_1)]\rvert.
+\end{align*}
+
+\subsection{Instantiating the idealized key derivation}
+
+Let $A_*$ be a random decision algorithm with access to oracles for a
+ collection of nonce-based authenticated ciphers.
+Assume $A$ makes $E(u,n)$ encryption queries under nonce $n$ to the
+ $u^{\mathit{th}}$ user's cipher, and $D(u,n)$ decryption queries.
+
+$\DAENCE/_*$ is simply $\DAENCE/$ with a uniform random function $F$
+ substituted for $\Salsa20/_k$, so if $A_*$ can distinguish a
+ collection of $\DAENCE/_*$ instances from a collection of $\DAENCE/$
+ instances then it can be used in an algorithm to distinguish a
+ collection of $\Salsa20/_k$ instances from a collection of $F$
+ instances (recall $F\colon \{0,1\}^{128} \to \{0,1\}^{512}$ is a
+ uniform random function).
+
+If $\mathcal O(u,n)$ is an oracle for a collection of function
+ instances indexed by $u$, define $A'_*(\mathcal O)$ to run $A_*$ with
+ oracles for the following nonce-based authenticated cipher under
+ nonce $n$, decryption being defined the obvious way:
+%
+\begin{enumerate}
+  \item $k_0 \concat k_1 \concat k_2 := \mathcal O(u, n)$
+    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $t \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(m))$
+    \hfill (24-byte $t$)
+  \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
+      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+\end{enumerate}
+%
+The algorithm $A'_*$ performs $\sum_{u,n} E(u,n) + D(u,n)$ oracle
+ queries, and spends the cost of computing $A_*$ plus the cost of
+ evaluating $\Poly1305/^2$, $\XSalsa20/$, \etc, on
+ $\sum_{u,n} E(u,n) + D(u,n)$ different $\ell$-byte inputs; and
+%
+\begin{multline*}
+  \lvert\Pr[A_*(\DAENCE/)] - \Pr[A_*(\DAENCE/_*)]\rvert
+   = \lvert\Pr[A'_*(\Salsa20/_k)] - \Pr[A'_*(F)]\rvert \\
+   = \Adv^{\muPRF}_{\Salsa20/}(A'_*).
+\end{multline*}
+
+\subsection{Tying the room together}
+
+By stringing all the inequalities together, we complete the proof:
+%
+\begin{align*}
+  \Adv^{\muNMRAE}_{\DAENCE/}(A_*)
+  &= \lvert\Pr[A_*(\DAENCE/)] - \Pr[A_*(U)]\rvert \\
+  &\leq \lvert\Pr[A_*(\DAENCE/)] - \Pr[A_*(\DAENCE/_*)]\rvert \\
+  &\qquad + \lvert\Pr[A_*(\DAENCE/_*)] - \Pr[A_*(U)]\rvert \\
+  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*) \\
+  &\qquad + \lvert\Pr[A(\DAENCE/_1)] - \Pr[A(\DEUCE/)]\rvert \\
+  &\qquad + \lvert\Pr[A(\DEUCE/)] - \Pr[A(U_1)]\rvert \\
+  &\leq \Adv^{\muPRF}_{\Salsa20/}(A'_*) \\
+  &\qquad + \Adv^{\muPRF}_{\XSalsa20/}(A') \\
+  &\qquad + \sum_{u,n}
+              \frac{\bigl(E(u,n) + D(u,n)\bigr)^2 + D(u,n) + \binom{E(u,n)}{2}}
+                   {2^{192}} \\
+  &\qquad\qquad\qquad
+          + 8\lceil\ell/16\rceil
+            \frac{D(u,n) E(u,n) + \binom{E(u,n)}{2}}{2^{212}}.
+\end{align*}
+
+\section{Shaving IAQs---Infrequently Asked Questions}
+
+\begin{description}
+  \item[Why not just use the \CAESAR/ competition winner?]
+    In our estimation, the \CAESAR/
+     competition\footnote{\CAESAR/: Competition for Authenticated
+        Encryption: Security, Applicability, and Robustness.
+       \url{https://competitions.cr.yp.to/caesar.html}}
+     was too broad and dragged on for too long, and in the end failed
+     to gain the traction it needed.
+    While \NaCl/, \IETF/ \ChaCha//\Poly1305/, and \AESGCM/ are
+     ubiquitous today, with a variety of high-quality implementations
+     available in many programming languages, the benefits of the
+     \CAESAR/ winners do not seem to justify the engineering effort to
+     make the novel cryptographic primitives as ubiquitous.
+    In contrast, \DAENCE/ requires negligible engineering effort on
+     top of \NaCl/ or \libsodium/.
+
+  \item[Why bother with \Salsa20/?  Why not just \AEAD/ with \ChaCha/?]
+    \hspace{\stretch{1}}\penalty-300
+    The \NaCl/ \naclonetimeauth/ interface is widely available in many
+     languages, particularly via TweetNaCl.
+    It is easy to implement \DAENCE/ without associated data in terms
+     of this interface; it is not easy to use it to handle associated
+     data.
+
+    On the other hand, \ChaCha//\Poly1305/ is becoming more
+     prevalent following \IETF/ standardization in \TLS/, and \AEAD/s
+     are useful in their own right.
+    So we also provide a nonce-misuse-resistant \AEAD/ that can be
+     easily implemented in terms of \ChaCha/ and \Poly1305/ as found
+     in \libsodium/ and likely other libraries.
+
+  \item[Why a nonce?]
+    Instead of having a nonce, we could \emph{start} with a 512-bit
+     key $k_0 \concat k_1 \concat k_2$ (32-byte $k_0$, 16-byte $k_1$,
+     16-byte $k_2$), and derive the subkey
+    \[
+      k'_0 \concat k'_1 \concat k'_2
+      = \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(a)),
+    \]
+     where $a$ is the associated data; then use $k'_0$, $k'_1$, and
+     $k'_2$ where we currently use $k_0$, $k_1$, and $k_2$ in the
+     definition of \DAENCE/.
+
+    This is \emph{effectively} almost like a nonce---there's a
+     slightly higher chance of collision, but under nonce reuse
+     security simply reduces to deterministic authenticated
+     encryption, so it's not the end of the world.
+    This would simplify the conceptual model by obviating the need for
+     any `nonce' input at all, at the minor cost of requiring a
+     512-bit key instead of a 256-bit key---and it would enable the
+     use of associated data in \NaCl/.
+
+    But\dots it would require adjusting the analysis above, which I
+     will leave for another day.
+\end{description}
+
+\noindent
+We do not anticipate that \DAENCE/ will replace \ChaCha//\Poly1305/ in
+ major protocols such as \TLS/ designed by world-class cryptographers,
+ which can easily take advantage of a message number guaranteed not to
+ repeat.
+We do hope that \DAENCE/ will find its way into the repertoire of
+ general-purpose application engineers who need to store messages safe
+ from eavesdropping and forgery in diverse software
+ environments---%
+ \emph{without} auditing the software stack all the way down to
+  machine instructions to ensure their use of \AESGCMSIV/ is safe from
+  timing side channels,
+ \emph{without} adopting unusual cryptographic primitives or an
+  entirely new cryptography library, and
+ \emph{without} teetering on the brink of catastrophe from nonce reuse
+  in \naclsecretbox/ or \AESGCM/.
+
+\bibliography{daence}
+
+\appendix
+
+\section{Reference implementation}
+
+\lstinputlisting[basicstyle=\small\ttfamily,tabsize=4]{testvector.c}
+
+\section{Test vectors}
+
+\lstinputlisting[basicstyle=\small\ttfamily]{testvector.out}
+
+\end{document}

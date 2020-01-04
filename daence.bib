@@ -1,0 +1,207 @@
+% Primarily about Hash127 polynomial evaluation message
+% authentication.  Used here for f(n) + h(m) vs f(h(m)) vs f(n, h(m))
+% structure of authenticators -- specifically f(h(m)).
+@Unpublished{bernstein1999hash127,
+    author = {Daniel J. Bernstein},
+    title = {Floating-point arithmetic and message authentication},
+    year = 2000,
+    month = APR,
+    note = {Manuscript, last updated 2004-09-18},
+    url = "https://cr.yp.to/papers.html#hash127",
+}
+
+% crypto_secretbox_xsalsa20poly1305 authenticated cipher
+@Unpublished{bernstein2009naclcrypto,
+    author = {Daniel J. Bernstein},
+    title = {Cryptography in {NaCl}},
+    year = 2009,
+    month = MAR,
+    day = 10,
+    url = "https://cr.yp.to/papers.html#naclcrypto",
+}
+
+@Misc{cperciva2011tarsnap-nonce-reuse,
+    author = {Colin Percival},
+    title = {{Tarsnap} critical security bug},
+    year = 2011,
+    month = JAN,
+    day = 18,
+    howpublished = {{Daemonic Dispatches} blog},
+    url = "https://www.daemonology.net/blog/2011-01-18-tarsnap-critical-security-bug.html",
+}
+
+% Auth256, a 256-bit polynomial evaluation authenticator.
+@InProceedings{bernstein-chou2014auth256,
+    author = {Daniel J. Bernstein and Tung Chou},
+    title = {Faster binary-field multiplication and faster binary-field
+        {MAC}s},
+    pages = "92--111",
+    crossref = "sac2014",
+    url = "https://cr.yp.to/papers.html#auth256",
+    doi = "10.1007/978-3-319-13051-4_6",
+}
+
+% SIV mode.
+@Misc{rogaway-shrimpton2006keywrap,
+    author = {Phillip Rogaway and Thomas Shrimpton},
+    title = {Deterministic Authenticated-Encryption:
+        A Provable-Security Treatment of the Key-Wrap Problem},
+    year = 2006,
+    note = {Full version of \cite{rogaway-shrimpton2006keywrap-eurocrypt},
+        last updated 2007-08},
+    url = "https://web.cs.ucdavis.edu/~rogaway/papers/keywrap.html",
+}
+
+@InProceedings{rogaway-shrimpton2006keywrap-eurocrypt,
+    author = {Phillip Rogaway and Thomas Shrimpton},
+    title = {A Provable-Security Treatment of the Key-Wrap Problem},
+    pages = "373--390",
+    crossref = "eurocrypt2006",
+    url = "https://link.springer.com/chapter/10.1007/11761679_23",
+    doi = "10.1007/11761679_23",
+}
+
+% Sec. 1.5: `[L]et $H$ be a collection of almost universal$_2$ hash
+% functions, meaning that for any fixed but distinct $x, x'$, the
+% probability that $h(x) = h(x')$ is small, when $h$ is drawn randomly
+% from $H$.  Then $G_{a,h}(x) = F_a(h(x))$ is also a VI_PRF family.'
+@Misc{bellare-canetti-krawczyk1996cascade,
+    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
+    title = {Pseudorandom Functions Revisited:
+        The Cascade Construction and its Concrete Security},
+    year = 1996,
+    note = {Full version of \cite{bellare-canetti-krawczyk1996cascade-fosc}},
+    url = "https://cseweb.ucsd.edu/~mihir/papers/cascade.html",
+}
+
+% Sec. 1.5, same as full version.
+@InProceedings{bellare-canetti-krawczyk1996cascade-fosc,
+    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
+    title = {Pseudorandom functions revisited:
+        the cascade construction and its concrete security},
+    pages = "514--523",
+    crossref = "ieee-focs1996",
+    url = "https://ieeexplore.ieee.org/document/548510",
+    doi = "10.1109/SFCS.1996.548510",
+}
+
+@Misc{bernstein2011xsalsa,
+    author = {Daniel J. Bernstein},
+    title = {Extending the {Salsa20} nonce},
+    howpublished = {Workshop Record of {Symmetric Key Encryption Workshop}},
+    year = 2011,
+    month = FEB,
+    day = 4,
+    url = "https://cr.yp.to/papers.html#xsalsa",
+}
+
+% Proceedings
+
+@Proceedings{eurocrypt2006,
+    editor = {Serge Vaudenay},
+    title = {Advances in Cryptology---{EUROCRYPT}~2006,
+        24th Annual International Conference on the Theory and
+        Applications of Cryptographic Techniques},
+    booktitle = {Advances in Cryptology---{EUROCRYPT}~2006,
+        24th Annual International Conference on the Theory and
+        Applications of Cryptographic Techniques},
+    year = 2006,
+    month = MAY,
+    series = {Lecture Notes in Computer Science},
+    volume = 4004,
+    isbn = "978-3-540-34546-6",
+    publisher = {Springer-Verlag},
+    address = {Berlin, Heidelberg, Germany},
+    url = "https://link.springer.com/book/10.1007/11761679",
+    doi = "10.1007/11761679",
+}
+
+@Proceedings{ieee-focs1996,
+    title = {Proceedings of the 37th Conference on Foundations of
+        Computer Science---{FOSC}~1996},
+    booktitle = {Proceedings of the 37th Conference on Foundations of
+        Computer Science---{FOSC}~1996},
+    year = 1996,
+    month = OCT,
+    issn = "0272-5428",
+    url = "https://ieeexplore.ieee.org/xpl/tocresult.jsp?isnumber=11790&isYear=1996",
+    doi = "10.1109/SFCS.1996.548510",
+}
+
+@Proceedings{sac2014,
+    editor = {Antoine Joux and Amr M. Youssef},
+    title = {Selected Areas in Cryptography---{SAC}~2014, 21st International Conference, Revised Selected Papers},
+    booktitle = {Selected Areas in Cryptography---{SAC}~2014, 21st International Conference, Revised Selected Papers},
+    year = 2014,
+    month = AUG,
+    series = {Lecture Notes in Computer Science},
+    volume = 8781,
+    isbn = "978-3-319-13050-7",
+    publisher = {Springer},
+    address = {Cham, Switzerland},
+    url = "https://link.springer.com/book/10.1007/978-3-319-13051-4",
+    doi = "10.1007/978-3-319-13051-4",
+}
+
+% IETF RFCs -- https://datatracker.ietf.org/doc/rfcNNNN/bibtex/
+
+@misc{rfc7539,
+	series =	{Request for Comments},
+	number =	7539,
+	howpublished =	{RFC 7539},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC7539},
+	url =		{https://rfc-editor.org/rfc/rfc7539.txt},
+        author =	{Yoav Nir and Adam Langley},
+	title =		{{ChaCha20 and Poly1305 for IETF Protocols}},
+	pagetotal =	45,
+	year =		2015,
+	month =		may,
+	abstract =	{This document defines the ChaCha20 stream cipher as well as the use of the Poly1305 authenticator, both as stand-alone algorithms and as a "combined mode", or Authenticated Encryption with Associated Data (AEAD) algorithm. This document does not introduce any new crypto, but is meant to serve as a stable reference and an implementation guide. It is a product of the Crypto Forum Research Group (CFRG).},
+}
+
+@misc{rfc7905,
+	series =	{Request for Comments},
+	number =	7905,
+	howpublished =	{RFC 7905},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC7905},
+	url =		{https://rfc-editor.org/rfc/rfc7905.txt},
+        author =	{Adam Langley and Wan-Teh Chang and Nikos Mavrogiannopoulos and Joachim Strombergson and Simon Josefsson},
+	title =		{{ChaCha20-Poly1305 Cipher Suites for Transport Layer Security (TLS)}},
+	pagetotal =	8,
+	year =		2016,
+	month =		jun,
+	abstract =	{This document describes the use of the ChaCha stream cipher and Poly1305 authenticator in the Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS) protocols. This document updates RFCs 5246 and 6347.},
+}
+
+@misc{rfc8452,
+	series =	{Request for Comments},
+	number =	8452,
+	howpublished =	{RFC 8452},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC8452},
+	url =		{https://rfc-editor.org/rfc/rfc8452.txt},
+        author =	{Shay Gueron and Adam Langley and Yehuda Lindell},
+	title =		{{AES-GCM-SIV: Nonce Misuse-Resistant Authenticated Encryption}},
+	pagetotal =	42,
+	year =		2019,
+	month =		apr,
+	abstract =	{This memo specifies two authenticated encryption algorithms that are nonce misuse resistant -- that is, they do not fail catastrophically if a nonce is repeated. This document is the product of the Crypto Forum Research Group.},
+}
+
+% NIST Standards
+
+% AES-GCM
+@TechReport{nist-sp800-38d,
+    author = {Morris Dworkin},
+    title = {{Recommendation for Block Cipher Modes of Operation:
+        Galois/Counter Mode (GCM) and GMAC}},
+    institution = {{National Institute of Standards and Technology},
+        {U.S. Department of Commerce}},
+    note = {{NIST Special Publication 800--38D}},
+    year = 2007,
+    month = NOV,
+    doi = "10.6028/NIST.SP.800-38D",
+    url = "https://csrc.nist.gov/publications/detail/sp/800-38d/final",
+}
