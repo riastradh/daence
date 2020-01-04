@@ -182,7 +182,7 @@ The \emph{nonce-misuse-resistant} authenticated cipher
 We propose a nonce-misuse-resistant authenticated cipher \DAENCE/,
  built out of a deterministic authenticated cipher using \Salsa20/ or
  \ChaCha/ and the \Poly1305/ universal hash family, with keys derived
- from a master key and 128-bit nonce.
+ from a master key and a 128-bit nonce.
 The design is based on the \SIV/ construction of Rogaway and
  Shrimpton~\cite{rogaway-shrimpton2006keywrap}, with a
  variable-input-PRF made by composing a universal hash family with a
