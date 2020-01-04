@@ -851,10 +851,10 @@ By stringing all the inequalities together, we complete the proof:
   \item[Why a nonce?]
     Instead of having a nonce, we could \emph{start} with a 512-bit
      key $k_0 \concat k_1 \concat k_2$ (32-byte $k_0$, 16-byte $k_1$,
-     16-byte $k_2$), and derive the subkey
+     16-byte $k_2$), and derive the 512-bit subkey
     \[
       k'_0 \concat k'_1 \concat k'_2
-      = \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(a)),
+      = \XSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(a)),
     \]
      where $a$ is the associated data; then use $k'_0$, $k'_1$, and
      $k'_2$ where we currently use $k_0$, $k_1$, and $k_2$ in the
