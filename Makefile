@@ -56,3 +56,27 @@ clean: clean-testvector
 clean-testvector: .PHONY
 	-rm -f testvector
 	-rm -f $(SRCS_testvector:.c=.o)
+
+SRCS_daence = \
+	daence.c \
+	tweetnacl.c \
+	# end of SRCS_daence
+daence: $(SRCS_daence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_daence:.c=.o)
+
+check: check-daence
+check-daence: .PHONY
+check-daence: daence
+	./daence
+
+clean: clean-daence
+clean-daence: .PHONY
+	-rm -f daence
+	-rm -f $(SRCS_daence:.c=.o)
+
+tweetnacl.o: tweetnacl.c
+	$(CC) -c -o $@ $(CFLAGS) $(CPPFLAGS) -Wno-sign-compare tweetnacl.c
+
+daence.o: daence.h
+daence.o: tweetnacl.h
+tweetnacl.o: tweetnacl.h
