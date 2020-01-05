@@ -8,12 +8,14 @@ PDFLATEX = pdflatex
 all: .PHONY
 all: daence.pdf
 
+check: .PHONY
+
 clean: .PHONY
 
 daence.pdf: daence.bib
 daence.pdf: daence.tex
 daence.pdf: testvector.c
-daence.pdf: testvector.out
+daence.pdf: testvector.exp
 	$(PDFLATEX) \\nonstopmode\\input daence
 	$(BIBTEX) daence
 	$(PDFLATEX) \\nonstopmode\\input daence
@@ -28,6 +30,12 @@ clean-daence.pdf: .PHONY
 	-rm -f daence.brf
 	-rm -f daence.log
 	-rm -f daence.pdf
+
+check: check-testvector
+check-testvector: .PHONY
+check-testvector: testvector.exp
+check-testvector: testvector.out
+	diff -u testvector.exp testvector.out
 
 testvector.out: testvector
 	./testvector > $@.tmp && mv -f $@.tmp $@
