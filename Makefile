@@ -7,6 +7,7 @@ PDFLATEX = pdflatex
 
 all: .PHONY
 all: daence.pdf
+all: check
 
 check: .PHONY
 
