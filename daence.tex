@@ -217,8 +217,9 @@ This means it consists of two functions:
 \begin{enumerate}
   \item You must choose a secret key $k$ uniformly at random and
      independently of everything else in your application.
-    (You may safely derive the 64-byte key $k$ from a 32-byte
-     key by a key derivation function---\eg, $k = \Salsa20/_{k'}(0)$.)
+    (You may safely derive the 64-byte key $k$ from a 32-byte key $k'$
+     by a key derivation function---\eg, $k = \Salsa20/_{k'}(0)$, or
+     $k = \operatorname{HKDF-SHA256}_{k'}(\mathit{salt}, \text{`foo'})$.)
 
   \item If $\DaenceDecrypt$ reports a forgery, you must decline to act
      on the alleged message content except by immediately dropping it
