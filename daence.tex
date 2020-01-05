@@ -203,13 +203,13 @@ This means it consists of two functions:
     \begin{itemize}
       \item If $c' = \DaenceEncrypt(k, a', m)$, $\DaenceDecrypt$
          returns $m$.
-      \item Otherwise, $\DaenceDecrypt$ returns $\bot$ with high
+      \item Otherwise, $\DaenceDecrypt$ reports a forgery with high
          probability.
+        In the sequel we denote this by the symbol `$\bot$'; in
+         practice, a \texttt{crypto\_dae\_salsa20poly1305\_open}
+         function in the style of \NaCl/ may return an error code or
+         throw an exception.
     \end{itemize}
-
-    In practice, a \texttt{crypto\_dae\_salsa20poly1305\_open}
-     function in the style of \NaCl/ may return an error code or
-     throw an exception to represent $\bot$.
 \end{description}
 
 \paragraph*{Responsibilities of the user.}
@@ -242,8 +242,9 @@ Under any key $k$ independently:
      adversary has no hope of distinguishing the ciphertexts of your
      messages from uniform random byte strings of the same length.
 
-  \item The adversary's probability of succeeding at forgery is less
-     than $2^{-32}$.
+  \item The adversary's probability of succeeding at forgery---even
+     after flooding your system with up to $2^{70}$ bytes of forgery
+     attempts---is less than $2^{-32}$.
 \end{enumerate}
 
 \noindent
