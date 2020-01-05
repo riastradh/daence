@@ -6,13 +6,14 @@
 \usepackage[T1]{fontenc}
 \usepackage[final=true,backref=page,colorlinks=true]{hyperref}[2016/05/21]
 \usepackage[final]{listings}
+\usepackage[numbers]{natbib}
 
 \title{\DAENCE/:
   \Salsa20/ and \ChaCha/ in Deterministic Authenticated Encryption \\
   with no noNCEnse}
 \author{Taylor `Riastradh' Campbell}
 
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 \renewcommand*{\backrefalt}[4]{%
   \ifcase#1% no citations
   \or% one citation
@@ -21,6 +22,12 @@
     Cited on pp.~#2.%
   \fi%
 }
+\DeclareUrlCommand\doi{%
+  \def\UrlLeft##1\UrlRight{DOI~\href{https://doi.org/##1}{##1}}%
+  \urlstyle{rm}}
+\DeclareUrlCommand\url{%
+  \def\UrlLeft##1\UrlRight{\href{##1}{##1}}%
+  \urlstyle{tt}}
 
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -934,7 +941,6 @@ We do hope that \DAENCE/ will find its way into the repertoire of
  \emph{without} teetering on the brink of catastrophe from nonce reuse
   in \naclsecretbox/ or \AESGCM/.
 
-\break
 \bibliography{daence}
 
 \break
