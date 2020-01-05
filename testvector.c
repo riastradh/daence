@@ -28,7 +28,7 @@ show(const char *name, const unsigned char *buf, size_t len)
 	for (i = 0; i < len; i++) {
 		printf("%02hhx", buf[i]);
 		if (i + 1 < len && ((i + 1) % 24) == 0)
-			printf("\n");
+			printf("\n%*s", (int)strlen(name) + 1, "");
 	}
 	printf("\n");
 }
