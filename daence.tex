@@ -572,11 +572,16 @@ Thus,
 \end{align*}
 
 How often do collisions occur?
-There are at most $E + D$ distinct values of $h$.
-The values of $t$ are independent uniform random 192-bit strings, and
- there are up to $E + D$ of them, so
+It suffices to consider the event $C_{th_{192}}$ of a collision
+ between a $t$ and just the upper 192 bits of an $h$; call it
+ $h_{192}$.
+There are at most $E + D$ distinct values of $h$ and thus of
+ $h_{192}$.
+The values of $t$ are independent uniform 192-bit strings, and there
+ are up to $E + D$ of them, so
 \[
   \Pr[C_{th}]
+  \leq \Pr[C_{th_{192}}]
   \leq \sum_{i=1}^{E + D} \frac{E + D}{2^{192}}
   = \frac{(E + D)^2}{2^{192}}.
 \]
