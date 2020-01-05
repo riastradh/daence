@@ -41,6 +41,7 @@
 \def\HChaCha#1/{\operatorsc{HChaCha#1}}
 \def\HSalsa#1/{\operatorsc{HSalsa#1}}
 \def\XChaCha#1/{\operatorsc{XChaCha#1}}
+\def\HXChaCha#1/{\operatorsc{HXChaCha#1}}
 \def\XSalsa#1/{\operatorsc{XSalsa#1}}
 \def\HXSalsa#1/{\operatorsc{HXSalsa#1}}
 \def\Poly#1/{\operatorsc{Poly#1}}
@@ -313,13 +314,13 @@ We recommend using \ChaCha/ instead of \Salsa20/ in order to take
  implemented in \libsodium/ \sodiumaead/.
 With associated data $a$ of $\lvert a\rvert < 2^{64}$ bytes,
  encryption is as above but with length-delimited associated data fed
- into \Poly1305/:
+ into $\Poly1305/^2$:
 %
 \begin{itemize}
   \item $k_0 \concat k_1 \concat k_2 := \ChaCha/_k(n)$
     \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
   \item $t \concat \_ :=
-      \HChaCha/_{k_0}(
+      \HXChaCha/_{k_0}(
         \Poly1305/^2_{k_1,k_2}(\lvert a\rvert \concat a \concat m))$
     \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
