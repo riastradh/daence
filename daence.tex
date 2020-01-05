@@ -593,8 +593,8 @@ Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
   probability.}
 \leavevmode\hfill\break
 The decryption oracle of \DICE/ returns anything other than
- $\bot$ only in the event $F$ that $A$ forges a ciphertext not
- obtained from the encryption oracle.
+ $\bot$ only in the event $F$ that $A$ forges a ciphertext for a
+ message not sent to the encryption oracle.
 Conditional on $\lnot F$, \DICE/ and \DUNCE/ otherwise have the same
  distribution---the encryption oracle is the same and the decryption
  oracle always returns $\bot$ in both cases---so
