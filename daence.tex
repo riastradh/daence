@@ -170,9 +170,9 @@ The \emph{nonce-misuse-resistant} authenticated cipher
  \AESGCM/---and amplifies the performance cost by deriving fresh keys
  for each distinct nonce, yet has very narrow security margins.
 
-We propose a deterministic authenticated cipher \DAENCE/, built out of
- a deterministic authenticated cipher using \Salsa20/ or \ChaCha/
- and the \Poly1305/ universal hash family.
+We propose a deterministic authenticated cipher \DAENCE/ built out of
+ the \Salsa20/ or \ChaCha/ pseudorandom function family and the
+ \Poly1305/ universal hash family.
 The design is based on the \SIV/ construction of Rogaway and
  Shrimpton~\cite{rogaway-shrimpton2006keywrap}, with a
  variable-input-PRF made by composing a universal hash family with a
