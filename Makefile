@@ -16,7 +16,7 @@ clean: .PHONY
 daence.pdf: daence.bib
 daence.pdf: daence.tex
 daence.pdf: testvector.c
-daence.pdf: testvector.exp
+daence.pdf: testvector.out
 	$(PDFLATEX) \\nonstopmode\\input daence
 	$(BIBTEX) daence
 	$(PDFLATEX) \\nonstopmode\\input daence
