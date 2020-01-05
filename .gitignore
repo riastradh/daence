@@ -17,4 +17,5 @@
 *.o
 
 # our crud
+/daence
 /testvector
