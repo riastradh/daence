@@ -65,6 +65,7 @@
 \def\IETF/{IETF}
 \def\TLS/{TLS}
 \def\IV/{\textsc{iv}}
+\def\Tarsnap/{Tarsnap}
 \def\AESGCM/{AES\nobreakdash-GCM}
 \def\AESGCMSIV/{AES\nobreakdash-GCM\nobreakdash-SIV}
 \def\naclsecretbox/{crypto\_secretbox\_xsalsa20poly1305}
@@ -904,6 +905,58 @@ Thus,
     In contrast, \DAENCE/ requires negligible engineering effort on
      top of \NaCl/ or \libsodium/.
 
+  \item[Does \DAENCE/ support streaming?]
+    No.
+    If you want to stream large files, break them into bite-size
+     pieces first, and include the piece number and an end-of-stream
+     flag in the associated data.
+    Make sure the pieces are no larger than the amount of memory you
+     are willing to let an adversary waste with a forgery if they are
+     carrying out a denial of service attack.
+
+  \item[Why not a nonce-misuse-resistant authenticated cipher?]
+    If you have a nonce---say a message sequence number---then you can
+     use it in the associated data.
+    So out of \DAENCE/ you can build your own nonce-misuse-resistant
+     authenticated cipher: just prefix a fixed-size nonce to the
+     associated data!
+
+    But there is a conceptual cost to \emph{requiring} a nonce
+     parameter \emph{and} associated data---what are you supposed to
+     put in the nonce and what are you supposed to put in the
+     associated data?
+    The terms `nonce' and `nonce-misuse-resistant authenticated
+     cipher' are confusing to non-experts (not to mention the
+     British).
+
+    The security bounds could be better if we derived a fresh key for
+     each distinct nonce like \AESGCMSIV/ does.
+    But \AESGCMSIV/ has weaker security bounds to begin with.
+    At the level of security that \DAENCE/ provides, there is little
+     reason to pay the interface complexity cost.
+
+  \item[Why not just use \AESGCMSIV/?]
+    \AESGCMSIV/ is optimized for applications that can
+     \emph{guarantee} hardware support for the primitives---otherwise
+     it may be subject to severe performance degradation and/or timing
+     side channel attacks.
+    This may be reasonable when the engineer can control everything
+     about the hardware and software stack, and audit the software
+     stack all the way down to the hardware to ensure safety, but it
+     does not make for a good general-purpose tool.
+
+    The \AESGCMSIV/ security guarantee requires unusually detailed
+     safe usage limits~\cite[\S9]{rfc8452}, and users are advised to
+     choose nonces at random---which is exactly the opposite of the
+     advice for nonce-based ciphers like \AESGCM/ and \NaCl/
+     \naclsecretbox/.
+    This limits \AESGCMSIV/'s value as a drop-in replacement for
+     nonce-based ciphers with a safety net for \Tarsnap/-style
+     accidental nonce reuse
+     bugs~\cite{cperciva2011tarsnap-nonce-reuse} and virtual machine
+     rollbacks, and makes applications \emph{more} vulnerable to
+     broken entropy sources than \DAENCE/ would.
+
   \item[Why bother with \Salsa20/?  Why not just \ChaCha/?]
     \hspace{\stretch{1}}\penalty-300
     The \NaCl/ \naclonetimeauth/ interface is widely available in many
@@ -941,7 +994,6 @@ We do hope that \DAENCE/ will find its way into the repertoire of
  \emph{without} teetering on the brink of catastrophe from nonce reuse
   in \naclsecretbox/ or \AESGCM/.
 
-\newpage
 \bibliography{daence}
 
 \newpage
