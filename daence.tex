@@ -644,15 +644,16 @@ Suppose $A$ submits distinct encryption queries
  via intermediate hashes
  $h_i = \Poly1305/^2_{k_1,k_2}(a_i, m_i)$,
  so that $t_i = f(h_i)$ and $c_i = m_i \oplus g_*(t_i)$.
-Suppose $A$ then attempts a forgery $(a', t', c')$; let
+Suppose $A$ attempts a forgery $(a', t', c')$ with
+ $t' \concat c' \ne t_i \concat c_i$ for all $i$.
+Let
  $m' = c' \oplus g_*(t')$
  and
  $h' = \Poly1305/^2_{k_1,k_2}(a', m')$.
-The forgery succeeds if $t' \concat c' \ne t_i \concat c_i$ for all
- $i$, and $t' = f(h')$.
-In this case, $(a', m') \ne (a_i, m_i)$, for if
+The forgery succeeds if $t' = f(h')$.
+Note that $(a', m') \ne (a_i, m_i)$, for if
  $(a', m') = (a_i, m_i)$,
- then we must have
+ then we would have
  $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, $k_1$,
  and $k_2$---$t' \concat c'$ is a deterministic function of
  $(a', m')$.
