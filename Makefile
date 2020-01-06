@@ -5,6 +5,7 @@ default-target: .PHONY
 BIBTEX = bibtex
 PDFLATEX = pdflatex
 
+_CFLAGS = $(CFLAGS) -Werror -MMD -MF $*.d
 _CPPFLAGS = $(CPPFLAGS) \
 	-Itweetnacl \
 	-Icrypto_aead/salsa20daence/ref \
@@ -56,6 +57,8 @@ clean-testvector.out: .PHONY
 SRCS_testvector = \
 	testvector.c \
 	# end of SRCS_testvector
+DEPS_testvector = $(SRCS_testvector:.c=.d)
+-include $(DEPS_testvector)
 LIBS_testvector = \
 	-lsodium \
 	# end of LIBS_testvector
@@ -66,12 +69,15 @@ clean: clean-testvector
 clean-testvector: .PHONY
 	-rm -f testvector
 	-rm -f $(SRCS_testvector:.c=.o)
+	-rm -f $(SRCS_testvector:.c=.d)
 
 SRCS_t_daence = \
 	crypto_aead/salsa20daence/ref/salsa20daence.c \
 	t_daence.c \
 	tweetnacl/tweetnacl.c \
 	# end of SRCS_t_daence
+DEPS_t_daence = $(SRCS_t_daence:.c=.d)
+-include $(DEPS_t_daence)
 t_daence: $(SRCS_t_daence:.c=.o)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_daence:.c=.o)
 
@@ -84,9 +90,10 @@ clean: clean-daence
 clean-daence: .PHONY
 	-rm -f t_daence
 	-rm -f $(SRCS_t_daence:.c=.o)
+	-rm -f $(SRCS_t_daence:.c=.d)
 
 tweetnacl/tweetnacl.o: tweetnacl/tweetnacl.c
-	$(CC) -c -o $@ $(CFLAGS) $(_CPPFLAGS) -Wno-sign-compare \
+	$(CC) -c -o $@ $(_CFLAGS) $(_CPPFLAGS) -Wno-sign-compare \
 		tweetnacl/tweetnacl.c
 
 SRCS_t_tweetdaence = \
@@ -94,6 +101,8 @@ SRCS_t_tweetdaence = \
 	tweetdaence.c \
 	tweetnacl/tweetnacl.c \
 	# end of SRCS_t_tweetdaence
+DEPS_t_tweetdaence = $(SRCS_t_tweetdaence:.c=.d)
+-include $(DEPS_t_tweetdaence)
 t_tweetdaence: $(SRCS_t_tweetdaence:.c=.o)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_tweetdaence:.c=.o)
 
@@ -106,24 +115,11 @@ clean: clean-tweetdaence
 clean-tweetdaence: .PHONY
 	-rm -f t_tweetdaence
 	-rm -f $(SRCS_t_tweetdaence:.c=.o)
+	-rm -f $(SRCS_t_tweetdaence:.c=.d)
 
 .SUFFIXES:
 .SUFFIXES: .c
 .SUFFIXES: .o
 
 .c.o:
-	$(CC) -o $@ $(CFLAGS) $(_CPPFLAGS) -c $<
-
-crypto_aead/salsa20daence/ref/salsa20daence.o: crypto_aead/salsa20daence/ref/salsa20daence.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_core_hsalsa20.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_onetimeauth_poly1305.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_stream_xsalsa20.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_verify_32.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/tweetnacl.h
-daence.o: daence.h
-daence.o: tweetnacl/tweetnacl.h
-t_daence.o: crypto_aead/salsa20daence/ref/salsa20daence.h
-t_tweetdaence.o: tweetdaence.h
-tweetdaence.o: tweetdaence.h
-tweetdaence.o: tweetnacl/tweetnacl.h
-tweetnacl/tweetnacl.o: tweetnacl/tweetnacl.h
+	$(CC) -c -o $@ $(_CFLAGS) $(_CPPFLAGS) $<

@@ -14,6 +14,7 @@
 *.ps
 
 # C crud
+*.d
 *.o
 
 # our crud
