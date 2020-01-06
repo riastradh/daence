@@ -11,10 +11,10 @@
 static const unsigned char sigma[16] = "expand 32-byte k";
 
 /*
- * Lines marked `XXX KAT' expose internal state and are used only
- * for generating test vectors, to assist with making compatible
- * implementations.  For practical deployment, delete all of those
- * lines.
+ * Lines marked `XXX KAT' expose internal state and are used
+ * only for generating test vectors, to assist with making
+ * compatible implementations.  For practical deployment,
+ * delete all of those lines.
  */
 
 void
