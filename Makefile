@@ -106,7 +106,6 @@ clean-tweetdaence: .PHONY
 
 crypto_aead/salsa20daence/ref/salsa20daence.o: crypto_aead/salsa20daence/ref/salsa20daence.h
 crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_core_hsalsa20.h
-crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_core_salsa20.h
 crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_onetimeauth_poly1305.h
 crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_stream_xsalsa20.h
 crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_verify_32.h

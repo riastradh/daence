@@ -45,7 +45,6 @@
 #include <string.h>
 
 #include "crypto_core_hsalsa20.h"
-#include "crypto_core_salsa20.h"
 #include "crypto_onetimeauth_poly1305.h"
 #include "crypto_stream_xsalsa20.h"
 #include "crypto_verify_32.h"
