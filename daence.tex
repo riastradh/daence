@@ -197,15 +197,15 @@ This means it consists of two functions:
 %
 \begin{description}
   \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a 64-byte key
-     $k$, a string $a$ of up to $2^{32}$ bytes of associated data, and
-     a message $m$ of up to $2^{32}$ bytes.
+     $k$, a string $a$ of fewer than $2^{32}$ bytes of associated
+     data, and a message $m$ of fewer than $2^{32}$ bytes.
 
     $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
      24 bytes longer than $m$.
 
   \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a 64-byte
-     key $k$, a string $a'$ of up to $2^{32}$ bytes of associated
-     data, and an alleged authenticated ciphertext $c'$ of up to
+     key $k$, a string $a'$ of fewer than $2^{32}$ bytes of associated
+     data, and an alleged authenticated ciphertext $c'$ of fewer than
      $24 + 2^{32}$ bytes.
 
     \begin{itemize}
