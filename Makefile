@@ -5,7 +5,9 @@ default-target: .PHONY
 BIBTEX = bibtex
 PDFLATEX = pdflatex
 
-CPPFLAGS = -Itweetnacl -Icrypto_aead/salsa20daence/ref \
+_CPPFLAGS = $(CPPFLAGS) \
+	-Itweetnacl \
+	-Icrypto_aead/salsa20daence/ref \
 	-DDAENCE_GENERATE_KAT
 
 all: .PHONY
@@ -84,7 +86,7 @@ clean-daence: .PHONY
 	-rm -f $(SRCS_t_daence:.c=.o)
 
 tweetnacl/tweetnacl.o: tweetnacl/tweetnacl.c
-	$(CC) -c -o $@ $(CFLAGS) $(CPPFLAGS) -Wno-sign-compare \
+	$(CC) -c -o $@ $(CFLAGS) $(_CPPFLAGS) -Wno-sign-compare \
 		tweetnacl/tweetnacl.c
 
 SRCS_t_tweetdaence = \
@@ -104,6 +106,13 @@ clean: clean-tweetdaence
 clean-tweetdaence: .PHONY
 	-rm -f t_tweetdaence
 	-rm -f $(SRCS_t_tweetdaence:.c=.o)
+
+.SUFFIXES:
+.SUFFIXES: .c
+.SUFFIXES: .o
+
+.c.o:
+	$(CC) -o $@ $(CFLAGS) $(_CPPFLAGS) -c $<
 
 crypto_aead/salsa20daence/ref/salsa20daence.o: crypto_aead/salsa20daence/ref/salsa20daence.h
 crypto_aead/salsa20daence/ref/salsa20daence.o: tweetnacl/crypto_core_hsalsa20.h
