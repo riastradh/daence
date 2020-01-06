@@ -27,6 +27,7 @@ daence.pdf: tweetdaence.c
 	$(BIBTEX) daence
 	$(PDFLATEX) \\nonstopmode\\input daence
 	$(PDFLATEX) \\nonstopmode\\input daence
+	$(PDFLATEX) \\nonstopmode\\input daence
 
 clean: clean-daence.pdf
 clean-daence.pdf: .PHONY
