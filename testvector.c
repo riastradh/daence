@@ -10,28 +10,12 @@
 
 static const unsigned char sigma[16] = "expand 32-byte k";
 
-static void *
-explicit_memset(void *p, int c, size_t n)
-{
-
-	assert(c == 0);
-	sodium_memzero(p, n);
-	return p;
-}
-
-static void
-show(const char *name, const unsigned char *buf, size_t len)
-{
-	size_t i;
-
-	printf("%s=", name);
-	for (i = 0; i < len; i++) {
-		printf("%02hhx", buf[i]);
-		if (i + 1 < len && ((i + 1) % 24) == 0)
-			printf("\n%*s", (int)strlen(name) + 1, "");
-	}
-	printf("\n");
-}
+/*
+ * Lines marked `XXX KAT' expose internal state and are used only
+ * for generating test vectors, to assist with making compatible
+ * implementations.  For practical deployment, delete all of those
+ * lines.
+ */
 
 void
 crypto_dae_salsa20poly1305_test(unsigned char *c,
@@ -95,12 +79,12 @@ crypto_dae_salsa20poly1305_test(unsigned char *c,
 	crypto_stream_xsalsa20_xor(c + 24, m, mlen, c, k0);
 
 	/* Paranoia: clear temporaries.  */
-	explicit_memset(k1, 0, sizeof k1);
-	explicit_memset(k2, 0, sizeof k2);
-	explicit_memset(ham, 0, sizeof ham);
-	explicit_memset(h, 0, sizeof h);
-	explicit_memset(u, 0, sizeof u);
-	explicit_memset(t, 0, sizeof t);
+	sodium_memzero(k1, sizeof k1);
+	sodium_memzero(k2, sizeof k2);
+	sodium_memzero(ham, sizeof ham);
+	sodium_memzero(h, sizeof h);
+	sodium_memzero(u, sizeof u);
+	sodium_memzero(t, sizeof t);
 }
 
 int
@@ -160,16 +144,16 @@ crypto_dae_salsa20poly1305_open(unsigned char *m,
 	memset(t_ + 24, 0, 8);
 	ret = crypto_verify_32(t_, t);
 	if (ret)
-		explicit_memset(m, 0, mlen); /* paranoia */
+		sodium_memzero(m, mlen); /* paranoia */
 
 	/* Paranoia: clear temporaries.  */
-	explicit_memset(k1, 0, sizeof k1);
-	explicit_memset(k2, 0, sizeof k2);
-	explicit_memset(ham, 0, sizeof ham);
-	explicit_memset(h, 0, sizeof h);
-	explicit_memset(u, 0, sizeof u);
-	explicit_memset(t, 0, sizeof t);
-	explicit_memset(t_, 0, sizeof t_);
+	sodium_memzero(k1, sizeof k1);
+	sodium_memzero(k2, sizeof k2);
+	sodium_memzero(ham, sizeof ham);
+	sodium_memzero(h, sizeof h);
+	sodium_memzero(u, sizeof u);
+	sodium_memzero(t, sizeof t);
+	sodium_memzero(t_, sizeof t_);
 
 	return ret;
 }
@@ -196,6 +180,20 @@ static const unsigned char m[33] = {
 	0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,
 	0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f, 0x60,
 };
+
+static void
+show(const char *name, const unsigned char *buf, size_t len)
+{
+	size_t i;
+
+	printf("%s=", name);
+	for (i = 0; i < len; i++) {
+		printf("%02hhx", buf[i]);
+		if (i + 1 < len && ((i + 1) % 24) == 0)
+			printf("\n%*s", (int)strlen(name) + 1, "");
+	}
+	printf("\n");
+}
 
 int
 main(void)

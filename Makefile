@@ -17,6 +17,7 @@ daence.pdf: daence.bib
 daence.pdf: daence.tex
 daence.pdf: testvector.c
 daence.pdf: testvector.out
+daence.pdf: tweetdaence.c
 	$(PDFLATEX) \\nonstopmode\\input daence
 	$(BIBTEX) daence
 	$(PDFLATEX) \\nonstopmode\\input daence
@@ -78,6 +79,27 @@ clean-daence: .PHONY
 tweetnacl.o: tweetnacl.c
 	$(CC) -c -o $@ $(CFLAGS) $(CPPFLAGS) -Wno-sign-compare tweetnacl.c
 
+SRCS_t_tweetdaence = \
+	t_tweetdaence.c \
+	tweetdaence.c \
+	tweetnacl.c \
+	# end of SRCS_t_tweetdaence
+t_tweetdaence: $(SRCS_t_tweetdaence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_tweetdaence:.c=.o)
+
+check: check-tweetdaence
+check-tweetdaence: .PHONY
+check-tweetdaence: t_tweetdaence
+	./t_tweetdaence
+
+clean: clean-tweetdaence
+clean-tweetdaence: .PHONY
+	-rm -f t_tweetdaence
+	-rm -f $(SRCS_t_tweetdaence:.c=.o)
+
 daence.o: daence.h
 daence.o: tweetnacl.h
+t_tweetdaence.o: tweetdaence.h
+tweetdaence.o: tweetdaence.h
+tweetdaence.o: tweetnacl.h
 tweetnacl.o: tweetnacl.h
