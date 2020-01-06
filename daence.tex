@@ -166,7 +166,7 @@ The nonce-based authenticated cipher \AESGCM/~\cite{nist-sp800-38d} is
  popular, though only with hardware support is it fast and resistant
  to timing side channels.
 
-\naclsecretbox/ and \AESGCM/ fail catastrophically in the face of
+These three nonce-based ciphers fail catastrophically in the face of
  nonce reuse.
 They are best suited to protocols that are designed to support
  sequential message numbers, such as the record number in \TLS/.
@@ -185,8 +185,8 @@ We propose a deterministic authenticated cipher \DAENCE/ built out of
  \Poly1305/ universal hash family.
 The design is based on the \SIV/ construction of Rogaway and
  Shrimpton~\cite{rogaway-shrimpton2006keywrap}, with a
- variable-input-PRF made by composing a universal hash family with a
- fixed-input PRF~%
+ variable-input-\PRF/ made by composing a universal hash family with a
+ fixed-input \PRF/~%
   \cite[\S1.5]{bellare-canetti-krawczyk1996cascade}%
   \cite[\S9, Theorem~9.2]{bernstein1999hash127}.
 \DAENCE/ is easily implemented in terms of the primitives available in
