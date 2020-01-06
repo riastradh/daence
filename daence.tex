@@ -65,6 +65,8 @@
 \def\IETF/{IETF}
 \def\TLS/{TLS}
 \def\IV/{\textsc{iv}}
+\def\CPU/{\textsc{cpu}}
+\def\SUPERCOP/{\textsc{supercop}}
 \def\Tarsnap/{Tarsnap}
 \def\AESGCM/{AES\nobreakdash-GCM}
 \def\AESGCMSIV/{AES\nobreakdash-GCM\nobreakdash-SIV}
@@ -911,15 +913,6 @@ Thus,
     In contrast, \DAENCE/ requires negligible engineering effort on
      top of \NaCl/ or \libsodium/.
 
-  \item[Does \DAENCE/ support streaming?]
-    No.
-    If you want to stream large files, break them into bite-size
-     pieces first, and include the piece number and an end-of-stream
-     flag in the associated data.
-    Make sure the pieces are no larger than the amount of memory you
-     are willing to let an adversary waste with a forgery if they are
-     carrying out a denial of service attack.
-
   \item[Why not a nonce-misuse-resistant authenticated cipher?]
     If you have a nonce---say a message sequence number---then you can
      use it in the associated data.
@@ -971,7 +964,7 @@ Thus,
      interface, but not \ChaCha/-\DAENCE/.
 
     On the other hand, \ChaCha//\Poly1305/ is seeing wider use after
-     \IETF/ standardization in \TLS/---and an implementation of
+     \IETF/ standardization in \TLS/---and systems with
      \ChaCha//\Poly1305/ will generally have the parts needed to
      implement \ChaCha/-\DAENCE/ just as easily.
 
@@ -981,6 +974,35 @@ Thus,
      defining both alternatives is to reduce the engineering costs to
      adopting either one in environments that already use \NaCl/ or
      already implement \ChaCha//\Poly1305/.
+
+  \item[How fast is it?]
+    The main cost over \naclsecretbox/ is evaluating \Poly1305/ twice
+     rather than once, and completing it before starting \XSalsa20/,
+     so \Salsa20/-\DAENCE/ should cost about 1--2x what
+     \naclsecretbox/ costs.
+    If the analysis survives some scrutiny, we will submit \DAENCE/ to
+     \SUPERCOP/\footnote{\url{https://bench.cr.yp.to/}} for reliable,
+     fair measurements across a variety of machines.
+
+    But if you must see rough numbers first, on our Intel Core~i7,
+     \SUPERCOP/ measures
+     ${\approx}2.5\,\mathrm{cpb}$ for \naclsecretbox/,
+     ${\approx}1.9\,\mathrm{cpb}$ for hardware-accelerated \AESGCM/,
+     and
+     ${\approx}3.6\,\mathrm{cpb}$ for \Salsa20/-\DAENCE/.
+    There is room for improvement: this na\"ive code makes no attempt
+     to compute the two \Poly1305/'s in parallel, which may be faster
+     than computing them serially---especially for messages exceeding
+     the \CPU/ cache.
+
+  \item[Does \DAENCE/ support streaming?]
+    No.
+    If you want to stream large files, break them into bite-size
+     pieces first, and include the piece number and an end-of-stream
+     flag in the associated data.
+    Make sure the pieces are no larger than the amount of memory you
+     are willing to let an adversary waste with a forgery if they are
+     carrying out a denial of service attack.
 \end{description}
 
 \noindent
