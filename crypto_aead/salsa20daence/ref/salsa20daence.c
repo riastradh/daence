@@ -54,8 +54,8 @@ static void *(*volatile explicit_memset)(void *, int, size_t) = memset;
 
 static const unsigned char sigma[16] = "expand 32-byte k";
 
-void
-crypto_dae_salsa20daence(unsigned char *c,
+static void
+compressauth(unsigned char t[static 24],
     const unsigned char *m, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
@@ -66,7 +66,7 @@ crypto_dae_salsa20daence(unsigned char *c,
 	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
 	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
 	unsigned char h[32], *h1 = h, *h2 = h + 16;
-	unsigned char u[32], t[32];
+	unsigned char u[32];
 
 	/*
 	 * Poly1305 keys: Set evaluation point; zero addend.
@@ -92,13 +92,32 @@ crypto_dae_salsa20daence(unsigned char *c,
 	/*
 	 * Tag generation:
 	 *	u := HSalsa20_k0(h1)
-	 *	t := HSalsa20_u(h2)
+	 *	u := HSalsa20_u(h2)
 	 */
 	crypto_core_hsalsa20(u, h1, k0, sigma);
-	crypto_core_hsalsa20(t, h2, u, sigma);
+	crypto_core_hsalsa20(u, h2, u, sigma);
 
-	/* Copy out tag: c[0..24] := t */
-	memcpy(c, t, 24);
+	/* Copy out tag: t[0..24] := u[0..24] */
+	memcpy(t, u, 24);
+
+	/* paranoia */
+	explicit_memset(k1, 0, sizeof k1);
+	explicit_memset(k2, 0, sizeof k2);
+	explicit_memset(ham, 0, sizeof ham);
+	explicit_memset(h, 0, sizeof h);
+	explicit_memset(u, 0, sizeof u);
+}
+
+void
+crypto_dae_salsa20daence(unsigned char *c,
+    const unsigned char *m, unsigned long long mlen,
+    const unsigned char *a, unsigned long long alen,
+    const unsigned char k[static 64])
+{
+	const unsigned char *k0 = k;	/* k0 := k[0..32] */
+
+	/* c[0..24] := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	compressauth(c, m, mlen, a, alen, k);
 
 	/*
 	 * Stream cipher:
@@ -106,14 +125,6 @@ crypto_dae_salsa20daence(unsigned char *c,
 	 *	    ^ XSalsa20_k0(t @ c[0..24])
 	 */
 	crypto_stream_xsalsa20_xor(c + 24, m, mlen, c, k0);
-
-	/* Paranoia: clear temporaries.  */
-	explicit_memset(k1, 0, sizeof k1);
-	explicit_memset(k2, 0, sizeof k2);
-	explicit_memset(ham, 0, sizeof ham);
-	explicit_memset(h, 0, sizeof h);
-	explicit_memset(u, 0, sizeof u);
-	explicit_memset(t, 0, sizeof t);
 }
 
 int
@@ -123,12 +134,7 @@ crypto_dae_salsa20daence_open(unsigned char *m,
     const unsigned char k[static 64])
 {
 	const unsigned char *k0 = k;	/* k0 := k[0..32] */
-	unsigned char k1[32], k2[32];
-	unsigned char ham[64];
-	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
-	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
-	unsigned char h[32], *h1 = h, *h2 = h + 16;
-	unsigned char u[32], t[32], t_[32];
+	unsigned char t[32], t_[32];
 	int ret;
 
 	/*
@@ -138,49 +144,18 @@ crypto_dae_salsa20daence_open(unsigned char *m,
 	 */
 	crypto_stream_xsalsa20_xor(m, c + 24, mlen, c, k0);
 
-	/*
-	 * Poly1305 keys: Set evaluation point; zero addend.
-	 *	k1 := k[32..48] || 0^16
-	 *	k2 := k[48..64] || 0^16
-	 */
-	memcpy(k1, k + 32, 16); memset(k1 + 16, 0, 16);
-	memcpy(k2, k + 48, 16); memset(k2 + 16, 0, 16);
-
-	/*
-	 * Message compression:
-	 *	ha := Poly1305^2_{k1,k2}(a)
-	 *	hm := Poly1305^2_{k1,k2}(m)
-	 *	h := Poly1305^2_{k1,k2}(ha || hm)
-	 */
-	crypto_onetimeauth_poly1305(ha1, a, alen, k1);
-	crypto_onetimeauth_poly1305(ha2, a, alen, k2);
-	crypto_onetimeauth_poly1305(hm1, m, mlen, k1);
-	crypto_onetimeauth_poly1305(hm2, m, mlen, k2);
-	crypto_onetimeauth_poly1305(h1, ham, 64, k1);
-	crypto_onetimeauth_poly1305(h2, ham, 64, k2);
-
-	/*
-	 * Tag generation:
-	 *	u := HSalsa20_k0(h1)
-	 *	t := HSalsa20_u(h2)
-	 */
-	crypto_core_hsalsa20(u, h1, k0, sigma);
-	crypto_core_hsalsa20(t, h2, u, sigma);
+	/* t := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	compressauth(t, m, mlen, a, alen, k);
 
 	/* Verify tag: c[0..24] ?= t (no crypto_verify_24) */
-	memset(t + 24, 0, 8);
 	memcpy(t_, c, 24);
+	memset(t + 24, 0, 8);
 	memset(t_ + 24, 0, 8);
 	ret = crypto_verify_32(t_, t);
 	if (ret)
 		explicit_memset(m, 0, mlen); /* paranoia */
 
 	/* Paranoia: clear temporaries.  */
-	explicit_memset(k1, 0, sizeof k1);
-	explicit_memset(k2, 0, sizeof k2);
-	explicit_memset(ham, 0, sizeof ham);
-	explicit_memset(h, 0, sizeof h);
-	explicit_memset(u, 0, sizeof u);
 	explicit_memset(t, 0, sizeof t);
 	explicit_memset(t_, 0, sizeof t_);
 
