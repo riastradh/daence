@@ -913,27 +913,6 @@ Thus,
     In contrast, \DAENCE/ requires negligible engineering effort on
      top of \NaCl/ or \libsodium/.
 
-  \item[Why not a nonce-misuse-resistant authenticated cipher?]
-    If you have a nonce---say a message sequence number---then you can
-     use it in the associated data.
-    So out of \DAENCE/ you can build your own nonce-misuse-resistant
-     authenticated cipher: just prefix a fixed-size nonce to the
-     associated data!
-
-    But there is a conceptual cost to \emph{requiring} a nonce
-     parameter \emph{and} associated data---what are you supposed to
-     put in the nonce and what are you supposed to put in the
-     associated data?
-    The terms `nonce' and `nonce-misuse-resistant authenticated
-     cipher' are confusing to non-experts (not to mention the
-     British).
-
-    The security bounds could be better if we derived a fresh key for
-     each distinct nonce like \AESGCMSIV/ does.
-    But \AESGCMSIV/ has weaker security bounds to begin with.
-    At the level of security that \DAENCE/ provides, there is little
-     reason to pay the interface complexity cost.
-
   \item[Why not just use \AESGCMSIV/?]
     \AESGCMSIV/ is optimized for applications that can
      \emph{guarantee} hardware support for the primitives---otherwise
@@ -955,6 +934,27 @@ Thus,
      bugs~\cite{cperciva2011tarsnap-nonce-reuse} and virtual machine
      rollbacks, and makes applications \emph{more} vulnerable to
      broken entropy sources than \DAENCE/ would.
+
+  \item[Why not a nonce-misuse-resistant authenticated cipher?]
+    If you have a nonce---say a message sequence number---then you can
+     use it in the associated data.
+    So out of \DAENCE/ you can build your own nonce-misuse-resistant
+     authenticated cipher: just prefix a fixed-size nonce to the
+     associated data!
+
+    But there is a conceptual cost to \emph{requiring} a nonce
+     parameter \emph{and} associated data---what are you supposed to
+     put in the nonce and what are you supposed to put in the
+     associated data?
+    The terms `nonce' and `nonce-misuse-resistant authenticated
+     cipher' are confusing to non-experts (not to mention the
+     British).
+
+    The security bounds could be better if we derived a fresh key for
+     each distinct nonce like \AESGCMSIV/ does.
+    But \AESGCMSIV/ has weaker security bounds to begin with.
+    At the level of security that \DAENCE/ provides, there is little
+     reason to pay the interface complexity cost.
 
   \item[Why bother with \Salsa20/?  Why not just \ChaCha/?]
     \hspace{\stretch{1}}\penalty-300
