@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <string.h>
 
 #include <sodium/crypto_core_hsalsa20.h>
@@ -10,18 +9,13 @@
 
 static const unsigned char sigma[16] = "expand 32-byte k";
 
-/*
- * Lines marked `XXX KAT' expose internal state and are used
- * only for generating test vectors, to assist with making
- * compatible implementations.  For practical deployment,
- * delete all of those lines.
- */
-
-void
-crypto_dae_salsa20daence_test(unsigned char *c,
-    unsigned char v_ham[static restrict 64], /* XXX KAT */
-    unsigned char v_h[static restrict 32],   /* XXX KAT */
-    unsigned char v_u[static restrict 32],   /* XXX KAT */
+static void
+compressauth(unsigned char t[static 24],
+#ifdef DAENCE_GENERATE_KAT
+    unsigned char v_ham[static restrict 64],
+    unsigned char v_h[static restrict 32],
+    unsigned char v_u[static restrict 32],
+#endif
     const unsigned char *m, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
@@ -32,7 +26,7 @@ crypto_dae_salsa20daence_test(unsigned char *c,
 	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
 	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
 	unsigned char h[32], *h1 = h, *h2 = h + 16;
-	unsigned char u[32], t[32];
+	unsigned char u[32];
 
 	/*
 	 * Poly1305 keys: Set evaluation point; zero addend.
@@ -55,21 +49,44 @@ crypto_dae_salsa20daence_test(unsigned char *c,
 	crypto_onetimeauth_poly1305(h1, ham, 64, k1);
 	crypto_onetimeauth_poly1305(h2, ham, 64, k2);
 
-	memcpy(v_ham, ham, sizeof ham);	/* XXX KAT */
-	memcpy(v_h, h, sizeof h);	/* XXX KAT */
 
-	/*
-	 * Tag generation:
-	 *	u := HSalsa20_k0(h1)
-	 *	t := HSalsa20_u(h2)
-	 */
+	/* Tag generation: t, _ := HXSalsa20_k0(h1 || h2) */
 	crypto_core_hsalsa20(u, h1, k0, sigma);
-	crypto_core_hsalsa20(t, h2, u, sigma);
+#ifdef DAENCE_GENERATE_KAT
+	memcpy(v_ham, ham, sizeof ham);
+	memcpy(v_h, h, sizeof h);
+	memcpy(v_u, u, 32);
+#endif
+	crypto_core_hsalsa20(u, h2, u, sigma);
+	memcpy(t, u, 24);
 
-	memcpy(v_u, u, 32);	/* XXX KAT */
+	/* paranoia */
+	sodium_memzero(k1, sizeof k1);
+	sodium_memzero(k2, sizeof k2);
+	sodium_memzero(ham, sizeof ham);
+	sodium_memzero(h, sizeof h);
+	sodium_memzero(u, sizeof u);
+}
 
-	/* Copy out tag: c[0..24] := t */
-	memcpy(c, t, 24);
+void
+crypto_dae_salsa20daence_test(unsigned char *c,
+#ifdef DAENCE_GENERATE_KAT
+    unsigned char v_ham[static restrict 64],
+    unsigned char v_h[static restrict 32],
+    unsigned char v_u[static restrict 32],
+#endif
+    const unsigned char *m, unsigned long long mlen,
+    const unsigned char *a, unsigned long long alen,
+    const unsigned char k[static 64])
+{
+	const unsigned char *k0 = k;	/* k0 := k[0..32] */
+
+	/* c[0..24] := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	compressauth(c,
+#ifdef DAENCE_GENERATE_KAT
+	    v_ham, v_h, v_u,
+#endif
+	    m, mlen, a, alen, k);
 
 	/*
 	 * Stream cipher:
@@ -77,16 +94,8 @@ crypto_dae_salsa20daence_test(unsigned char *c,
 	 *	    ^ XSalsa20_k0(t @ c[0..24])
 	 */
 	crypto_stream_xsalsa20_xor(c + 24, m, mlen, c, k0);
-
-	/* Paranoia: clear temporaries.  */
-	sodium_memzero(k1, sizeof k1);
-	sodium_memzero(k2, sizeof k2);
-	sodium_memzero(ham, sizeof ham);
-	sodium_memzero(h, sizeof h);
-	sodium_memzero(u, sizeof u);
-	sodium_memzero(t, sizeof t);
 }
-
+
 int
 crypto_dae_salsa20daence_open(unsigned char *m,
     const unsigned char *c, unsigned long long mlen,
@@ -94,12 +103,10 @@ crypto_dae_salsa20daence_open(unsigned char *m,
     const unsigned char k[static 64])
 {
 	const unsigned char *k0 = k;	/* k0 := k[0..32] */
-	unsigned char k1[32], k2[32];
-	unsigned char ham[64];
-	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
-	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
-	unsigned char h[32], *h1 = h, *h2 = h + 16;
-	unsigned char u[32], t[32], t_[32];
+#ifdef DAENCE_GENERATE_KAT
+	unsigned char v_ham[64], v_h[32], v_u[32];
+#endif
+	unsigned char t[32], t_[32];
 	int ret;
 
 	/*
@@ -109,54 +116,34 @@ crypto_dae_salsa20daence_open(unsigned char *m,
 	 */
 	crypto_stream_xsalsa20_xor(m, c + 24, mlen, c, k0);
 
-	/*
-	 * Poly1305 keys: Set evaluation point; zero addend.
-	 *	k1 := k[32..48] || 0^16
-	 *	k2 := k[48..64] || 0^16
-	 */
-	memcpy(k1, k + 32, 16); memset(k1 + 16, 0, 16);
-	memcpy(k2, k + 48, 16); memset(k2 + 16, 0, 16);
-
-	/*
-	 * Message compression:
-	 *	ha := Poly1305^2_{k1,k2}(a)
-	 *	hm := Poly1305^2_{k1,k2}(m)
-	 *	h := Poly1305^2_{k1,k2}(ha || hm)
-	 */
-	crypto_onetimeauth_poly1305(ha1, a, alen, k1);
-	crypto_onetimeauth_poly1305(ha2, a, alen, k2);
-	crypto_onetimeauth_poly1305(hm1, m, mlen, k1);
-	crypto_onetimeauth_poly1305(hm2, m, mlen, k2);
-	crypto_onetimeauth_poly1305(h1, ham, 64, k1);
-	crypto_onetimeauth_poly1305(h2, ham, 64, k2);
-
-	/*
-	 * Tag generation:
-	 *	u := HSalsa20_k0(h1)
-	 *	t := HSalsa20_u(h2)
-	 */
-	crypto_core_hsalsa20(u, h1, k0, sigma);
-	crypto_core_hsalsa20(t, h2, u, sigma);
+	/* t := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	compressauth(t,
+#ifdef DAENCE_GENERATE_KAT
+	    v_ham, v_h, v_u,
+#endif
+	    m, mlen, a, alen, k);
 
 	/* Verify tag: c[0..24] ?= t (no crypto_verify_24) */
-	memset(t + 24, 0, 8);
 	memcpy(t_, c, 24);
+	memset(t + 24, 0, 8);
 	memset(t_ + 24, 0, 8);
 	ret = crypto_verify_32(t_, t);
 	if (ret)
 		sodium_memzero(m, mlen); /* paranoia */
 
-	/* Paranoia: clear temporaries.  */
-	sodium_memzero(k1, sizeof k1);
-	sodium_memzero(k2, sizeof k2);
-	sodium_memzero(ham, sizeof ham);
-	sodium_memzero(h, sizeof h);
-	sodium_memzero(u, sizeof u);
+	/* paranoia */
 	sodium_memzero(t, sizeof t);
 	sodium_memzero(t_, sizeof t_);
+#ifdef DAENCE_GENERATE_KAT
+	sodium_memzero(v_ham, sizeof v_ham);
+	sodium_memzero(v_h, sizeof v_h);
+	sodium_memzero(v_u, sizeof v_u);
+#endif
 
 	return ret;
 }
+
+#ifdef DAENCE_GENERATE_KAT
 
 static const unsigned char k[64] = {
 	0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
@@ -194,7 +181,7 @@ show(const char *name, const unsigned char *buf, size_t len)
 	}
 	printf("\n");
 }
-
+
 int
 main(void)
 {
@@ -241,3 +228,5 @@ main(void)
 
 	return ret;
 }
+
+#endif	/* DAENCE_GENERATE_KAT */

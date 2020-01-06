@@ -5,7 +5,8 @@ default-target: .PHONY
 BIBTEX = bibtex
 PDFLATEX = pdflatex
 
-CPPFLAGS = -Itweetnacl -Icrypto_aead/salsa20daence/ref
+CPPFLAGS = -Itweetnacl -Icrypto_aead/salsa20daence/ref \
+	-DDAENCE_GENERATE_KAT
 
 all: .PHONY
 all: daence.pdf

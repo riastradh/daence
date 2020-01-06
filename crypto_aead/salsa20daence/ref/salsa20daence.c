@@ -89,15 +89,9 @@ compressauth(unsigned char t[static 24],
 	crypto_onetimeauth_poly1305(h1, ham, 64, k1);
 	crypto_onetimeauth_poly1305(h2, ham, 64, k2);
 
-	/*
-	 * Tag generation:
-	 *	u := HSalsa20_k0(h1)
-	 *	u := HSalsa20_u(h2)
-	 */
+	/* Tag generation: t, _ := HXSalsa20_k0(h1 || h2) */
 	crypto_core_hsalsa20(u, h1, k0, sigma);
 	crypto_core_hsalsa20(u, h2, u, sigma);
-
-	/* Copy out tag: t[0..24] := u[0..24] */
 	memcpy(t, u, 24);
 
 	/* paranoia */
