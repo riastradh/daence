@@ -80,7 +80,7 @@ crypto_dae_salsa20daence(unsigned char *c,
 	 * Message compression:
 	 *	ha := Poly1305^2_{k1,k2}(a)
 	 *	hm := Poly1305^2_{k1,k2}(m)
-	 *	h := Poly1305^2_k1(ha || hm)
+	 *	h := Poly1305^2_{k1,k2}(ha || hm)
 	 */
 	crypto_onetimeauth_poly1305(ha1, a, alen, k1);
 	crypto_onetimeauth_poly1305(ha2, a, alen, k2);
@@ -150,7 +150,7 @@ crypto_dae_salsa20daence_open(unsigned char *m,
 	 * Message compression:
 	 *	ha := Poly1305^2_{k1,k2}(a)
 	 *	hm := Poly1305^2_{k1,k2}(m)
-	 *	h := Poly1305^2_k1(ha || hm)
+	 *	h := Poly1305^2_{k1,k2}(ha || hm)
 	 */
 	crypto_onetimeauth_poly1305(ha1, a, alen, k1);
 	crypto_onetimeauth_poly1305(ha2, a, alen, k2);
