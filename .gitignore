@@ -17,6 +17,6 @@
 *.o
 
 # our crud
-/daence
+/t_daence
 /t_tweetdaence
 /testvector

@@ -40,19 +40,15 @@
  *              return (t, c)
  */
 
-#include "daence.h"
+#include "salsa20daence.h"
 
 #include <string.h>
 
-#if 1
-#include "tweetnacl.h"
-#else
 #include "crypto_core_hsalsa20.h"
 #include "crypto_core_salsa20.h"
 #include "crypto_onetimeauth_poly1305.h"
 #include "crypto_stream_xsalsa20.h"
 #include "crypto_verify_32.h"
-#endif
 
 static void *(*volatile explicit_memset)(void *, int, size_t) = memset;
 
@@ -239,35 +235,4 @@ crypto_dae_salsa20daence_selftest(void)
 		return -1;
 
 	return 0;
-}
-
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-void
-randombytes(unsigned char *p, unsigned long long n)
-{
-	static int fd = -1;
-	ssize_t nread;
-
-	if (fd == -1) {
-		if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
-			abort();
-	}
-
-	while (n) {
-		nread = read(fd, p, n);
-		if (nread == -1 || nread == 0)
-			abort();
-		p += ((size_t)nread > n ? n : (size_t)nread);
-		n -= ((size_t)nread > n ? n : (size_t)nread);
-	}
-}
-
-int
-main(void)
-{
-
-	return crypto_dae_salsa20daence_selftest();
 }
