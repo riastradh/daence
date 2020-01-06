@@ -59,7 +59,7 @@ static void *(*volatile explicit_memset)(void *, int, size_t) = memset;
 static const unsigned char sigma[16] = "expand 32-byte k";
 
 void
-crypto_dae_salsa20poly1305(unsigned char *c,
+crypto_dae_salsa20daence(unsigned char *c,
     const unsigned char *m, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
@@ -121,7 +121,7 @@ crypto_dae_salsa20poly1305(unsigned char *c,
 }
 
 int
-crypto_dae_salsa20poly1305_open(unsigned char *m,
+crypto_dae_salsa20daence_open(unsigned char *m,
     const unsigned char *c, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
@@ -192,7 +192,7 @@ crypto_dae_salsa20poly1305_open(unsigned char *m,
 }
 
 int
-crypto_dae_salsa20poly1305_selftest(void)
+crypto_dae_salsa20daence_selftest(void)
 {
 	static const unsigned char k[64] = {
 		0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
@@ -226,15 +226,15 @@ crypto_dae_salsa20poly1305_selftest(void)
 	unsigned char c0[sizeof c];
 	unsigned char m0[sizeof m];
 
-	crypto_dae_salsa20poly1305(c0, m, sizeof m, a, sizeof a, k);
+	crypto_dae_salsa20daence(c0, m, sizeof m, a, sizeof a, k);
 	if (memcmp(c, c0, sizeof c) != 0)
 		return -1;
-	if (crypto_dae_salsa20poly1305_open(m0, c, sizeof m, a, sizeof a, k))
+	if (crypto_dae_salsa20daence_open(m0, c, sizeof m, a, sizeof a, k))
 		return -1;
 	if (memcmp(m, m0, sizeof m) != 0)
 		return -1;
 	c0[18] ^= 0x4;
-	if (crypto_dae_salsa20poly1305_open(m0, c0, sizeof m, a, sizeof a, k)
+	if (crypto_dae_salsa20daence_open(m0, c0, sizeof m, a, sizeof a, k)
 	    == 0)
 		return -1;
 
@@ -269,5 +269,5 @@ int
 main(void)
 {
 
-	return crypto_dae_salsa20poly1305_selftest();
+	return crypto_dae_salsa20daence_selftest();
 }

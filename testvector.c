@@ -18,7 +18,7 @@ static const unsigned char sigma[16] = "expand 32-byte k";
  */
 
 void
-crypto_dae_salsa20poly1305_test(unsigned char *c,
+crypto_dae_salsa20daence_test(unsigned char *c,
     unsigned char v_ham[static restrict 64], /* XXX KAT */
     unsigned char v_h[static restrict 32],   /* XXX KAT */
     unsigned char v_u[static restrict 32],   /* XXX KAT */
@@ -88,7 +88,7 @@ crypto_dae_salsa20poly1305_test(unsigned char *c,
 }
 
 int
-crypto_dae_salsa20poly1305_open(unsigned char *m,
+crypto_dae_salsa20daence_open(unsigned char *m,
     const unsigned char *c, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
@@ -212,9 +212,9 @@ main(void)
 		memset(m_, 0, sizeof m_);
 
 		/* test */
-		crypto_dae_salsa20poly1305_test(c,
+		crypto_dae_salsa20daence_test(c,
 		    ham,h,u, m, i, a, sizeof a, k);
-		if (crypto_dae_salsa20poly1305_open(m_, c,
+		if (crypto_dae_salsa20daence_open(m_, c,
 			i, a, sizeof a, k) != 0)
 			ret = 1;
 		if (memcmp(m, m_, i) != 0)

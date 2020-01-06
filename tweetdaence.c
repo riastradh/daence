@@ -20,7 +20,7 @@ static void prf(u8 *t,const u8 *m,u64 mlen,
   crypto_core_hsalsa20(t,h,k,sigma);
   crypto_core_hsalsa20(t,h + 16,t,sigma);
 }
-void crypto_dae_salsa20poly1305(u8 *c,const u8 *m,
+void crypto_dae_salsa20daence(u8 *c,const u8 *m,
     u64 mlen,const u8 *a,u64 alen,const u8 *k)
 {
   u8 t[32],i;
@@ -28,7 +28,7 @@ void crypto_dae_salsa20poly1305(u8 *c,const u8 *m,
   FOR(i,24) c[i] = t[i];
   crypto_stream_xsalsa20_xor(c + 24,m,mlen,c,k);
 }
-int crypto_dae_salsa20poly1305_open(u8 *m,const u8 *c,
+int crypto_dae_salsa20daence_open(u8 *m,const u8 *c,
     u64 mlen,const u8 *a,u64 alen,const u8 *k)
 {
   u8 t[32],t_[32];

@@ -27,17 +27,17 @@
 #ifndef DAENCE_H
 #define	DAENCE_H
 
-#define	crypto_dae_salsa20poly1305_KEYBYTES	64u
-#define	crypto_dae_salsa20poly1305_TAGBYTES	24u
+#define	crypto_dae_salsa20daence_KEYBYTES	64u
+#define	crypto_dae_salsa20daence_TAGBYTES	24u
 
-void crypto_dae_salsa20poly1305(unsigned char */*c*/,
+void crypto_dae_salsa20daence(unsigned char */*c*/,
     const unsigned char */*m*/, unsigned long long /*mlen*/,
     const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20poly1305_KEYBYTES]);
+    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
 
-int crypto_dae_salsa20poly1305_open(unsigned char */*m*/,
+int crypto_dae_salsa20daence_open(unsigned char */*m*/,
     const unsigned char */*c*/, unsigned long long /*mlen*/,
     const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20poly1305_KEYBYTES]);
+    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
 
 #endif  /* DAENCE_H */
