@@ -609,8 +609,8 @@ Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
   probability.}
 \leavevmode\hfill\break
 The decryption oracle of \DICE/ returns anything other than
- $\bot$ only in the event $F$ that $A$ forges a ciphertext for a
- message not sent to the encryption oracle.
+ $\bot$ only in the event $F$ that $A$ forges a ciphertext not
+ returned by the encryption oracle.
 Conditional on $\lnot F$, \DICE/ and \DUNCE/ otherwise have the same
  distribution---the encryption oracle is the same and the decryption
  oracle always returns $\bot$ in both cases---so
@@ -630,14 +630,12 @@ Conditional on $\lnot F$, \DICE/ and \DUNCE/ otherwise have the same
 \]
 
 Assume $A$ halts after the first forgery attempt---an adversary that
- makes $D>1$ forgery attempts can be broken into an adversary that
- halts after the first forgery attempt, and an adversary that
- simulates forgery failure for the first attempt before making $D-1$
- more attempts.
-If the first variant succeeded with probability at most $p$, then by
- induction the second succeeds with probability at most $(D - 1) p$,
- so that the original adversary succeeds with probability at most
- $p + (D - 1) p = D p$.
+ makes $D>1$ forgery attempts can be broken into one that halts after
+ the first forgery attempt, and another one that simulates forgery
+ failure for the first attempt before making $D-1$ more attempts.
+If the first succeeded with probability at most $p$, then by induction
+ the second succeeds with probability at most $(D - 1) p$, so that the
+ original succeeds with probability at most $p + (D - 1) p = D p$.
 
 Suppose $A$ submits distinct encryption queries
  $(a_1, m_1), \dotsc, (a_E, m_E)$
@@ -650,11 +648,18 @@ Suppose $A$ then attempts a forgery $(a', t', c')$; let
  $m' = c' \oplus g_*(t')$
  and
  $h' = \Poly1305/^2_{k_1,k_2}(a', m')$.
-The forgery succeeds if $(a', m') \ne (a_i, m_i)$ for all $i$, and
- $t' = f(h')$.
+The forgery succeeds if $t' \concat c' \ne t_i \concat c_i$ for all
+ $i$, and $t' = f(h')$.
+In this case, $(a', m') \ne (a_i, m_i)$, for if
+ $(a', m') = (a_i, m_i)$,
+ then we must have
+ $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, $k_1$,
+ and $k_2$---$t' \concat c'$ is a deterministic function of
+ $(a', m')$.
+
 The string $f(h')$ is a uniform random 192-bit string independent of
  the $t_i$ and $c_i$, except in the event $C_{h'}$ that $h'$ coincides
- with one of the $h_i$, which happens with probability
+ with one of the $h_i$:
 %
 \begin{align*}
   \Pr[C_{h'}]
