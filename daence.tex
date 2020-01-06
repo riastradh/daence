@@ -307,9 +307,9 @@ The authenticated ciphertext is $t \concat c$.
 \paragraph*{Decryption.}
 Given
  a 64-byte key $k$,
- associated data $a$, and
+ associated data $a$ of fewer than $2^{32}$ bytes, and
  an alleged authenticated ciphertext $t' \concat c'$ of between $24$
- and $24 + 2^{70}$ bytes, compute:
+ and $24 + 2^{32}$ bytes, compute:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 := k$
