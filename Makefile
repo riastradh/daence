@@ -31,6 +31,7 @@ clean-daence.pdf: .PHONY
 	-rm -f daence.blg
 	-rm -f daence.brf
 	-rm -f daence.log
+	-rm -f daence.out
 	-rm -f daence.pdf
 
 check: check-testvector
