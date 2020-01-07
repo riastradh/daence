@@ -60,6 +60,7 @@ and thereby leaked all your data to the adversary including the key to
 forgery?
 
 
+COPYING         2-clause BSD licence
 Makefile        machine-readable instructions for building everything
 README          you are here
 crypto_aead/    SUPERCOP AEAD API for you to copypasta
