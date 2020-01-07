@@ -76,16 +76,17 @@
 \def\sodiumaead/{crypto\_aead}
 
 \makeatletter
-\def\newlatin#1#2{\def#1{\protect\@latin{#2}}}
-\def\@latin#1{\@ifnextchar.{\@latinfinal{#1}}{\@latinmedial{#1}}}
-\def\@latinfinal#1{\emph{#1}\@}
-\def\@latinmedial#1{\emph{#1.}}
+\def\newlatinabbr#1#2{\def#1{\protect\@latinabbr{#2}}}
+\def\@latinabbr#1{\@ifnextchar.{\@latinabbrfinal{#1}}{\@latinabbrmedial{#1}}}
+\def\@latinabbrfinal#1{\latin{#1}\@}
+\def\@latinabbrmedial#1{\latin{#1.}}
 \makeatother
-\newlatin\eg{e.g}
-\newlatin\etc{etc}
-\newlatin\etseq{et seq}
-\newlatin\ie{i.e}
-\newlatin\vs{vs}
+\newlatinabbr\eg{e.g}
+\newlatinabbr\etc{etc}
+\newlatinabbr\etseq{et seq}
+\newlatinabbr\ie{i.e}
+\newlatinabbr\vs{vs}
+\def\latin#1{\emph{#1}}
 
 \def\INDCPA{%
   \ifmmode\def\next{\operatorname{IND-CPA}}%
