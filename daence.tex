@@ -425,7 +425,7 @@ The corresponding decryption operation is derived similarly.
 \subsection{Collisions under double-hashing with associated data}
 
 \begin{lemma}[Double-hashing]\label{double-hash}
-  Let $k_1$ and $k_2$ be independent \Poly1305/ keys.
+  Let $k_1, k_2$ be independent \Poly1305/ keys.
   For any distinct strings $m \ne m'$ of at most $\ell$ bytes,
   \[
     \Pr[\Poly1305/^2_{k_1,k_2}(m) = \Poly1305/^2_{k_1,k_2}(m')]
@@ -457,10 +457,10 @@ The corresponding decryption operation is derived similarly.
   \end{align*}
 \end{proof}
 
-\begin{lemma}[Hashing associated data]\label{hash-ad}
-  Let $k_1$ and $k_2$ be independent \Poly1305/ keys.
-  For strings $a \ne a'$ of up to $\ell_a$ bytes, and strings
-   $m \ne m'$ of up to $\ell_m$ bytes,
+\begin{lemma}[Hashing tuples]\label{hash-tuple}
+  Let $k_1, k_2$ be independent \Poly1305/ keys.
+  For strings $a, a'$ up to $\ell_a$ bytes and $m, m'$ up to $\ell_m$
+   bytes, if $(a, m) \ne (a', m')$ then
 %
   \begin{multline*}
     \Pr[\Poly1305/^2_{k_1,k_2}(a, m) = \Poly1305/^2_{k_1,k_2}(a', m')] \\
@@ -471,19 +471,18 @@ The corresponding decryption operation is derived similarly.
 \end{lemma}
 
 \begin{proof}
-  Let
-   $h_a = \Poly1305/^2_{k_1,k_2}(a)$
-   and
-   $h_m = \Poly1305/^2_{k_1,k_2}(m)$,
-   and likewise $h_{a'}$ and $h_{m'}$.
+  Let $h_x := \Poly1305/^2_{k_1,k_2}(x)$, and note that
+%
+  \begin{align*}
+    \Pr&[(h_a, h_m) = (h_{a'}, h_{m'}) \given (a, m) \ne (a', m')] \\
+    &= \Pr[h_a = h_{a'} \mathrel{\text{and}} h_m = h_{m'}
+           \given a \ne a' \mathrel{\text{or}} m \ne m'] \\
+    &= \Pr[h_a = h_{a'} \given a \ne a']
+       + \Pr[h_m = h_{m'} \given m \ne m'].
+  \end{align*}
+%
   By Lemma~\ref{double-hash},
-   $\Pr[h_a = h_{a'}] \leq \collisionbound(\ell_a)$
-   and
-   $\Pr[h_m = h_{m'}] \leq \collisionbound(\ell_m)$.
-  Thus,
-   $\Pr[(h_a, h_m) = (h_{a'}, h_{m'})]
-     \leq \Pr[h_a = h_{a'}] + \Pr[h_m = h_{m'}]
-     \leq \collisionbound(\ell_a) + \collisionbound(\ell_m)$.
+   $\Pr[h_x = h_{x'} \given x \ne x'] \leq \collisionbound(\ell_x)$.
   Conditional on $(h_a, h_m) \ne (h_{a'}, h_{m'})$, the 64-byte
    strings $h_a \concat h_m$ and $h_{a'} \concat h_{m'}$ collide under
    $\Poly1305/^2$ with probability at most
@@ -494,7 +493,8 @@ The corresponding decryption operation is derived similarly.
     \Pr&[\Poly1305/^2_{k_1,k_2}(a, m) = \Poly1305/^2_{k_1,k_2}(a', m')] \\
     &= \Pr[\Poly1305/^2_{k_1,k_2}(h_a \concat h_m)
              = \Poly1305/^2_{k_1,k_2}(h_{a'} \concat h_{m'})] \\
-    &\leq \Pr[h_a = h_{a'}] + \Pr[h_m = h_{m'}] \\
+    &\leq \Pr[h_a = h_{a'} \given a \ne a']
+          + \Pr[h_m = h_{m'} \given m \ne m'] \\
     &\qquad + \Pr[\Poly1305/^2_{k_1,k_2}(h_a \concat h_m)
                     = \Poly1305/^2_{k_1,k_2}(h_{a'} \concat h_{m'}) \\
     &\qquad\qquad\quad \given (h_a, h_m) \ne (h_{a'}, h_{m'})] \\
