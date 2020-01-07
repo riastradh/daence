@@ -98,8 +98,15 @@ ChaCha-Daence.
    ln -s /path/to/daence/crypto_auth/salsa20daence crypto_auth/.
 
 Now run SUPERCOP, as <https://bench.cr.yp.to/supercop.html> explains.
+
 If you want to measure just Salsa20-Daence, you will first need:
 
+   ./do-part init
+   ./do-part used
+
+or at least:
+
+   ./do-part init
    ./do-part crypto_verify 16
    ./do-part crypto_verify 32
    ./do-part crypto_core salsa20
@@ -108,9 +115,8 @@ If you want to measure just Salsa20-Daence, you will first need:
    ./do-part crypto_stream xsalsa20
    ./do-part crypto_onetimeauth poly1305
 
-Then you can measure crypto_aead/salsa20daence and
-crypto_auth/salsa20daence, in that order (the auth uses the aead as a
-subroutine -- the auth is just the aead with empty payload):
+Then you can measure crypto_aead/salsa20daence or
+crypto_auth/salsa20daence:
 
    ./do-part crypto_aead salsa20daence
    ./do-part crypto_auth salsa20daence
