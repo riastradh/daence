@@ -28,7 +28,8 @@
  * Salsa20-DAENCE
  * Salsa20 in Deterministic Authenticated Encryption with no noNCEnse
  *
- *      Given 32-byte k, header a, and message m:
+ *      Given 32-byte k0, 16-byte k1, 16-byte k2, header a, and
+ *      message m:
  *
  *              ha1 := Poly1305_{k1,0}(a), ha2 := Poly1305_{k2,0}(a)
  *              hm1 := Poly1305_{k1,0}(m), hm2 := Poly1305_{k2,0}(m)
