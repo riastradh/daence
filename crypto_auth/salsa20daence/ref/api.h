@@ -1,0 +1,2 @@
+#define crypto_auth_salsa20daence_ref_BYTES 24
+#define crypto_auth_salsa20daence_ref_KEYBYTES 64
