@@ -500,7 +500,7 @@ The corresponding decryption operation is derived similarly.
     &\qquad\qquad\quad \given (h_a, h_m) \ne (h_{a'}, h_{m'})] \\
     &\leq \varepsilon(\ell_a) + \varepsilon(\ell_m)
           + \varepsilon(64) \\
-    &= \frac{\lceil\ell_a/16\rceil + \lceil\ell_m/16\rceil + 16}
+    &= \frac{\lceil\ell_a/16\rceil^2 + \lceil\ell_m/16\rceil^2 + 16}
             {2^{206}}.
     \qedhere
   \end{align*}
