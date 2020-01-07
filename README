@@ -12,10 +12,10 @@ Daence.
 
 If you and your friend share a secret 64-byte key for Daence:
 
-- You can feed in a header and a payload of up to 2^32 bytes, and
-  Daence-Encrypt returns an authenticated ciphertext concealing the
-  payload, which you send to your friend in an envelope with the
-  header on it in the clear.
+- You can feed a header and a payload of up to 2^32 bytes into
+  Daence-Encrypt, which will return an authenticated ciphertext
+  concealing the payload; you can then send it to your friend in an
+  envelope with the header on it in the clear.
 
     c = Daence-Encrypt(key, header, payload)
 
