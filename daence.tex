@@ -1034,13 +1034,12 @@ Thus,
      the \CPU/ cache.
 
   \item[Does \DAENCE/ support streaming?]
-    No.
     If you want to stream large files, break them into bite-size
-     pieces first, and include the piece number and an end-of-stream
-     flag in the associated data.
-    Make sure the pieces are no larger than the amount of memory you
-     are willing to let an adversary waste with a forgery if they are
-     carrying out a denial of service attack.
+     pieces, and include the piece number and an end-of-stream flag in
+     the associated data for each piece as a separate message.
+    Ensure the pieces are no larger than the amount of memory you are
+     willing to let an adversary waste with a forgery in a denial of
+     service attack.
 \end{description}
 
 \noindent
