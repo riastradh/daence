@@ -977,6 +977,42 @@ Thus,
      adopting either one in environments that already use \NaCl/ or
      already implement \ChaCha//\Poly1305/.
 
+  \item[Why not use \Auth256/?]
+    The \Auth256/~\cite{bernstein-chou2014auth256} message
+     authentication code is based on a universal hash family with
+     collision probability bounded by $1/2^{255}$ using a key as long
+     as the message.
+    This bound obviously seems better than the
+     ${\approx}\ell^2\!/2^{206}$ bound for $\Poly1305/^2$, so why not
+     reach for it?
+
+    With \DAENCE/, even if messages were the maximum length, $2^{33}$
+     ($2^{32}$ bytes of associated data and $2^{32}$ bytes of
+     message), and you exposed hundreds of trillions of such messages
+     to the adversary ($2^{33} \cdot 2^{48} = 2^{80}$ bytes of data),
+     and even if the adversary attempted about a quintillion forgeries
+     ($2^{60}$, representing an unimaginable $2^{93}$ bytes of data
+     altogether being processed by the application), the probability
+     of a \emph{single} forgery would remain below $2^{-32}$.
+    \textcolor{red}{\textbf{XXX Double-check this bound!}}
+    So there is little \emph{security} motivation to replace
+     \Poly1305/ by a larger universal hash family.
+
+    What about performance?
+    Software performance of \Auth256/ is not better than software
+     performance of \Poly1305/.
+    Maybe \Auth256/ would improve on $\Poly1305/^2$---it's not clear,
+     \latin{a priori}, and since \Auth256/ requires a message-length
+     key the cost would have to figure in key generation.
+
+    But most importantly, neither \Auth256/ nor any other
+     ${\approx}256$-bit universal hash family, whether in a binary
+     field or large prime field, is widely implemented and deployed
+     the way \Poly1305/ is.
+    So---even if there may be a slim performance
+     improvement---switching from \Poly1305/ would substantially raise
+     the engineering costs of adopting \DAENCE/.
+
   \item[How fast is it?]
     The main cost over \naclsecretbox/ is evaluating \Poly1305/ twice
      rather than once, and completing it before starting \XSalsa20/,
