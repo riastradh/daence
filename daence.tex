@@ -199,14 +199,14 @@ The design is based on the \SIV/ construction of Rogaway and
 This means it consists of two functions:
 %
 \begin{description}
-  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a 64-byte key
+  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a 96-byte key
      $k$, a string $a$ of fewer than $2^{32}$ bytes of associated
      data, and a message $m$ of fewer than $2^{32}$ bytes.
 
     $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
      24 bytes longer than $m$.
 
-  \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a 64-byte
+  \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a 96-byte
      key $k$, a string $a'$ of fewer than $2^{32}$ bytes of associated
      data, and an alleged authenticated ciphertext $c'$ of fewer than
      $24 + 2^{32}$ bytes.
@@ -228,9 +228,10 @@ This means it consists of two functions:
 \begin{enumerate}
   \item You must choose a secret key $k$ uniformly at random and
      independently of everything else in your application.
-    (You may safely derive the 64-byte key $k$ from a 32-byte key $k'$
-     by a key derivation function---\eg, $k = \Salsa20/_{k'}(0)$, or
-     $k = \operatorname{HKDF-SHA256}_{k'}(\mathit{salt}, \text{`foo'})$.)
+    (You may safely derive the 96-byte key $k$ from a 32-byte key $k'$
+     by a key derivation function---\eg,
+     $k = \operatorname{HKDF-SHA256}_{k'}(\mathit{salt}, \text{`foo'},
+      96)$.)
 
   \item If $\DaenceDecrypt$ reports a forgery, you must decline to act
      on the alleged message content except by immediately dropping it
@@ -265,15 +266,16 @@ Under any key $k$ independently:
 \section{Definition}
 
 \paragraph*{$\Poly1305/^2$.}
-For 16-byte $k_1$, 16-byte $k_2$, and a byte string $m$, define
+For 16-byte strings $k_1, \dotsc, k_4$, and a byte string $m$, define
 \[
   \Poly1305/^2_{k_1,k_2}(m)
-  := \Poly1305/_{k_1}(m) \concat \Poly1305/_{k_2}(m),
+  := \Poly1305/_{k_1}(m) \concat \Poly1305/_{k_2}(m).
 \]
- and for byte strings $a$ and $m$, define
+
+For byte strings $a$ and $m$, define
 \[
-  \Poly1305/^2_{k_1,k_2}(a, m)
-  := \Poly1305/^2_{k_1,k_2}(h_a \concat h_m),
+  \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)
+  := \Poly1305/^2_{k_3,k_4}(h_a \concat h_m),
 \]
  where
  $h_a = \Poly1305/^2_{k_1,k_2}(a)$
@@ -292,15 +294,16 @@ Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
 
 \paragraph*{Encryption.}
 Given
- a 64-byte key $k$,
+ a 96-byte key $k$,
  associated data $a$ of fewer than $2^{32}$ bytes, and
  a message $m$ of fewer than $2^{32}$ bytes,
  compute:
 %
 \begin{enumerate}
-  \item $k_0 \concat k_1 \concat k_2 := k$
-    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
-  \item $t \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(a, m))$
+  \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
+    \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
+  \item $t \concat \_ :=
+      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))$
     \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
       \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
@@ -310,17 +313,18 @@ The authenticated ciphertext is $t \concat c$.
 
 \paragraph*{Decryption.}
 Given
- a 64-byte key $k$,
+ a 96-byte key $k$,
  associated data $a$ of fewer than $2^{32}$ bytes, and
  an alleged authenticated ciphertext $t' \concat c'$ of between $24$
  and $24 + 2^{32}$ bytes, compute:
 %
 \begin{enumerate}
-  \item $k_0 \concat k_1 \concat k_2 := k$
-    \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
+  \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
+    \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
   \item $m' := c' \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
       \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
-  \item $t' \concat \_ := \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2}(a, m'))$
+  \item $t' \concat \_ :=
+      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m'))$
     \hfill (24-byte $t'$)
 \end{enumerate}
 %
@@ -330,16 +334,16 @@ If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
 \paragraph*{\ChaCha/ alternative.}
 Rather than hash the associated data separately, implementations of
  the \ChaCha//\Poly1305/ authenticated cipher used in \TLS/ and
- implemented in \libsodium/ \sodiumaead/ support passing associated
- data into \Poly1305/ natively with an 8-byte little-endian length
- prefix:
+ implemented in \libsodium/ \sodiumaead/ support passing multiple
+ strings into \Poly1305/ natively, with a 4-byte little-endian length
+ $\lvert a\rvert_4$ appended:
 %
 \begin{itemize}
   \item $k_0 \concat k_1 \concat k_2 := k$
     \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
   \item $t \concat \_ :=
       \HXChaCha/_{k_0}(
-        \Poly1305/^2_{k_1,k_2}(\lvert a\rvert \concat a \concat m))$
+        \Poly1305/^2_{k_1,k_2}(a \concat m \concat \lvert a\rvert_4))$
     \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
       \XChaCha20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
@@ -379,7 +383,8 @@ The corresponding decryption operation is derived similarly.
    where
   \[
     \collisionbound(\ell_a, \ell_m)
-    := \frac{\lceil\ell_a/16\rceil^2 + \lceil\ell_m/16\rceil^2 + 16}
+    := \frac{\max\{\lceil\ell_a/16\rceil^2, \lceil\ell_m/16\rceil^2\}
+             + 16}
             {2^{206}}.
   \]
 \end{theorem}
@@ -458,49 +463,49 @@ The corresponding decryption operation is derived similarly.
 \end{proof}
 
 \begin{lemma}[Hashing tuples]\label{hash-tuple}
-  Let $k_1, k_2$ be independent \Poly1305/ keys.
+  Let $k_1, \dotsc, k_4$ be independent \Poly1305/ keys.
   For strings $a, a'$ up to $\ell_a$ bytes and $m, m'$ up to $\ell_m$
    bytes, if $(a, m) \ne (a', m')$ then
 %
   \begin{multline*}
-    \Pr[\Poly1305/^2_{k_1,k_2}(a, m) = \Poly1305/^2_{k_1,k_2}(a', m')] \\
+    \Pr[\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)
+        = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')] \\
     \leq \collisionbound(\ell_a, \ell_m)
-    := \frac{\lceil\ell_a/16\rceil^2 + \lceil\ell_m/16\rceil^2 + 16}
+    := \frac{\max\{\lceil\ell_a/16\rceil^2, \lceil\ell_m/16\rceil^2\}
+             + 16}
             {2^{206}}.
   \end{multline*}
 \end{lemma}
 
 \begin{proof}
-  Let $h_x := \Poly1305/^2_{k_1,k_2}(x)$, and note that
+  Write
+   $H := \Poly1305/^2_{k_1,k_2}$ and
+   $H^* := \Poly1305/^2_{k_3,k_4}$.
+  Let $h_x := H(x)$.
+  We must have either $a \ne a'$ or $m \ne m'$, or both.
+  If $a \ne a'$, then by Lemma~\ref{double-hash},
+   $\Pr[(h_a, h_m) = (h_{a'}, h_{m'})]
+    \leq \Pr[h_a = h_{a'}]
+    \leq \collisionbound(\ell_a)$.
+  Similarly, if $m \ne m'$, the probability is bounded by
+   $\collisionbound(\ell_m)$,
+   so in either case,
+  \[
+    \Pr[(h_a, h_m) = (h_{a'}, h_{m'})]
+    \leq \max\{\collisionbound(\ell_a), \collisionbound(\ell_m)\}.
+  \]
+  Finally, since $H^*$ is independent of $H$ and thus of the $h_x$:
 %
   \begin{align*}
-    \Pr&[(h_a, h_m) = (h_{a'}, h_{m'}) \given (a, m) \ne (a', m')] \\
-    &= \Pr[h_a = h_{a'} \mathrel{\text{and}} h_m = h_{m'}
-           \given a \ne a' \mathrel{\text{or}} m \ne m'] \\
-    &= \Pr[h_a = h_{a'} \given a \ne a']
-       + \Pr[h_m = h_{m'} \given m \ne m'].
-  \end{align*}
-%
-  By Lemma~\ref{double-hash},
-   $\Pr[h_x = h_{x'} \given x \ne x'] \leq \collisionbound(\ell_x)$.
-  Conditional on $(h_a, h_m) \ne (h_{a'}, h_{m'})$, the 64-byte
-   strings $h_a \concat h_m$ and $h_{a'} \concat h_{m'}$ collide under
-   $\Poly1305/^2$ with probability at most
-   $\collisionbound(64)$.
-  Hence
-%
-  \begin{align*}
-    \Pr&[\Poly1305/^2_{k_1,k_2}(a, m) = \Poly1305/^2_{k_1,k_2}(a', m')] \\
-    &= \Pr[\Poly1305/^2_{k_1,k_2}(h_a \concat h_m)
-             = \Poly1305/^2_{k_1,k_2}(h_{a'} \concat h_{m'})] \\
-    &\leq \Pr[h_a = h_{a'} \given a \ne a']
-          + \Pr[h_m = h_{m'} \given m \ne m'] \\
-    &\qquad + \Pr[\Poly1305/^2_{k_1,k_2}(h_a \concat h_m)
-                    = \Poly1305/^2_{k_1,k_2}(h_{a'} \concat h_{m'}) \\
-    &\qquad\qquad\quad \given (h_a, h_m) \ne (h_{a'}, h_{m'})] \\
-    &\leq \varepsilon(\ell_a) + \varepsilon(\ell_m)
-          + \varepsilon(64) \\
-    &= \frac{\lceil\ell_a/16\rceil^2 + \lceil\ell_m/16\rceil^2 + 16}
+    \Pr&[H^*(h_a \concat h_m) = H^*(h_{a'} \concat h_{m'})] \\
+    &\leq \Pr[(h_a, h_m) = (h_{a'}, h_{m'})] \\
+    &\qquad
+          + \Pr[H^*(h_a \concat h_m) = H^*(h_{a'} \concat h_{m'})
+                \given (h_a, h_m) \ne (h_{a'}, h_{m'})] \\
+    &\leq \max\{\collisionbound(\ell_a), \collisionbound(\ell_m)\}
+          + \collisionbound(64)
+     = \frac{\max\{\lceil\ell_a/16\rceil^2, \lceil\ell_m/16\rceil^2\}
+             + 4^2}
             {2^{206}}.
     \qedhere
   \end{align*}
@@ -523,7 +528,7 @@ Define \term{\DEUCE/} to be as \DAENCE/, but with $f$ substituted for
  $\XSalsa20/_{k_0}$:
 %
 \begin{enumerate}
-  \item $h := \Poly1305/^2_{k_1,k_2}(m)$
+  \item $h := \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)$
     \hfill (32-byte $h$)
   \item $t := \hat f_{192}(h)$
     \hfill (24-byte $t$)
@@ -534,7 +539,7 @@ Define \term{\DICE/} to be as \DEUCE/, but with $g$ substituted for
  $f$ in the pad:
 %
 \begin{enumerate}
-  \item $h := \Poly1305/^2_{k_1,k_2}(m)$
+  \item $h := \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)$
     \hfill (32-byte $h$)
   \item $t := \hat f_{192}(h)$
     \hfill (24-byte $t$)
@@ -644,21 +649,21 @@ Suppose $A$ submits distinct encryption queries
  $(a_1, m_1), \dotsc, (a_E, m_E)$
  giving answers
  $t_1 \concat c_1, \dotsc, t_E \concat c_E$
- via intermediate hashes
- $h_i = \Poly1305/^2_{k_1,k_2}(a_i, m_i)$,
+ via hashes
+ $h_i = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)$,
  so that $t_i = f(h_i)$ and $c_i = m_i \oplus g_*(t_i)$.
 Suppose $A$ attempts a forgery $(a', t', c')$ with
  $t' \concat c' \ne t_i \concat c_i$ for all $i$.
 Let
  $m' = c' \oplus g_*(t')$
  and
- $h' = \Poly1305/^2_{k_1,k_2}(a', m')$.
+ $h' = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')$.
 The forgery succeeds if $t' = f(h')$.
 Note that $(a', m') \ne (a_i, m_i)$, for if
  $(a', m') = (a_i, m_i)$,
  then we would have
- $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, $k_1$,
- and $k_2$---$t' \concat c'$ is a deterministic function of
+ $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, and
+ $k_1,\dotsc,k_4$---$t' \concat c'$ is a deterministic function of
  $(a', m')$.
 
 The string $f(h')$ is a uniform random 192-bit string independent of
@@ -670,8 +675,8 @@ The string $f(h')$ is a uniform random 192-bit string independent of
   &= \Pr[\exists i\colon h' = h_i]
    \leq \sum_i \Pr[h' = h_i] \\
   &= \sum_i
-       \Pr[\Poly1305/^2_{k_1,k_2}(a', m')
-             = \Poly1305/^2_{k_1,k_2}(a_i, m_i)] \\
+       \Pr[\Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')
+             = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)] \\
   &\leq \sum_i \collisionbound(\ell_a, \ell_m)
    = E \cdot \collisionbound(\ell_a, \ell_m).
 \end{align*}
@@ -708,8 +713,8 @@ If the oracle is \DUNCE/, then all the strings $t_i = f(h_i)$ and
     &= \Pr[\exists i<j\colon h_i = h_j]
      \leq \sum_{i<j} \Pr[h_i = h_j] \\
     &= \sum_{i<j}
-         \Pr[\Poly1305/^2_{k_1,k_2}(a_i, m_i)
-               = \Poly1305/^2_{k_1,k_2}(a_j, m_j)] \\
+         \Pr[\Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)
+               = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_j, m_j)] \\
     &\leq \sum_{i<j} \collisionbound(\ell_a, \ell_m)
      = \binom{E}{2} \collisionbound(\ell_a, \ell_m).
 \end{align*}
@@ -792,9 +797,9 @@ Thus,
    events---$C_{th}$, $F$, $C_{h'}$, $C_h$, and $C_t$---can be
    straightforwardly seen to sum over the users independently.
   For example, the event $C_{th}$ of a collision in \emph{any one} of
-   the users each with their own independent function $f$ and key
-   $(k_1, k_2)$ is the sum over all users of $C_{th}$ for each user
-   separately.
+   the users each with their own independent function $f$ and keys
+   $k_1,\dotsc,k_4$ is the sum over all users of $C_{th}$ for each
+   user separately.
   Consequently, the multi-user \DAE/ advantage against \DEUCE/---that
    is, the statistical distance under $A$ from \DEUCE/ to a
    pathological `\DAE/' collection $U$---is at most the sum of the
@@ -836,11 +841,11 @@ Thus,
   If $\mathcal O(u,x)$ is an oracle for a collection of function
    instances indexed by $u$, define $A'(\mathcal O)$ to run $A$ with
    oracles for the following \DAE/ under independent uniform random keys
-   $k_1 \concat k_2$ for the $u^{\mathit{th}}$ user, decryption being
+   $k_1,\dotsc,k_4$ for the $u^{\mathit{th}}$ user, decryption being
    defined the obvious way:
   %
   \begin{enumerate}
-    \item $h := \Poly1305/^2_{k_1,k_2}(a, m)$
+    \item $h := \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)$
       \hfill (32-byte $h$)
     \item $t := \hat{\mathcal O}_{192}(u, h)$
       \hfill (24-byte $t$)
@@ -884,9 +889,9 @@ Thus,
 \begin{proof}[Proof of Theorem~\ref{chacha-daence}]
   The \ChaCha/ version of \DAENCE/ uses
   \[
-    \Poly1305/^2_{k_1,k_2}(\lvert a\rvert \concat a \concat m)
+    \Poly1305/^2_{k_1,k_2}(a \concat m \concat \lvert a\rvert_4)
     \qquad\text{instead of}\qquad
-    \Poly1305/^2_{k_1,k_2}(a, m).
+    \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m).
   \]
   By~Lemma~\ref{double-hash}, the collision probability is bounded by
    $\collisionbound(8 + \ell_a + \ell_m)$ rather than by
@@ -1069,11 +1074,11 @@ We do hope that \DAENCE/ will find its way into the repertoire of
 \section{Reference implementation}
 
 \lstinputlisting[basicstyle=\small\ttfamily,tabsize=4,formfeed=\newpage]
-  {testvector.c}
+  {kat_salsa20daence.c}
 
 \newpage
 \section{Test vectors}
 
-\lstinputlisting[basicstyle=\small\ttfamily]{testvector.out}
+\lstinputlisting[basicstyle=\small\ttfamily]{kat_salsa20daence.out}
 
 \end{document}

@@ -18,6 +18,8 @@
 *.o
 
 # our crud
-/t_daence
+/kat_chachadaence
+/kat_salsa20daence
+/t_chachadaence
+/t_salsa20daence
 /t_tweetdaence
-/testvector

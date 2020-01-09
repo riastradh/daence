@@ -1,75 +1,91 @@
 #include <string.h>
 
-#include <sodium/crypto_core_hsalsa20.h>
+#include <sodium/crypto_core_hchacha20.h>
 #include <sodium/crypto_onetimeauth_poly1305.h>
-#include <sodium/crypto_stream_xsalsa20.h>
+#include <sodium/crypto_stream_xchacha20.h>
 #include <sodium/crypto_verify_32.h>
 #include <sodium/utils.h>
 
 static const unsigned char sigma[16] = "expand 32-byte k";
 
 static void
+le32enc(void *buf, uint32_t v)
+{
+	unsigned char *p = buf;
+
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff;
+}
+
+static void
+poly1305ad(unsigned char h[static 16],
+    const unsigned char *m, unsigned long long mlen,
+    const unsigned char *a, unsigned long long alen,
+    const unsigned char k[static 16])
+{
+	static const unsigned char z[16] = {0};
+	unsigned char alen32le[4];
+	crypto_onetimeauth_poly1305_state poly1305;
+	unsigned char k_[32];
+
+	/* Poly1305: Set evaluation point; zero addend. */
+	memcpy(k_, k, 16);
+	memset(k_ + 16, 0, 16);
+
+	/* Set h := Poly1305_k(pad0(a) || pad0(m) || |a|_4). */
+	crypto_onetimeauth_poly1305_init(&poly1305, k_);
+	crypto_onetimeauth_poly1305_update(&poly1305, a, alen);
+	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - alen) & 0xf);
+	crypto_onetimeauth_poly1305_update(&poly1305, m, mlen);
+	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - mlen) & 0xf);
+	le32enc(alen32le, alen);
+	crypto_onetimeauth_poly1305_update(&poly1305, alen32le, 4);
+	crypto_onetimeauth_poly1305_final(&poly1305, h);
+
+	sodium_memzero(&poly1305, sizeof poly1305);
+	sodium_memzero(k_, sizeof k_);
+}
+
+static void
 compressauth(unsigned char t[static 24],
 #ifdef DAENCE_GENERATE_KAT
-    unsigned char v_ham[static restrict 64],
     unsigned char v_h[static restrict 32],
     unsigned char v_u[static restrict 32],
 #endif
     const unsigned char *m, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
-    const unsigned char k[static 64])
+    const unsigned char k[static 96])
 {
-	const unsigned char *k0 = k;	/* k0 := k[0..32] */
-	unsigned char k1[32], k2[32];
-	unsigned char ham[64];
-	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
-	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
+	const unsigned char *k0 = k, *k1 = k + 32, *k2 = k + 48;
 	unsigned char h[32], *h1 = h, *h2 = h + 16;
 	unsigned char u[32];
 
 	/*
-	 * Poly1305 keys: Set evaluation point; zero addend.
-	 *	k1 := k[32..48] || 0^16
-	 *	k2 := k[48..64] || 0^16
-	 */
-	memcpy(k1, k + 32, 16); memset(k1 + 16, 0, 16);
-	memcpy(k2, k + 48, 16); memset(k2 + 16, 0, 16);
-
-	/*
 	 * Message compression:
-	 *	ha := Poly1305^2_{k1,k2}(a)
-	 *	hm := Poly1305^2_{k1,k2}(m)
-	 *	h := Poly1305^2_{k1,k2}(ha || hm)
+	 *	h := Poly1305^2_{k1,k2}(a || m || |a|)
 	 */
-	crypto_onetimeauth_poly1305(ha1, a, alen, k1);
-	crypto_onetimeauth_poly1305(ha2, a, alen, k2);
-	crypto_onetimeauth_poly1305(hm1, m, mlen, k1);
-	crypto_onetimeauth_poly1305(hm2, m, mlen, k2);
-	crypto_onetimeauth_poly1305(h1, ham, 64, k1);
-	crypto_onetimeauth_poly1305(h2, ham, 64, k2);
+	poly1305ad(h1, m, mlen, a, alen, k1);
+	poly1305ad(h2, m, mlen, a, alen, k2);
 
-	/* Tag generation: t, _ := HXSalsa20_k0(h1 || h2) */
-	crypto_core_hsalsa20(u, h1, k0, sigma);
+	/* Tag generation: t, _ := HXChaCha_k0(h1 || h2) */
+	crypto_core_hchacha20(u, h1, k0, sigma);
 #ifdef DAENCE_GENERATE_KAT
-	memcpy(v_ham, ham, sizeof ham);
 	memcpy(v_h, h, sizeof h);
 	memcpy(v_u, u, 32);
 #endif
-	crypto_core_hsalsa20(u, h2, u, sigma);
+	crypto_core_hchacha20(u, h2, u, sigma);
 	memcpy(t, u, 24);
 
 	/* paranoia */
-	sodium_memzero(k1, sizeof k1);
-	sodium_memzero(k2, sizeof k2);
-	sodium_memzero(ham, sizeof ham);
 	sodium_memzero(h, sizeof h);
 	sodium_memzero(u, sizeof u);
 }
 
 void
-crypto_dae_salsa20daence_test(unsigned char *c,
+crypto_dae_chachadaence_test(unsigned char *c,
 #ifdef DAENCE_GENERATE_KAT
-    unsigned char v_ham[static restrict 64],
     unsigned char v_h[static restrict 32],
     unsigned char v_u[static restrict 32],
 #endif
@@ -79,30 +95,30 @@ crypto_dae_salsa20daence_test(unsigned char *c,
 {
 	const unsigned char *k0 = k;	/* k0 := k[0..32] */
 
-	/* c[0..24] := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	/* c[0..24] := HXChaCha_k0(Poly1305^2_{k1,k2}(a,m)) */
 	compressauth(c,
 #ifdef DAENCE_GENERATE_KAT
-	    v_ham, v_h, v_u,
+	    v_h, v_u,
 #endif
 	    m, mlen, a, alen, k);
 
 	/*
 	 * Stream cipher:
 	 *	c[24..24+mlen] := m[0..mlen]
-	 *	    ^ XSalsa20_k0(t @ c[0..24])
+	 *	    ^ XChaCha_k0(t @ c[0..24])
 	 */
-	crypto_stream_xsalsa20_xor(c + 24, m, mlen, c, k0);
+	crypto_stream_xchacha20_xor(c + 24, m, mlen, c, k0);
 }
 
 int
-crypto_dae_salsa20daence_open(unsigned char *m,
+crypto_dae_chachadaence_open(unsigned char *m,
     const unsigned char *c, unsigned long long mlen,
     const unsigned char *a, unsigned long long alen,
     const unsigned char k[static 64])
 {
 	const unsigned char *k0 = k;	/* k0 := k[0..32] */
 #ifdef DAENCE_GENERATE_KAT
-	unsigned char v_ham[64], v_h[32], v_u[32];
+	unsigned char v_h[32], v_u[32];
 #endif
 	unsigned char t[32], t_[32];
 	int ret;
@@ -110,14 +126,14 @@ crypto_dae_salsa20daence_open(unsigned char *m,
 	/*
 	 * Stream cipher:
 	 *	m[0..mlen] := c[24..24+mlen]
-	 *	    ^ XSalsa20_k0(t' @ c[0..24])
+	 *	    ^ XChaCha_k0(t' @ c[0..24])
 	 */
-	crypto_stream_xsalsa20_xor(m, c + 24, mlen, c, k0);
+	crypto_stream_xchacha20_xor(m, c + 24, mlen, c, k0);
 
-	/* t := HXSalsa20_k0(Poly1305^2_{k1,k2}(a,m)) */
+	/* t := HXChaCha_k0(Poly1305^2_{k1,k2}(a,m)) */
 	compressauth(t,
 #ifdef DAENCE_GENERATE_KAT
-	    v_ham, v_h, v_u,
+	    v_h, v_u,
 #endif
 	    m, mlen, a, alen, k);
 
@@ -133,7 +149,6 @@ crypto_dae_salsa20daence_open(unsigned char *m,
 	sodium_memzero(t, sizeof t);
 	sodium_memzero(t_, sizeof t_);
 #ifdef DAENCE_GENERATE_KAT
-	sodium_memzero(v_ham, sizeof v_ham);
 	sodium_memzero(v_h, sizeof v_h);
 	sodium_memzero(v_u, sizeof v_u);
 #endif
@@ -163,7 +178,7 @@ static const unsigned char m[33] = {
 	0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,
 	0x58,0x59,0x5a,0x5b,0x5c,0x5d,0x5e,0x5f,
 	0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,
-	0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f, 0x60,
+	0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f, 0x70,
 };
 
 static void
@@ -183,23 +198,22 @@ show(const char *name, const unsigned char *buf, size_t len)
 int
 main(void)
 {
-	unsigned char ham[64], h[32], u[32];
+	unsigned char h[32], u[32];
 	unsigned char c[24 + sizeof m], m_[sizeof m];
 	unsigned i;
 	int ret = 0;
 
 	for (i = 0; i <= sizeof m; i++) {
 		/* paranoia */
-		memset(ham, 0, sizeof ham);
 		memset(h, 0, sizeof h);
 		memset(u, 0, sizeof u);
 		memset(c, 0, sizeof c);
 		memset(m_, 0, sizeof m_);
 
 		/* test */
-		crypto_dae_salsa20daence_test(c,
-		    ham,h,u, m, i, a, sizeof a, k);
-		if (crypto_dae_salsa20daence_open(m_, c,
+		crypto_dae_chachadaence_test(c,
+		    h,u, m, i, a, sizeof a, k);
+		if (crypto_dae_chachadaence_open(m_, c,
 			i, a, sizeof a, k) != 0)
 			ret = 1;
 		if (memcmp(m, m_, i) != 0)
@@ -212,8 +226,6 @@ main(void)
 		show("m_", m_, i);
 		show("k", k, sizeof k);
 		show("a", a, sizeof a);
-		show("h_a", ham, 32);
-		show("h_m", ham + 32, 32);
 		show("h", h, sizeof h);
 		show("u", u, sizeof u);
 		show("c", c, 24 + i);

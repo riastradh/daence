@@ -21,8 +21,8 @@ clean: .PHONY
 
 daence.pdf: daence.bib
 daence.pdf: daence.tex
-daence.pdf: testvector.c
-daence.pdf: testvector.out
+daence.pdf: kat_salsa20daence.c
+daence.pdf: kat_salsa20daence.out
 daence.pdf: tweetdaence.c
 	$(PDFLATEX) \\nonstopmode\\input daence
 	$(BIBTEX) daence
@@ -42,55 +42,109 @@ clean-daence.pdf: .PHONY
 	-rm -f daence.out
 	-rm -f daence.pdf
 
-check: check-testvector
-check-testvector: .PHONY
-check-testvector: testvector.exp
-check-testvector: testvector.out
-	diff -u testvector.exp testvector.out
+check: check-kat_chachadaence
+check-kat_chachadaence: .PHONY
+check-kat_chachadaence: kat_chachadaence.exp
+check-kat_chachadaence: kat_chachadaence.out
+	diff -u kat_chachadaence.exp kat_chachadaence.out
 
-testvector.out: testvector
-	./testvector > $@.tmp && mv -f $@.tmp $@
-clean: clean-testvector.out
-clean-testvector.out: .PHONY
-	-rm -rf testvector.out
+kat_chachadaence.out: kat_chachadaence
+	./kat_chachadaence > $@.tmp && mv -f $@.tmp $@
+clean: clean-kat_chachadaence.out
+clean-kat_chachadaence.out: .PHONY
+	-rm -rf kat_chachadaence.out
 
-SRCS_testvector = \
-	testvector.c \
-	# end of SRCS_testvector
-DEPS_testvector = $(SRCS_testvector:.c=.d)
--include $(DEPS_testvector)
-LIBS_testvector = \
+SRCS_kat_chachadaence = \
+	kat_chachadaence.c \
+	# end of SRCS_kat_chachadaence
+DEPS_kat_chachadaence = $(SRCS_kat_chachadaence:.c=.d)
+-include $(DEPS_kat_chachadaence)
+LIBS_kat_chachadaence = \
 	-lsodium \
-	# end of LIBS_testvector
-testvector: $(SRCS_testvector:.c=.o)
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_testvector:.c=.o) \
-		$(LIBS_testvector)
-clean: clean-testvector
-clean-testvector: .PHONY
-	-rm -f testvector
-	-rm -f $(SRCS_testvector:.c=.o)
-	-rm -f $(SRCS_testvector:.c=.d)
+	# end of LIBS_kat_chachadaence
+kat_chachadaence: $(SRCS_kat_chachadaence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_kat_chachadaence:.c=.o) \
+		$(LIBS_kat_chachadaence)
+clean: clean-kat_chachadaence
+clean-kat_chachadaence: .PHONY
+	-rm -f kat_chachadaence
+	-rm -f $(SRCS_kat_chachadaence:.c=.o)
+	-rm -f $(SRCS_kat_chachadaence:.c=.d)
 
-SRCS_t_daence = \
-	crypto_aead/salsa20daence/ref/salsa20daence.c \
-	t_daence.c \
+check: check-kat_salsa20daence
+check-kat_salsa20daence: .PHONY
+check-kat_salsa20daence: kat_salsa20daence.exp
+check-kat_salsa20daence: kat_salsa20daence.out
+	diff -u kat_salsa20daence.exp kat_salsa20daence.out
+
+kat_salsa20daence.out: kat_salsa20daence
+	./kat_salsa20daence > $@.tmp && mv -f $@.tmp $@
+clean: clean-kat_salsa20daence.out
+clean-kat_salsa20daence.out: .PHONY
+	-rm -rf kat_salsa20daence.out
+
+SRCS_kat_salsa20daence = \
+	kat_salsa20daence.c \
+	# end of SRCS_kat_salsa20daence
+DEPS_kat_salsa20daence = $(SRCS_kat_salsa20daence:.c=.d)
+-include $(DEPS_kat_salsa20daence)
+LIBS_kat_salsa20daence = \
+	-lsodium \
+	# end of LIBS_kat_salsa20daence
+kat_salsa20daence: $(SRCS_kat_salsa20daence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_kat_salsa20daence:.c=.o) \
+		$(LIBS_kat_salsa20daence)
+clean: clean-kat_salsa20daence
+clean-kat_salsa20daence: .PHONY
+	-rm -f kat_salsa20daence
+	-rm -f $(SRCS_kat_salsa20daence:.c=.o)
+	-rm -f $(SRCS_kat_salsa20daence:.c=.d)
+
+SRCS_t_chachadaence = \
+	chachadaence.c \
+	t_chachadaence.c \
 	tweetnacl/tweetnacl.c \
-	# end of SRCS_t_daence
-DEPS_t_daence = $(SRCS_t_daence:.c=.d)
--include $(DEPS_t_daence)
-t_daence: $(SRCS_t_daence:.c=.o)
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_daence:.c=.o)
+	# end of SRCS_t_chachadaence
+DEPS_t_chachadaence = $(SRCS_t_chachadaence:.c=.d)
+-include $(DEPS_t_chachadaence)
+LIBS_t_chachadaence = \
+	-lsodium \
+	# end of LIBS_t_chachadaence
+t_chachadaence: $(SRCS_t_chachadaence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_chachadaence:.c=.o) \
+		$(LIBS_t_chachadaence)
 
-check: check-daence
-check-daence: .PHONY
-check-daence: t_daence
-	./t_daence
+check: check-chachadaence
+check-chachadaence: .PHONY
+check-chachadaence: t_chachadaence
+	./t_chachadaence
 
-clean: clean-daence
-clean-daence: .PHONY
-	-rm -f t_daence
-	-rm -f $(SRCS_t_daence:.c=.o)
-	-rm -f $(SRCS_t_daence:.c=.d)
+clean: clean-chachadaence
+clean-chachadaence: .PHONY
+	-rm -f t_chachadaence
+	-rm -f $(SRCS_t_chachadaence:.c=.o)
+	-rm -f $(SRCS_t_chachadaence:.c=.d)
+
+SRCS_t_salsa20daence = \
+	crypto_aead/salsa20daence/ref/salsa20daence.c \
+	t_salsa20daence.c \
+	tweetnacl/tweetnacl.c \
+	# end of SRCS_t_salsa20daence
+DEPS_t_salsa20daence = $(SRCS_t_salsa20daence:.c=.d)
+-include $(DEPS_t_salsa20daence)
+t_salsa20daence: $(SRCS_t_salsa20daence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_salsa20daence:.c=.o)
+
+check: check-salsa20daence
+check-salsa20daence: .PHONY
+check-salsa20daence: t_salsa20daence
+	./t_salsa20daence
+
+clean: clean-salsa20daence
+clean-salsa20daence: .PHONY
+	-rm -f t_salsa20daence
+	-rm -f $(SRCS_t_salsa20daence:.c=.o)
+	-rm -f $(SRCS_t_salsa20daence:.c=.d)
 
 tweetnacl/tweetnacl.o: tweetnacl/tweetnacl.c
 	$(CC) -c -o $@ $(_CFLAGS) $(_CPPFLAGS) -Wno-sign-compare \

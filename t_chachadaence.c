@@ -24,22 +24,35 @@
  * SUCH DAMAGE.
  */
 
-#ifndef SALSA20DAENCE_H
-#define	SALSA20DAENCE_H
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#define	crypto_dae_salsa20daence_KEYBYTES	96u
-#define	crypto_dae_salsa20daence_TAGBYTES	24u
+#include "chachadaence.h"
 
-void crypto_dae_salsa20daence(unsigned char */*c*/,
-    const unsigned char */*m*/, unsigned long long /*mlen*/,
-    const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
+void
+randombytes(unsigned char *p, unsigned long long n)
+{
+	static int fd = -1;
+	ssize_t nread;
 
-int crypto_dae_salsa20daence_open(unsigned char */*m*/,
-    const unsigned char */*c*/, unsigned long long /*mlen*/,
-    const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
+	if (fd == -1) {
+		if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
+			abort();
+	}
 
-int crypto_dae_salsa20daence_selftest(void);
+	while (n) {
+		nread = read(fd, p, n);
+		if (nread == -1 || nread == 0)
+			abort();
+		p += ((size_t)nread > n ? n : (size_t)nread);
+		n -= ((size_t)nread > n ? n : (size_t)nread);
+	}
+}
 
-#endif  /* SALSA20DAENCE_H */
+int
+main(void)
+{
+
+	return crypto_dae_chachadaence_selftest();
+}

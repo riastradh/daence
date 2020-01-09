@@ -24,22 +24,22 @@
  * SUCH DAMAGE.
  */
 
-#ifndef SALSA20DAENCE_H
-#define	SALSA20DAENCE_H
+#ifndef CHACHADAENCE_H
+#define	CHACHADAENCE_H
 
-#define	crypto_dae_salsa20daence_KEYBYTES	96u
-#define	crypto_dae_salsa20daence_TAGBYTES	24u
+#define	crypto_dae_chachadaence_KEYBYTES	64u
+#define	crypto_dae_chachadaence_TAGBYTES	24u
 
-void crypto_dae_salsa20daence(unsigned char */*c*/,
+void crypto_dae_chachadaence(unsigned char */*c*/,
     const unsigned char */*m*/, unsigned long long /*mlen*/,
     const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
+    const unsigned char[static crypto_dae_chachadaence_KEYBYTES]);
 
-int crypto_dae_salsa20daence_open(unsigned char */*m*/,
+int crypto_dae_chachadaence_open(unsigned char */*m*/,
     const unsigned char */*c*/, unsigned long long /*mlen*/,
     const unsigned char */*a*/, unsigned long long /*alen*/,
-    const unsigned char[static crypto_dae_salsa20daence_KEYBYTES]);
+    const unsigned char[static crypto_dae_chachadaence_KEYBYTES]);
 
-int crypto_dae_salsa20daence_selftest(void);
+int crypto_dae_chachadaence_selftest(void);
 
-#endif  /* SALSA20DAENCE_H */
+#endif  /* CHACHADAENCE_H */

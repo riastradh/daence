@@ -1,2 +1,3 @@
-#define crypto_auth_salsa20daence_ref_BYTES 24
-#define crypto_auth_salsa20daence_ref_KEYBYTES 64
+#define CRYPTO_BYTES 24
+#define CRYPTO_KEYBYTES 96
+#define CRYPTO_VERSION "0.0a20200109.1"

@@ -15,12 +15,13 @@ static void prf(u8 *t,const u8 *m,u64 mlen,
   crypto_onetimeauth_poly1305(ham + 16,a,alen,k2);
   crypto_onetimeauth_poly1305(ham + 32,m,mlen,k1);
   crypto_onetimeauth_poly1305(ham + 48,m,mlen,k2);
+  FOR(i,16) { k1[i] = k[64 + i]; k1[16 + i] = 0; }
+  FOR(i,16) { k2[i] = k[80 + i]; k2[16 + i] = 0; }
   crypto_onetimeauth_poly1305(h,ham,64,k1);
   crypto_onetimeauth_poly1305(h + 16,ham,64,k2);
   crypto_core_hsalsa20(t,h,k,sigma);
   crypto_core_hsalsa20(t,h + 16,t,sigma);
 }
-
 void crypto_dae_salsa20daence(u8 *c,const u8 *m,
     u64 mlen,const u8 *a,u64 alen,const u8 *k)
 {
@@ -29,7 +30,6 @@ void crypto_dae_salsa20daence(u8 *c,const u8 *m,
   FOR(i,24) c[i] = t[i];
   crypto_stream_xsalsa20_xor(c + 24,m,mlen,c,k);
 }
-
 int crypto_dae_salsa20daence_open(u8 *m,const u8 *c,
     u64 mlen,const u8 *a,u64 alen,const u8 *k)
 {

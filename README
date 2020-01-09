@@ -10,7 +10,7 @@ security analysis, reference implementation, and test vectors for
 Daence.
 
 
-If you and your friend share a secret 64-byte key for Daence:
+If you and your friend share a secret 96-byte key for Salsa20-Daence:
 
 - You can feed a header and a payload of up to 2^32 bytes into
   Daence-Encrypt, which will return an authenticated ciphertext
@@ -51,7 +51,7 @@ a short implementation in terms of three primitives available in NaCl
 and libsodium -- crypto_onetimeauth_poly1305, crypto_core_hsalsa20,
 and crypto_stream_xsalsa20.  (The ChaCha-Daence variant is defined in
 terms of parts that a ChaCha/Poly1305 implementation is likely to have
-around.)
+around, and has a smaller 64-byte key.)
 
 Daence won't beat speed records for ChaCha/Poly1305, NaCl
 crypto_secretbox_xsalsa20poly1305, or (hardware-accelerated) AES-GCM
@@ -63,17 +63,22 @@ forgery?
 COPYING         2-clause BSD licence
 Makefile        machine-readable instructions for building everything
 README          you are here
-crypto_aead/    SUPERCOP AEAD API for you to copypasta
-crypto_auth/    SUPERCOP PRF/authenticator API
+chachadaence.c  copypastable ChaCha-Daence using libsodium
+chachadaence.h  header file with prototypes for chachadaence.c
+crypto_aead/    SUPERCOP AEAD API for you to copypasta (Salsa20-Daence only)
+crypto_auth/    SUPERCOP PRF/authenticator API (Salsa20-Daence only)
 daence.bib      bibliography
 daence.tex      definition and analysis
-t_daence.c      a test program to verify crypto_aead/salsa20daence/ref
-t_tweetdaence.c a test program to verify tweetdaence.c
-testvector.c    reference implementation and test vector generation
-testvector.exp  expected values of test vectors
-tweetdaence.c   tweetnacl-style implementation in 48 lines (plus header)
-tweetdaence.h   header file with prototypes for tweetdaence.c
-tweetnacl/      a copy of tweetnacl-20140427 <https://tweetnacl.cr.yp.to/>
+kat_chachadaence.c      reference implementation and test vector generation
+kat_chachadaence.exp    expected values of test vectors
+kat_salsa20daence.c     reference implementation and test vector generation
+kat_salsa20daence.exp   expected values of test vectors
+t_chachadaence.c        test program to verify chachadaence.c
+t_salsa20daence.c       test program to verify crypto_aead/salsa20daence/ref
+t_tweetdaence.c         test program to verify tweetdaence.c
+tweetdaence.c           tweetnacl-style Salsa20-Daence in 48 lines plus header
+tweetdaence.h           header file with prototypes for tweetdaence.c
+tweetnacl/      copy of tweetnacl-20140427 <https://tweetnacl.cr.yp.to/>
 
 
 * Building the specification and testing the implementation
@@ -86,9 +91,6 @@ distribution.  Run
 and let me know if anything goes wrong.  If it worked, you should have
 a shiny new copy of the definition and analysis in daence.pdf, and
 evidence that the reference implementation worked on your machine too.
-
-Currently missing: reference implementation and test vectors for
-ChaCha-Daence.
 
 
 * Measuring performance with SUPERCOP <https://bench.cr.yp.to/>
