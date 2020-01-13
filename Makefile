@@ -8,7 +8,6 @@ PDFLATEX = pdflatex
 _CFLAGS = $(CFLAGS) -Werror -MMD -MF $*.d
 _CPPFLAGS = $(CPPFLAGS) \
 	-Itweetnacl \
-	-Icrypto_aead/salsa20daence/ref \
 	-DDAENCE_GENERATE_KAT
 
 all: .PHONY
@@ -126,7 +125,7 @@ clean-chachadaence: .PHONY
 	-rm -f $(SRCS_t_chachadaence:.c=.d)
 
 SRCS_t_salsa20daence = \
-	crypto_aead/salsa20daence/ref/salsa20daence.c \
+	salsa20daence.c \
 	t_salsa20daence.c \
 	tweetnacl/tweetnacl.c \
 	# end of SRCS_t_salsa20daence
