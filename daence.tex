@@ -356,6 +356,81 @@ Rather than hash the associated data separately, implementations of
 %
 The corresponding decryption operation is derived similarly.
 
+\section{Security notions}
+
+Let $A$ be a random decision algorithm with access to an oracle
+ $\mathcal O$.
+Write $\Pr[A(\mathcal O)]$ for the probability $A$ accepts after
+ making various queries to $\mathcal O$:
+%
+\begin{description}
+  \item[Encryption queries for a \emph{single} user]
+    Given associated data $a$ and message $m$, return an authenticated
+     ciphertext $c$.
+  \item[Decryption queries for a \emph{single} user]
+    Given associated data $a$ and alleged authenticated ciphertext
+     $c$, return a message $m$, or $\bot$ if the alleged authenticated
+     ciphertext is deemed a forgery.
+  \item[Encryption queries for \emph{multiple} users]
+    Given a user number $u$, associated data $a$, and message $m$,
+     return an authenticated ciphertext $c$.
+  \item[Decryption queries for \emph{multiple} users]
+    Given a user number $u$, associated data $a$, and alleged
+     authenticated ciphertext $c$, return a message $m$, or $\bot$ if
+     the alleged ciphertext is deemed a forgery.
+  \item[Function queries for \emph{multiple} users]
+    Given a user number $u$ and an input $x$, return an output $y$.
+\end{description}
+%
+The adversary $A$ is assumed not to repeat queries, nor to submit the
+ answers from encryption queries as decryption queries.
+We review standard notions of security
+ (\eg,~%
+  \cite[Definition~1]{rogaway-shrimpton2006keywrap}%
+  \cite[\S3]{bellare-tackmann2016mu-ae-crypto}),
+ loosely summarized as how well $A$ can tell users of a real
+ cryptosystem---\DAENCE/, \XSalsa20/, \etc---from pranksters who just
+ roll dice to answer every query.
+
+\begin{definition}
+  The \term{pathological deterministic authenticated cipher $U_1$}
+   returns an independent uniform random authenticated ciphertext of
+   the appropriate length for each encryption query, and returns
+   $\bot$ for every decryption query.
+  The notion extends naturally to the multi-user setting.
+\end{definition}
+
+\begin{definition}
+  For a deterministic authenticated cipher $E_k$ with random key $k$,
+   the
+   \term{multi-user deterministic authenticated encryption advantage}
+   of $A$ against $E$ is the statistical distance from $E_k$ to $U_1$
+   measured by $A$, where by abuse of language $k$ is understood to
+   mean a collection of keys chosen independently by many users and
+   $E_k$ is understood to mean a collection of instances of $E$ for
+   many users keyed by their respective keys:
+  \[
+    \Adv^{\muDAE}_E(A) := \lvert\Pr[A(E_k)] - \Pr[A(U_1)]\rvert.
+  \]
+  Here $A$ may submit encryption and decryption queries for
+   \emph{multiple} users.
+\end{definition}
+
+The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
+
+\begin{definition}
+  For a function family $\phi_k$ with random key $k$, the
+   \term{multi-user pseudorandom function advantage}
+   of $A$ against $\phi$ is the statistical distance from $\phi_k$ to
+   $f$ measured by $A$, where $f$ is a a uniform random function of
+   the same domain and codomain (where `$\phi_k$' and `$f$' again
+   mean many independent instances):
+  \[
+    \Adv^{\muPRF}_\phi(A) := \lvert\Pr[A(\phi_k)] - \Pr[A(f)]\rvert.
+  \]
+  Here $A$ may submit function queries for \emph{multiple} users.
+\end{definition}
+
 \section{Analysis}
 
 \begin{theorem}[\Salsa20/-\DAENCE/]\label{salsa20-daence}
