@@ -20,8 +20,7 @@ compressauth(unsigned char t[static 24],
     const unsigned char k[static 96])
 {
 	const unsigned char *k0 = k;	/* k0 := k[0..32] */
-	unsigned char k1[32], k2[32], k3[32], k4[32];
-	unsigned char ham[64];
+	unsigned char k1[32], k2[32], k3[32], k4[32], ham[64];
 	unsigned char *ha1 = ham +  0, *ha2 = ham + 16;
 	unsigned char *hm1 = ham + 32, *hm2 = ham + 48;
 	unsigned char h[32], *h3 = h, *h4 = h + 16;
