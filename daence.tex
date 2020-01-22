@@ -173,8 +173,8 @@ They are best suited to protocols that are designed to support
  sequential message numbers, such as the record number in \TLS/.
 Some applications are unable to keep the state needed to maintain a
  sequential message number, and although they could use an extended
- nonce like \XSalsa20/ chosen randomly, some environments may not
- have a reliable entropy source.
+ nonce like \XSalsa20/~\cite{bernstein2011xsalsa} chosen randomly,
+ some environments may not have a reliable entropy source.
 The \emph{nonce-misuse-resistant} authenticated cipher
  \AESGCMSIV/~\cite{rfc8452} was developed to address these use cases,
  but it carries with it the performance and side channel costs of
