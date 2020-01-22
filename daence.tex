@@ -1116,6 +1116,32 @@ Thus,
      than computing them serially---especially for messages exceeding
      the \CPU/ cache.
 
+  \item[Why a 96-byte key (or 64-byte for \ChaCha/-\DAENCE/)?]
+    For \ChaCha/-\DAENCE/, in addition to \ChaCha/ we use two
+     independent \Poly1305/ instances---each requiring 16-byte keys,
+     for a total of $32 + 2\cdot16 = 64$ bytes of key material---in
+     order to provide high security without nonces.
+
+    For \Salsa20/-\DAENCE/, in addition to \Salsa20/ we use
+     \emph{four} independent \Poly1305/ instances---each requiring
+     16-byte keys, for a total of $32 + 4\cdot16 = 96$ bytes of key
+     material---primarily to support incorporating associated data
+     without relying an incremental-update API for \Poly1305/.
+    This way, \Salsa20/-\DAENCE/ in order to take advantage of the
+     existing deployed \NaCl/ library which can only compute
+     \Poly1305/ on an entire message.
+
+    We could start from a 32-byte master key and then derive subkeys
+     from it.
+    However, doing this with the obvious tool at hand---either
+     \Salsa20/ or \ChaCha/---would add hundreds of cycles to the cost
+     of processing each message.
+    Since many applications already use trees of key derivation for
+     various purposes, we feel that the cost of deriving another few
+     dozen bytes of key material---which can be cached and reused by
+     the application---is not worth the cost of hundreds of additional
+     cycles per message.
+
   \item[Does \DAENCE/ support streaming?]
     If you want to stream large files, break them into bite-size
      pieces, and include the piece number and an end-of-stream flag in
