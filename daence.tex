@@ -156,11 +156,12 @@
 \begin{abstract}
   We present \DAENCE/, a deterministic authenticated cipher based on a
    256-bit-to-512-bit pseudorandom function family and a universal
-   hash family with low collision probability.
-  We recommend instantiation using
+   hash family.
+  We recommend instances with
    \Salsa20/~\cite{bernstein2007salsa20} or
    \ChaCha/~\cite{bernstein2008chacha}, and
-   \Poly1305/~\cite{bernstein2005poly1305}.
+   \Poly1305/~\cite{bernstein2005poly1305},
+   for high performance, high security, and easy deployment.
 
   \warning{The definition and analysis are works in progress.}
 \end{abstract}
