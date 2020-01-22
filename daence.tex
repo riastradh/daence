@@ -397,20 +397,21 @@ We review standard notions of security
    returns an independent uniform random authenticated ciphertext of
    the appropriate length for each encryption query, and returns
    $\bot$ for every decryption query.
-  The notion extends naturally to the multi-user setting.
+  The notion extends naturally to the multi-user setting; call it
+   $U$.
 \end{definition}
 
 \begin{definition}
   For a deterministic authenticated cipher $E_k$ with random key $k$,
    the
    \term{multi-user deterministic authenticated encryption advantage}
-   of $A$ against $E$ is the statistical distance from $E_k$ to $U_1$
+   of $A$ against $E$ is the statistical distance from $E_k$ to $U$
    measured by $A$, where by abuse of language $k$ is understood to
    mean a collection of keys chosen independently by many users and
    $E_k$ is understood to mean a collection of instances of $E$ for
    many users keyed by their respective keys:
   \[
-    \Adv^{\muDAE}_E(A) := \lvert\Pr[A(E_k)] - \Pr[A(U_1)]\rvert.
+    \Adv^{\muDAE}_E(A) := \lvert\Pr[A(E_k)] - \Pr[A(U)]\rvert.
   \]
   Here $A$ may submit encryption and decryption queries for
    \emph{multiple} users.
