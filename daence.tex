@@ -5,6 +5,7 @@
 \usepackage{amsthm}
 \usepackage[T1]{fontenc}
 \usepackage[final=true,backref=page,colorlinks=true]{hyperref}[2016/05/21]
+\usepackage{ifdraft}
 \usepackage[final]{listings}
 \usepackage[numbers]{natbib}
 
@@ -34,13 +35,16 @@
 \newtheorem{theorem}{Theorem}
 \newcommand{\term}[1]{\textbf{#1}}
 
-\newcommand{\margintodo}[1]{%
+\newcommand{\todo}[1]{\ifdraft{\textbf{\textcolor{red}{#1}}}{}}
+\newcommand{\warning}[1]{\todo{\textsc{Warning}: #1}}
+
+\newcommand{\margintodo}[1]{\ifdraft{%
   \leavevmode\marginpar{\leavevmode%
     \parskip=4pt plus 2pt minus 1pt\relax%
     \color{red}%
     TODO: #1%
   }%
-}
+}{}}
 
 \def\operatorsc#1{{%
   \ifmmode\let\next=\operatorname\else\let\next=\relax\fi\next{\textsc{#1}}}}
@@ -153,8 +157,7 @@
    \ChaCha/~\cite{bernstein2008chacha}, and
    \Poly1305/~\cite{bernstein2005poly1305}.
 
-  \textbf{\textcolor{red}{\textsc{Warning}: The definition and
-       analysis are works in progress.}}
+  \warning{The definition and analysis are works in progress.}
 \end{abstract}
 
 \section{Introduction}
@@ -263,7 +266,7 @@ Under any key $k$ independently:
 \end{enumerate}
 
 \noindent
-\textcolor{red}{\textbf{XXX Triple-check these bounds!}}
+\todo{Triple-check these bounds!}
 
 \section{Definition}
 
@@ -999,7 +1002,7 @@ Thus,
      ($2^{60}$, representing an unimaginable $2^{93}$ bytes of data
      altogether being processed by the application), the probability
      of a \emph{single} forgery would remain below $2^{-32}$.
-    \textcolor{red}{\textbf{XXX Double-check this bound!}}
+    \todo{Double-check this bound!}
     So there is little \emph{security} motivation to replace
      \Poly1305/ by a larger universal hash family.
 
