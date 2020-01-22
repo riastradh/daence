@@ -210,16 +210,17 @@ The design is based on the \SIV/ construction of Rogaway and
 This means it consists of two functions:
 %
 \begin{description}
-  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a 96-byte key
-     $k$, a string $a$ of fewer than $2^{32}$ bytes of associated
-     data, and a message $m$ of fewer than $2^{32}$ bytes.
+  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a key $k$
+     (96-byte in \Salsa20/-\DAENCE/, 64-byte in \ChaCha/-\DAENCE/),
+     a string $a$ of fewer than $2^{32}$ bytes of associated data, and
+     a message $m$ of fewer than $2^{32}$ bytes.
 
     $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
      24 bytes longer than $m$.
 
-  \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a 96-byte
-     key $k$, a string $a'$ of fewer than $2^{32}$ bytes of associated
-     data, and an alleged authenticated ciphertext $c'$ of fewer than
+  \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a key $k$,
+     a string $a'$ of fewer than $2^{32}$ bytes of associated data,
+     and an alleged authenticated ciphertext $c'$ of fewer than
      $24 + 2^{32}$ bytes.
 
     \begin{itemize}
