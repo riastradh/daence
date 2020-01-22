@@ -349,7 +349,7 @@ Rather than hash associated data separately, implementations of
  zero-padded as $\underline a$ and $\underline m$ to multiples of
  16 bytes with 8-byte little-endian lengths:
 %
-\begin{itemize}
+\begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 := k$
     \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
   \item $t \concat \_ :=
@@ -360,7 +360,7 @@ Rather than hash associated data separately, implementations of
     \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
       \XChaCha20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
-\end{itemize}
+\end{enumerate}
 %
 The corresponding decryption operation is derived similarly.
 
