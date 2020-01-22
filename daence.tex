@@ -12,7 +12,8 @@
 \title{\DAENCE/:
   \Salsa20/ and \ChaCha/ in Deterministic Authenticated Encryption \\
   with no noNCEnse}
-\author{Taylor `Riastradh' Campbell}
+\author{Taylor `Riastradh' Campbell
+  \email{campbell+daence@mumble.net}}
 
 \bibliographystyle{plainnat}
 \renewcommand*{\backrefalt}[4]{%
@@ -28,6 +29,9 @@
   \urlstyle{rm}}
 \DeclareUrlCommand\url{%
   \def\UrlLeft##1\UrlRight{\href{##1}{##1}}%
+  \urlstyle{tt}}
+\DeclareUrlCommand\email{%
+  \def\UrlLeft##1\UrlRight{\langle\href{mailto:##1}{##1}\rangle}%
   \urlstyle{tt}}
 
 \newtheorem{definition}{Definition}
