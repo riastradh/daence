@@ -303,8 +303,8 @@ Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
  just as \HSalsa20/ can be defined in terms of
  \Salsa20/, and has comparable security~\cite{bernstein2011xsalsa}.
 
-\paragraph*{Encryption.}
-Given
+\paragraph*{\Salsa20/-\DAENCE/.}
+To \term{encrypt}, given
  a 96-byte key $k$,
  associated data $a$ of fewer than $2^{32}$ bytes, and
  a message $m$ of fewer than $2^{32}$ bytes,
@@ -322,8 +322,7 @@ Given
 %
 The authenticated ciphertext is $t \concat c$.
 
-\paragraph*{Decryption.}
-Given
+To \term{verify and decrypt}, given
  a 96-byte key $k$,
  associated data $a$ of fewer than $2^{32}$ bytes, and
  an alleged authenticated ciphertext $t' \concat c'$ of $24$
@@ -342,7 +341,7 @@ Given
 If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
  forgery.
 
-\paragraph*{\ChaCha/ alternative.}
+\paragraph*{\ChaCha/-\DAENCE/.}
 Rather than hash associated data separately, implementations of
  \ChaCha//\Poly1305/ as used in \TLS/ and implemented in \libsodium/
  \sodiumaead/ support passing multiple strings into \Poly1305/,
