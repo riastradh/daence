@@ -9,10 +9,14 @@
 static const unsigned char sigma[16] = "expand 32-byte k";
 
 static void
-le32enc(void *buf, uint32_t v)
+le64enc(void *buf, uint32_t v)
 {
 	unsigned char *p = buf;
 
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
@@ -26,7 +30,7 @@ poly1305ad(unsigned char h[static 16],
     const unsigned char k[static 16])
 {
 	static const unsigned char z[16] = {0};
-	unsigned char alen32le[4];
+	unsigned char len64le[8];
 	crypto_onetimeauth_poly1305_state poly1305;
 	unsigned char k_[32];
 
@@ -34,14 +38,16 @@ poly1305ad(unsigned char h[static 16],
 	memcpy(k_, k, 16);
 	memset(k_ + 16, 0, 16);
 
-	/* Set h := Poly1305_k(pad0(a) || pad0(m) || |a|_4). */
+	/* Set h := Poly1305_k(pad0(a) || pad0(m) || |a|_8 || |m|_8). */
 	crypto_onetimeauth_poly1305_init(&poly1305, k_);
 	crypto_onetimeauth_poly1305_update(&poly1305, a, alen);
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - alen) & 0xf);
 	crypto_onetimeauth_poly1305_update(&poly1305, m, mlen);
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - mlen) & 0xf);
-	le32enc(alen32le, alen);
-	crypto_onetimeauth_poly1305_update(&poly1305, alen32le, 4);
+	le64enc(len64le, alen);
+	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
+	le64enc(len64le, mlen);
+	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
 	crypto_onetimeauth_poly1305_final(&poly1305, h);
 
 	sodium_memzero(&poly1305, sizeof poly1305);

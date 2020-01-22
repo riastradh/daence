@@ -326,8 +326,8 @@ The authenticated ciphertext is $t \concat c$.
 Given
  a 96-byte key $k$,
  associated data $a$ of fewer than $2^{32}$ bytes, and
- an alleged authenticated ciphertext $t' \concat c'$ of between $24$
- and $24 + 2^{32}$ bytes, compute:
+ an alleged authenticated ciphertext $t' \concat c'$ of $24$
+ to $24 + 2^{32}$ bytes, compute:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
@@ -343,18 +343,20 @@ If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
  forgery.
 
 \paragraph*{\ChaCha/ alternative.}
-Rather than hash the associated data separately, implementations of
- the \ChaCha//\Poly1305/ authenticated cipher used in \TLS/ and
- implemented in \libsodium/ \sodiumaead/ support passing multiple
- strings into \Poly1305/ natively, with a 4-byte little-endian length
- $\lvert a\rvert_4$ appended:
+Rather than hash associated data separately, implementations of
+ \ChaCha//\Poly1305/ as used in \TLS/ and implemented in \libsodium/
+ \sodiumaead/ support passing multiple strings into \Poly1305/,
+ zero-padded as $\underline a$ and $\underline m$ to multiples of
+ 16 bytes with 8-byte little-endian lengths:
 %
 \begin{itemize}
   \item $k_0 \concat k_1 \concat k_2 := k$
     \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
   \item $t \concat \_ :=
       \HXChaCha/_{k_0}(
-        \Poly1305/^2_{k_1,k_2}(a \concat m \concat \lvert a\rvert_4))$
+        \Poly1305/^2_{k_1,k_2}(
+          \underline a \concat \underline m
+            \concat \lvert a\rvert_8 \concat \lvert m\rvert_8))$
     \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
       \XChaCha20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
@@ -498,7 +500,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
             + \sum_u
                 \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
                      {2^{192}} \\
-                + \frac{\lceil(8 + \ell_a(u) + \ell_m(u))/16\rceil^2}{2^{206}}
+                + \frac{\lceil(\ell_a(u) + \ell_m(u) + 16)/16\rceil^2}{2^{206}}
                   \cdot
                   {\textstyle\bigl(D(u) E(u) + \binom{E(u)}{2}\bigr)}.
   \end{multline*}
@@ -976,12 +978,13 @@ Thus,
 \begin{proof}[Proof of Theorem~\ref{chacha-daence}]
   The \ChaCha/ version of \DAENCE/ uses
   \[
-    \Poly1305/^2_{k_1,k_2}(a \concat m \concat \lvert a\rvert_4)
+    \Poly1305/^2_{k_1,k_2}(
+      a \concat m \concat \lvert a\rvert_8 \concat \lvert m\rvert_8)
     \qquad\text{instead of}\qquad
     \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m).
   \]
   By~Lemma~\ref{double-hash}, the collision probability is bounded by
-   $\collisionbound(8 + \ell_a + \ell_m)$ rather than by
+   $\collisionbound(\ell_a + \ell_m + 16)$ rather than by
    $\collisionbound(\ell_a, \ell_m)$; the rest of the analysis carries
    over identically, with \XChaCha/ in the place of \XSalsa20/.
 \end{proof}

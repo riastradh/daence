@@ -31,8 +31,8 @@
  *      Given 32-byte k0, 16-byte k1, 16-byte k2, header a, and
  *      message m:
  *
- *              h1 := Poly1305_{k1,0}(pad0(a) || pad0(m) || |a|_4)
- *              h2 := Poly1305_{k2,0}(pad0(a) || pad0(m) || |a|_4)
+ *              h1 := Poly1305_{k1,0}(pad0(a) || pad0(m) || |a|_8 || |m|_8)
+ *              h2 := Poly1305_{k2,0}(pad0(a) || pad0(m) || |a|_8 || |m|_8)
  *              u := HChaCha_k0(h1)
  *              t := HChaCha_u(h2) [truncated to 24 bytes]
  *              c = m + XChaCha_k0(t)
@@ -53,10 +53,14 @@ static void *(*volatile explicit_memset)(void *, int, size_t) = memset;
 static const unsigned char sigma[16] = "expand 32-byte k";
 
 static void
-le32enc(void *buf, uint32_t v)
+le64enc(void *buf, uint64_t v)
 {
 	unsigned char *p = buf;
 
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
+	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
 	*p++ = v & 0xff; v >>= 8;
@@ -70,7 +74,7 @@ poly1305ad(unsigned char h[static 16],
     const unsigned char k[static 16])
 {
 	static const unsigned char z[16] = {0};
-	unsigned char alen32le[4];
+	unsigned char len64le[8];
 	crypto_onetimeauth_poly1305_state poly1305;
 	unsigned char k_[32];
 
@@ -84,8 +88,10 @@ poly1305ad(unsigned char h[static 16],
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - alen) & 0xf);
 	crypto_onetimeauth_poly1305_update(&poly1305, m, mlen);
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - mlen) & 0xf);
-	le32enc(alen32le, alen);
-	crypto_onetimeauth_poly1305_update(&poly1305, alen32le, 4);
+	le64enc(len64le, alen);
+	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
+	le64enc(len64le, mlen);
+	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
 	crypto_onetimeauth_poly1305_final(&poly1305, h);
 
 	explicit_memset(&poly1305, 0, sizeof poly1305);
@@ -197,13 +203,13 @@ crypto_dae_chachadaence_selftest(void)
 		0x68,0x69,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f, 0x70,
 	};
 	static const unsigned char c[24 + sizeof m] = {
-		0xa0,0x46,0xb1,0x3d,0xe9,0x14,0x5c,0x02,
-		0xd3,0x9c,0xee,0xf2,0x04,0xe7,0x99,0xa1,
-		0xc6,0xe1,0x0a,0xa4,0xa9,0x92,0x6a,0x02,
-		0xb5,0x2d,0xa0,0xc6,0x97,0x0c,0xf3,0x9a,
-		0x41,0x8a,0x48,0xa9,0xc7,0xe1,0xcd,0x2c,
-		0xd2,0xc3,0x22,0x1f,0xe7,0xa0,0x96,0xbf,
-		0xf3,0xd1,0x89,0xc0,0x78,0xe8,0x55,0xba, 0x8d,
+		0x99,0x76,0x70,0x9c,0x45,0x3c,0x8f,0x94,
+		0xe4,0x92,0xef,0xa7,0x70,0xe3,0xc2,0x21,
+		0xe0,0x8e,0xa6,0xa0,0xe5,0x88,0xd5,0x4e,
+		0x22,0x7d,0x2c,0x0c,0xde,0xe4,0x08,0xbc,
+		0xe9,0xd0,0x53,0x2a,0x3a,0x36,0x27,0x01,
+		0x0f,0x11,0xf2,0xb2,0xe4,0x72,0x67,0xe5,
+		0x33,0xe9,0x5a,0xa3,0xb2,0xe7,0x1e,0xfb, 0x68,
 	};
 	unsigned char c0[sizeof c];
 	unsigned char m0[sizeof m];
