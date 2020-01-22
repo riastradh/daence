@@ -35,13 +35,14 @@
 \newtheorem{theorem}{Theorem}
 \newcommand{\term}[1]{\textbf{#1}}
 
-\newcommand{\todo}[1]{\ifdraft{\textbf{\textcolor{red}{#1}}}{}}
-\newcommand{\warning}[1]{\todo{\textsc{Warning}: #1}}
+\newcommand{\warning}[1]{%
+  \ifdraft{\textbf{\textcolor{red}{\textsc{Warning}: #1}}}
+          {}}
 
 \newcommand{\margintodo}[1]{\ifdraft{%
   \leavevmode\marginpar{\leavevmode%
     \parskip=4pt plus 2pt minus 1pt\relax%
-    \color{red}%
+    \color{red}\bfseries%
     TODO: #1%
   }%
 }{}}
@@ -260,13 +261,12 @@ Under any key $k$ independently:
      adversary has no hope of distinguishing the ciphertexts of your
      messages from uniform random byte strings of the same length.
 
-  \item The adversary's probability of succeeding at forgery---even
+  \item
+    \margintodo{Triple-check bounds!}
+    The adversary's probability of succeeding at forgery---even
      after flooding your system with up to $2^{70}$ bytes of forgery
      attempts---is less than $2^{-32}$.
 \end{enumerate}
-
-\noindent
-\todo{Triple-check these bounds!}
 
 \section{Definition}
 
@@ -1069,6 +1069,7 @@ Thus,
      ${\approx}\ell^2\!/2^{206}$ bound for $\Poly1305/^2$, so why not
      reach for it?
 
+    \margintodo{Double-check bounds!}
     With \DAENCE/, even if messages were the maximum length, $2^{33}$
      ($2^{32}$ bytes of associated data and $2^{32}$ bytes of
      message), and you exposed hundreds of trillions of such messages
@@ -1077,7 +1078,6 @@ Thus,
      ($2^{60}$, representing an unimaginable $2^{93}$ bytes of data
      altogether being processed by the application), the probability
      of a \emph{single} forgery would remain below $2^{-32}$.
-    \todo{Double-check this bound!}
     So there is little \emph{security} motivation to replace
      \Poly1305/ by a larger universal hash family.
 
