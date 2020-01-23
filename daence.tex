@@ -6,6 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[final=true,backref=page,colorlinks=true]{hyperref}[2016/05/21]
 \usepackage{ifdraft}
+\usepackage[utf8]{inputenc}
 \usepackage[final]{listings}
 \usepackage[numbers]{natbib}
 
@@ -1121,8 +1122,8 @@ Thus,
      ${\approx}1.9\,\mathrm{cpb}$ for hardware-accelerated \AESGCM/,
      and
      ${\approx}3.6\,\mathrm{cpb}$ for \Salsa20/-\DAENCE/.
-    There is room for improvement: this na\"ive code makes no attempt
-     to compute the two \Poly1305/'s in parallel, which may be faster
+    There is room for improvement: this naïve code makes no attempt to
+     compute the two \Poly1305/'s in parallel, which may be faster
      than computing them serially---especially for messages exceeding
      the \CPU/ cache.
 
