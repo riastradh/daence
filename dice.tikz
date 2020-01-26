@@ -1,0 +1,100 @@
+% -*- Mode: LaTeX -*-
+
+\begin{tikzpicture}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{fit}
+\usetikzlibrary{shapes}
+
+\input{palette.def}
+\colorlet{prf}{ReddishPurple}
+\colorlet{cipher}{BluishGreen}
+
+% Nodes representing data.
+\tikzset{datum/.style={
+    shape=rectangle,
+    minimum height=4ex,
+}}
+
+% Nodes representing operations on data.
+\tikzset{operation/.style={
+    shape=trapezium,
+    trapezium left angle=-70,
+    trapezium right angle=-70,
+    minimum height=4ex,
+}}
+
+% Nodes representing an xor operation.
+\tikzset{xor/.style={
+    circle,
+    append after command={
+      [shorten >=\pgflinewidth, shorten <=\pgflinewidth]
+      (\tikzlastnode.north) edge (\tikzlastnode.south)
+      (\tikzlastnode.east) edge (\tikzlastnode.west)
+    },
+}}
+
+% Nodes grouping collections of nodes together.
+\tikzset{grouping/.style={
+    rectangle, rounded corners, dashed, thick, inner sep=1em
+}}
+
+\def\Poly#1/{\operatorname{\textsc{Poly#1}}}
+\def\XSalsa#1/{\operatorname{\textsc{XSalsa#1}}}
+\def\HXSalsa#1/{\operatorname{\textsc{HXSalsa#1}}}
+
+% Inputs
+\node (a) at (-2.5, 3) [draw, datum, minimum width=5em] {$a$};
+\node (m) at ( 4,   3) [draw, datum, minimum width=10em] {$m$};
+
+% Outputs
+\node (t) at (-2,  -3) [draw, datum, minimum width=2em] {$t$};
+\node (c) at ( 4,  -3) [draw, datum, minimum width=10em] {$c$};
+
+% Intermediate node
+\node (h) at (-2,   0) [draw, datum, minimum width=2em] {$h$};
+
+% PRF
+\node (poly1305)  at (-2, 1) [draw, operation]
+  {$\Poly1305/^2_{k_1,\dotsc,k_4}$};
+ \coordinate (poly1305-ad) at ($(poly1305.north) - (1/2,0)$);
+ \coordinate (poly1305-msg) at ($(poly1305.north) + (1/2,0)$);
+ \coordinate (poly1305-hash) at (poly1305.south);
+\node (hxsalsa20) at (-2,-1) [draw, operation]
+  {\hbox to 1cm{$\hfill f\hfill$}};
+ \coordinate (hxsalsa20-input) at (hxsalsa20.north);
+ \coordinate (hxsalsa20-output) at (hxsalsa20.south);
+\node (prf) [draw, grouping, color=prf, fit=(poly1305) (h) (hxsalsa20)] {};
+  \node at (prf.south west) [color=prf, anchor=north west]
+    {PRF};
+
+% Randomized cipher
+\node (xsalsa20)  at ( 2, 0) [draw, operation]
+  {\hbox to 1cm{$\hfill g\hfill$}};
+ \coordinate (xsalsa20-input) at (xsalsa20.north);
+ \coordinate (xsalsa20-output) at (xsalsa20.south);
+\node (xor)       at ( 4, -1) [draw, xor, scale=2] {};
+\node (cipher) [draw, grouping, color=cipher, fit=(xsalsa20) (xor)] {};
+  \node at (cipher.south west) [color=cipher, anchor=north west, align=left]
+    {Randomized cipher};
+
+% Hash inputs into authentication tag
+\draw[->] (a) -- (poly1305-ad);
+\draw[->] (m) |- ($(poly1305-msg) + (0,1/2)$) -- (poly1305-msg);
+
+\draw[->] (poly1305-hash) -- (h);
+\draw[->] (h) -- (hxsalsa20-input);
+\draw[->] (hxsalsa20-output) -- (t);
+
+% Snake the line from t into XSalsa20 along a vertical line placed
+% evenly between the two major components.
+\draw[->]
+  let \p1 = ($(prf.north east) !1/2! (cipher.north west)$)
+  in (t) -| (\x1,1) -| (xsalsa20-input);
+
+% Encrypt message with pad derived from authentication tag
+\draw[->] (xsalsa20-output) |- (xor);
+\draw[->] (m) -- (xor);
+\draw[->] (xor.south) -- (c.north);
+
+\end{tikzpicture}

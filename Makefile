@@ -12,6 +12,9 @@ _CPPFLAGS = $(CPPFLAGS) \
 
 all: .PHONY
 all: daence.pdf
+all: diagdaence.pdf
+all: diagdice.pdf
+all: diagpoly13052.pdf
 all: check
 
 check: .PHONY
@@ -40,6 +43,35 @@ clean-daence.pdf: .PHONY
 	-rm -f daence.log
 	-rm -f daence.out
 	-rm -f daence.pdf
+
+diagdaence.pdf: daence.tikz
+diagdaence.pdf: diagdaence.tex
+diagdaence.pdf: palette.def
+	$(PDFLATEX) \\nonstopmode\\input diagdaence
+clean: clean-diagdaence.pdf
+clean-diagdaence.pdf: .PHONY
+	-rm -f diagdaence.aux
+	-rm -f diagdaence.log
+	-rm -f diagdaence.pdf
+
+diagdice.pdf: diagdice.tex
+diagdice.pdf: dice.tikz
+diagdice.pdf: palette.def
+	$(PDFLATEX) \\nonstopmode\\input diagdice
+clean: clean-diagdice.pdf
+clean-diagdice.pdf: .PHONY
+	-rm -f diagdice.aux
+	-rm -f diagdice.log
+	-rm -f diagdice.pdf
+
+diagpoly13052.pdf: diagpoly13052.tex
+diagpoly13052.pdf: poly13052.tikz
+	$(PDFLATEX) \\nonstopmode\\input diagpoly13052
+clean: clean-diagpoly13052.pdf
+clean-diagpoly13052.pdf: .PHONY
+	-rm -f diagpoly13052.aux
+	-rm -f diagpoly13052.log
+	-rm -f diagpoly13052.pdf
 
 check: check-kat_chachadaence
 check-kat_chachadaence: .PHONY

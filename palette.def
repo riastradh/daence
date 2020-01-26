@@ -1,0 +1,10 @@
+% -*- Mode: LaTeX -*-
+
+% Colorblind-friendly palette from <https://jfly.uni-koeln.de/color/>.
+\definecolor{Vermillion}        {cmy}{0,    0.8, 1}
+\definecolor{Orange}            {cmy}{0,    0.5, 1}
+\definecolor{SkyBlue}           {cmy}{0.8,  0,   0}
+\definecolor{BluishGreen}       {cmy}{0.97, 0,   0.75}
+\definecolor{Yellow}            {cmy}{0.1,  0.5, 0.9}
+\definecolor{Blue}              {cmy}{1,    0.5, 0}
+\definecolor{ReddishPurple}     {cmy}{0.1,  0.7, 0}

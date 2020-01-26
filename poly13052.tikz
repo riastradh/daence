@@ -1,0 +1,62 @@
+% -*- Mode: LaTeX -*-
+
+\begin{tikzpicture}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{fit}
+\usetikzlibrary{shapes}
+
+% Nodes representing data.
+\tikzset{datum/.style={
+    shape=rectangle,
+    minimum height=4ex,
+}}
+
+% Nodes representing operations on data.
+\tikzset{operation/.style={
+    shape=trapezium,
+    trapezium left angle=-70,
+    trapezium right angle=-70,
+    minimum height=4ex,
+}}
+
+\def\Poly#1/{\operatorname{\textsc{Poly#1}}^{\vphantom{k_0}}}
+
+\node (a) at (-3,   1.5) [draw, datum, minimum width=5em] {$a$};
+\node (m) at ( 3,   1.5) [draw, datum, minimum width=10em] {$m$};
+\node (h) at ( 0,  -5.5) [draw, datum, minimum width=2em] {$h$};
+
+\node (poly1305-a1) at (-4.5, 0) [draw, operation] {$\Poly1305/_{k_1}$};
+\node (poly1305-a2) at (-1.5, 0) [draw, operation] {$\Poly1305/_{k_2}$};
+\node (poly1305-m1) at ( 1.5, 0) [draw, operation] {$\Poly1305/_{k_1}$};
+\node (poly1305-m2) at ( 4.5, 0) [draw, operation] {$\Poly1305/_{k_2}$};
+\node (ham)         at ( 0,  -2) [draw, operation] {$\|$};
+\node (poly1305-h3) at (-1.5,-3.5) [draw, operation] {$\Poly1305/_{k_3}$};
+\node (poly1305-h4) at ( 1.5,-3.5) [draw, operation] {$\Poly1305/_{k_4}$};
+\node (h34) at ($(h) + (0,1)$) [draw, operation] {$\|$};
+
+\draw[->] (a) -- +(0,-2/3) -| (poly1305-a1.north);
+\draw[->] (a) -- +(0,-2/3) -| (poly1305-a2.north);
+\draw[->] (m) -- +(0,-2/3) -| (poly1305-m1.north);
+\draw[->] (m) -- +(0,-2/3) -| (poly1305-m2.north);
+
+\begin{scope}
+\coordinate (L) at (ham.top left corner);
+\coordinate (R) at (ham.top right corner);
+\path let \p1 = ($(poly1305-a1.south) - (ham.north)$) in
+  coordinate (D) at (0,\y1/3);
+\draw[->] (poly1305-a1.south) -- +($-2*(D)$) -| ($(L) !1/5! (R)$);
+\draw[->] (poly1305-a2.south) -- +($-1*(D)$) -| ($(L) !2/5! (R)$);
+\draw[->] (poly1305-m1.south) -- +($-1*(D)$) -| ($(L) !3/5! (R)$);
+\draw[->] (poly1305-m2.south) -- +($-2*(D)$) -| ($(L) !4/5! (R)$);
+\end{scope}
+
+\draw[->] (ham) -- +(0,-2/3) -| (poly1305-h3);
+\draw[->] (ham) -- +(0,-2/3) -| (poly1305-h4);
+
+\draw[->] (poly1305-h3) |- (h34);
+\draw[->] (poly1305-h4) |- (h34);
+
+\draw[->] (h34) -- (h);
+
+\end{tikzpicture}
