@@ -12,3 +12,6 @@ name = "crypto_daence"
 
 [dependencies]
 rust-crypto = "*"
+
+[dev-dependencies]
+structopt = "0.3"
