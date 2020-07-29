@@ -213,18 +213,19 @@ The design is based on the \SIV/ construction of Rogaway and
 This means it consists of two functions:
 %
 \begin{description}
-  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a key $k$
-     (96-byte in \Salsa20/-\DAENCE/, 64-byte in \ChaCha/-\DAENCE/),
-     a string $a$ of fewer than $2^{38}$ bytes of associated data, and
-     a message $m$ of fewer than $2^{38}$ bytes ($256\,\mathrm{GB}$).
+  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes
+     a key $k$ (96-byte in \Salsa20/-\DAENCE/, 64-byte in
+      \ChaCha/-\DAENCE/),
+     a string $a$ of at most $2^{38}$ bytes of associated data, and
+     a message $m$ of at most $2^{38}$ bytes ($256\,\mathrm{GB}$).
 
     $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
      24 bytes longer than $m$.
 
   \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a key $k$,
-     a string $a'$ of fewer than $2^{30}$ bytes of associated data,
-     and an alleged authenticated ciphertext $c'$ of fewer than
-     $24 + 2^{38}$ bytes.
+     a string $a'$ of at most $2^{38}$ bytes of associated data, and an
+     alleged authenticated ciphertext $c'$ of at most $24 + 2^{38}$
+     bytes.
 
     \begin{itemize}
       \item If $c' = \DaenceEncrypt(k, a', m)$, $\DaenceDecrypt$
@@ -252,9 +253,7 @@ This means it consists of two functions:
      on the alleged message content except by immediately dropping it
      on the floor.
 
-  \item You must process no more than a total of $2^{52}$ messages,
-     including legitimate messages and forgery attempts, with any
-     single key.
+  \item You must encrypt at most $2^{52}$ messages with each key.
 
     Applications limited to smaller \emph{messages} can safely process
      a larger \emph{number} of messages: if every message is at most
@@ -315,8 +314,8 @@ Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
 \paragraph*{\Salsa20/-\DAENCE/.}
 To \term{encrypt}, given
  a 96-byte key $k$,
- associated data $a$ of fewer than $2^{30}$ bytes, and
- a message $m$ of fewer than $2^{30}$ bytes,
+ associated data $a$ of at most $2^{38}$ bytes, and
+ a message $m$ of at most $2^{38}$ bytes,
  compute:
 %
 \begin{enumerate}
@@ -333,9 +332,9 @@ The authenticated ciphertext is $t \concat c$.
 
 To \term{verify and decrypt}, given
  a 96-byte key $k$,
- associated data $a$ of fewer than $2^{30}$ bytes, and
+ associated data $a$ of at most $2^{38}$ bytes, and
  an alleged authenticated ciphertext $t' \concat c'$ of $24$
- to $24 + 2^{30}$ bytes, compute:
+ to $24 + 2^{38}$ bytes, compute:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
