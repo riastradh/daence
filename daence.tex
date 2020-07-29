@@ -47,6 +47,7 @@
 \newcommand{\margintodo}[1]{\ifdraft{%
   \leavevmode\marginpar{\leavevmode%
     \parskip=4pt plus 2pt minus 1pt\relax%
+    \raggedright%
     \color{red}\bfseries%
     TODO: #1%
   }%
@@ -442,6 +443,9 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
 \end{definition}
 
 \section{Analysis}
+
+\margintodo{Outdated---with better proof we can set better bounds on
+  advantage and allow keys to be used for many more messages safely.}
 
 \begin{theorem}[\Salsa20/-\DAENCE/]\label{salsa20-daence}
   Let $A$ be a random decision algorithm with encryption and
