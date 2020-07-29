@@ -1,0 +1,14 @@
+[package]
+name = "daence"
+version = "0.0.20200729"
+authors = ["Taylor R Campbell <campbell+daence@mumble.net>"]
+license = "BSD-2-Clause-NetBSD"
+repository = "https://mumble.net/~campbell/git/daence.git"
+description = "Deterministic Authenticated Encryption with no noNCEnse"
+keywords = ["crypto", "Daence", "Salsa20", "ChaCha", "Poly1305"]
+
+[lib]
+name = "crypto_daence"
+
+[dependencies]
+rust-crypto = "*"
