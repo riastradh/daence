@@ -215,16 +215,16 @@ This means it consists of two functions:
 \begin{description}
   \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes a key $k$
      (96-byte in \Salsa20/-\DAENCE/, 64-byte in \ChaCha/-\DAENCE/),
-     a string $a$ of fewer than $2^{32}$ bytes of associated data, and
-     a message $m$ of fewer than $2^{32}$ bytes.
+     a string $a$ of fewer than $2^{38}$ bytes of associated data, and
+     a message $m$ of fewer than $2^{38}$ bytes ($256\,\mathrm{GB}$).
 
     $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
      24 bytes longer than $m$.
 
   \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a key $k$,
-     a string $a'$ of fewer than $2^{32}$ bytes of associated data,
+     a string $a'$ of fewer than $2^{30}$ bytes of associated data,
      and an alleged authenticated ciphertext $c'$ of fewer than
-     $24 + 2^{32}$ bytes.
+     $24 + 2^{38}$ bytes.
 
     \begin{itemize}
       \item If $c' = \DaenceEncrypt(k, a', m)$, $\DaenceDecrypt$
@@ -252,8 +252,14 @@ This means it consists of two functions:
      on the alleged message content except by immediately dropping it
      on the floor.
 
-  \item You must process no more than a total of $2^{80}$ bytes of
-     data, including associated data, with any single key.
+  \item You must process no more than a total of $2^{52}$ messages,
+     including legitimate messages and forgery attempts, with any
+     single key.
+
+    Applications limited to smaller \emph{messages} can safely process
+     a larger \emph{number} of messages: if every message is at most
+     $L < 2^{38}$ bytes long (including associated data), then you may
+     process up to $2^{90}\!/L$ messages.
 \end{enumerate}
 
 \paragraph*{Security guarantee.}
@@ -273,8 +279,8 @@ Under any key $k$ independently:
   \item
     \margintodo{Triple-check bounds!}
     The adversary's probability of succeeding at forgery---even
-     after flooding your system with up to $2^{80}$ bytes of forgery
-     attempts---is less than $2^{-32}$.
+     after flooding your system with up to $2^{100}$ forgery
+     attempts---is less than $1/2^{32}$.
 \end{enumerate}
 
 \section{Definition}
@@ -309,8 +315,8 @@ Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
 \paragraph*{\Salsa20/-\DAENCE/.}
 To \term{encrypt}, given
  a 96-byte key $k$,
- associated data $a$ of fewer than $2^{32}$ bytes, and
- a message $m$ of fewer than $2^{32}$ bytes,
+ associated data $a$ of fewer than $2^{30}$ bytes, and
+ a message $m$ of fewer than $2^{30}$ bytes,
  compute:
 %
 \begin{enumerate}
@@ -327,9 +333,9 @@ The authenticated ciphertext is $t \concat c$.
 
 To \term{verify and decrypt}, given
  a 96-byte key $k$,
- associated data $a$ of fewer than $2^{32}$ bytes, and
+ associated data $a$ of fewer than $2^{30}$ bytes, and
  an alleged authenticated ciphertext $t' \concat c'$ of $24$
- to $24 + 2^{32}$ bytes, compute:
+ to $24 + 2^{30}$ bytes, compute:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
@@ -1085,14 +1091,12 @@ Thus,
      reach for it?
 
     \margintodo{Double-check bounds!}
-    With \DAENCE/, even if messages were the maximum length, $2^{33}$
-     ($2^{32}$ bytes of associated data and $2^{32}$ bytes of
-     message), and you exposed hundreds of trillions of such messages
-     to the adversary ($2^{33} \cdot 2^{48} = 2^{81}$ bytes of data),
-     and even if the adversary attempted about a quintillion forgeries
-     ($2^{60}$, representing an unimaginable $2^{93}$ bytes of data
-     altogether being processed by the application), the probability
-     of \emph{one} forgery would stay below $2^{-32}$.
+    With \DAENCE/, even if an application allowed messages up to the
+     maximum length, $2^{39}$ ($2^{38}$ bytes of associated data and
+     $2^{38}$ bytes of message), exposed quadrillions of legitimate
+     messages ($2^{52}$) to the adversary, and the adversary attempted
+     an unimaginable $2^{100}$ forgeries, the probability of \emph{one}
+     forgery would stay below $1/2^{32}$.
     So there is little \emph{security} motivation to replace
      \Poly1305/ by a larger hash.
 
@@ -1128,8 +1132,9 @@ Thus,
      ${\approx}3.6\,\mathrm{cpb}$ for \Salsa20/-\DAENCE/.
     There is room for improvement: this naïve code makes no attempt to
      compute the two \Poly1305/'s in parallel, which may be faster
-     than computing them serially---especially for messages exceeding
-     the \CPU/ cache.
+     than computing them serially---both for messages exceeding the
+     \CPU/ cache, and for short messages for which setting up many
+     powers of the evaluation point is not worthwhile.
 
   \item[Why a 96-byte key (or 64-byte for \ChaCha/-\DAENCE/)?]
     For \ChaCha/-\DAENCE/, in addition to \ChaCha/ we use two
