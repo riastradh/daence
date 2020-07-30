@@ -82,7 +82,7 @@ poly1305ad(unsigned char h[static 16],
 	memcpy(k_, k, 16);
 	memset(k_ + 16, 0, 16);
 
-	/* Set h := Poly1305_k(pad0(a) || pad0(m) || |a|_4). */
+	/* Set h := Poly1305_k(pad0(a) || pad0(m) || |a|_8 || |m|_8). */
 	crypto_onetimeauth_poly1305_init(&poly1305, k_);
 	crypto_onetimeauth_poly1305_update(&poly1305, a, alen);
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - alen) & 0xf);
