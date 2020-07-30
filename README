@@ -6,8 +6,9 @@ Taylor `Riastradh' Campbell <campbell+daence@mumble.net>
 
 Daence is a deterministic authenticated cipher built out of Poly1305
 and either Salsa20 or ChaCha.  This repository contains a definition,
-security analysis, reference implementation, and test vectors for
-Daence.
+security analysis, reference implementation in C, and test vectors for
+Daence.  This repository also contains a Go module, a Rust crate, and
+some sample Python code.
 
 
 If you and your friend share a secret 96-byte key for Salsa20-Daence:
@@ -69,10 +70,14 @@ crypto_aead/            SUPERCOP AEAD API (Salsa20-Daence only)
 crypto_auth/            SUPERCOP PRF/authenticator API (Salsa20-Daence only)
 daence.bib              bibliography
 daence.tex              definition and analysis
+go/                     Go module implementing Salsa20- and ChaCha-Daence
 kat_chachadaence.c      reference implementation and test vector generation
 kat_chachadaence.exp    expected values of test vectors
 kat_salsa20daence.c     reference implementation and test vector generation
 kat_salsa20daence.exp   expected values of test vectors
+python/                 sample Python code using pyca cryptography
+  chachadaence.py       WARNING: not safe for production use; see file
+rust/                   Rust crate implementing Salsa20- and ChaCha-Daence
 salsa20daence.c         copypastable Salsa20-Daence using NaCl/SUPERCOP
 salsa20daence.h         header file with prototypes for salsa20daence.c
 t_chachadaence.c        test program to verify chachadaence.c
