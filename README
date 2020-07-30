@@ -13,7 +13,7 @@ some sample Python code.
 
 If you and your friend share a secret 96-byte key for Salsa20-Daence:
 
-- You can feed a header and a payload of up to 2^32 bytes into
+- You can feed a header and a payload of up to 2^38 bytes into
   Daence-Encrypt, which will return an authenticated ciphertext
   concealing the payload; you can then send it to your friend in an
   envelope with the header on it in the clear.
@@ -32,8 +32,9 @@ you do not need to guarantee that every message has a unique number --
 though if you have one you can put it in the header to improve
 security.
 
-Then, as long as you and your friend handle no more than 2^70 bytes
-under a single key:
+Then, as long as you and your friend encrypt no more than 2^52
+messages, or 2^90/L messages if you and your friend agree on a smaller
+limit L < 2^38 on the number of bytes in each message:
 
 - An adversary has no hope of distinguishing authenticated ciphertexts
   from uniform random noise, except for noticing when you repeat the
