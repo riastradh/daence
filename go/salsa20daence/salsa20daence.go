@@ -91,15 +91,15 @@ func (d *salsa20daence) Seal(dst, n, m, a []byte) []byte {
 	if len(n) != 0 {
 		panic("salsa20daence: nonempty nonce passed to Seal")
 	}
-	if uint64(len(m)) > 1 << 38 {
+	if uint64(len(m)) > 1<<38 {
 		panic("salsa20daence: message too long")
 	}
 
 	var ret []byte
-	if cap(dst) >= len(m) + 24 {
-		ret = dst[:len(m) + 24]
+	if cap(dst) >= len(m)+24 {
+		ret = dst[:len(m)+24]
 	} else {
-		ret = make([]byte, len(m) + 24)
+		ret = make([]byte, len(m)+24)
 		copy(ret, dst)
 	}
 	out := ret[len(dst):]
@@ -121,7 +121,7 @@ func (d *salsa20daence) Open(dst, n, tc, a []byte) ([]byte, error) {
 	if len(n) != 0 {
 		panic("salsa20daence: nonempty nonce passed to Seal")
 	}
-	if uint64(len(tc)) > (1 << 38) + 24 {
+	if uint64(len(tc)) > (1<<38)+24 {
 		panic("salsa20daence: message too long")
 	}
 
