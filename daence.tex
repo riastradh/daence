@@ -1069,9 +1069,10 @@ Thus,
      reason to pay the interface complexity cost.
 
   \item[Why bother with \Salsa20/?  Why not just \ChaCha/?]
-    \hspace{\stretch{1}}\penalty-300
-    The \NaCl/ \naclonetimeauth/ interface is widely available in many
-     languages, particularly via \TweetNaCl/.
+    \NaCl/ and many of its derivatives support only \Salsa20/, not
+     \ChaCha/, and for \Poly1305/ only have a one-shot
+     \naclonetimeauth/ function that processes a whole message at
+     once.
     It is easy to implement \Salsa20/-\DAENCE/ in terms of this
      interface, but not \ChaCha/-\DAENCE/.
 
