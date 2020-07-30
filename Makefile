@@ -100,8 +100,8 @@ js/kat_salsa20daence.json: kat_salsa20daence.exp
 	$(KAT2JSON) < kat_salsa20daence.exp > $@.tmp && mv -f $@.tmp $@
 clean: clean-js/kat_salsa20daence.json
 clean-js/kat_salsa20daence.json: .PHONY
-	-rm -f clean-js/kat_salsa20daence.json
-	-rm -f clean-js/kat_salsa20daence.json.tmp
+	-rm -f js/kat_salsa20daence.json
+	-rm -f js/kat_salsa20daence.json.tmp
 
 kat_chachadaence.out: kat_chachadaence
 	./kat_chachadaence > $@.tmp && mv -f $@.tmp $@
