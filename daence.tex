@@ -11,7 +11,7 @@
 \usepackage[final]{microtype}
 \usepackage[numbers]{natbib}
 
-\title{\DAENCE/:
+\title{\Daence/:
   \Salsa20/ and \ChaCha/ in Deterministic Authenticated Encryption \\
   with no noNCEnse}
 \author{Taylor `Riastradh' Campbell
@@ -66,10 +66,10 @@
 \def\HXSalsa#1/{\operatorsc{HXSalsa#1}}
 \def\Poly#1/{\operatorsc{Poly#1}}
 \def\Auth#1/{\operatorsc{Auth#1}}
-\def\DAENCE/{\operatorsc{Daence}}
-\def\DUNCE/{\operatorsc{Dunce}}
-\def\DEUCE/{\operatorsc{Deuce}}
-\def\DICE/{\operatorsc{Dice}}
+\def\Daence/{\operatorsc{Daence}}
+\def\Dunce/{\operatorsc{Dunce}}
+\def\Deuce/{\operatorsc{Deuce}}
+\def\Dice/{\operatorsc{Dice}}
 
 \def\CAESAR/{\textsc{Caesar}}
 \def\eSTREAM/{eSTREAM}
@@ -165,7 +165,7 @@
 \maketitle
 
 \begin{abstract}
-  We present \DAENCE/, a deterministic authenticated cipher based on a
+  We present \Daence/, a deterministic authenticated cipher based on a
    pseudorandom function family and a universal hash family, similar
    to \SIV/~\cite{rogaway-shrimpton2006keywrap}.
   We recommend instances with
@@ -203,7 +203,7 @@ The \emph{nonce-misuse-resistant} authenticated cipher
  \AESGCM/---and amplifies the performance cost by deriving fresh keys
  for each distinct nonce, yet has very narrow security margins.
 
-We propose a deterministic authenticated cipher \DAENCE/ built out of
+We propose a deterministic authenticated cipher \Daence/ built out of
  the \Salsa20/ or \ChaCha/ pseudorandom function family and the
  \Poly1305/ universal hash family.
 The design is based on the \SIV/ construction of Rogaway and
@@ -212,18 +212,18 @@ The design is based on the \SIV/ construction of Rogaway and
  fixed-input \PRF/~%
   \cite[\S1.5]{bellare-canetti-krawczyk1996cascade}%
   \cite[\S9, Theorem~9.2]{bernstein1999hash127}.
-\DAENCE/ is easily implemented in terms of the primitives available in
+\Daence/ is easily implemented in terms of the primitives available in
  \NaCl/ and \libsodium/.
 
 \section{Security contract}
 
-\DAENCE/ is a deterministic authenticated cipher.
+\Daence/ is a deterministic authenticated cipher.
 This means it consists of two functions:
 %
 \begin{description}
   \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes
-     a key $k$ (96-byte in \Salsa20/-\DAENCE/, 64-byte in
-      \ChaCha/-\DAENCE/),
+     a key $k$ (96-byte in \Salsa20/-\Daence/, 64-byte in
+      \ChaCha/-\Daence/),
      a string $a$ of at most $2^{38}$ bytes of associated data, and
      a message $m$ of at most $2^{38}$ bytes ($256\,\mathrm{GB}$).
 
@@ -319,7 +319,7 @@ Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
  just as \HSalsa20/ can be defined in terms of
  \Salsa20/, and has comparable security~\cite{bernstein2011xsalsa}.
 
-\paragraph*{\Salsa20/-\DAENCE/.}
+\paragraph*{\Salsa20/-\Daence/.}
 To \term{encrypt}, given
  a 96-byte key $k$,
  associated data $a$ of at most $2^{38}$ bytes, and
@@ -357,7 +357,7 @@ To \term{verify and decrypt}, given
 If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
  forgery.
 
-\paragraph*{\ChaCha/-\DAENCE/.}
+\paragraph*{\ChaCha/-\Daence/.}
 Rather than hash associated data separately, implementations of
  \ChaCha//\Poly1305/ as used in \TLS/ and implemented in \libsodium/
  \sodiumaead/ support passing multiple strings into \Poly1305/,
@@ -412,7 +412,7 @@ We review standard notions of security
   \cite[Definition~1]{rogaway-shrimpton2006keywrap}%
   \cite[\S3]{bellare-tackmann2016mu-ae-crypto}),
  loosely summarized as how well $A$ can tell users of a real
- cryptosystem---\DAENCE/, \XSalsa20/, \etc---from pranksters who just
+ cryptosystem---\Daence/, \XSalsa20/, \etc---from pranksters who just
  roll dice to answer every query.
 
 \begin{definition}
@@ -460,7 +460,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
 \margintodo{Outdated---with better proof we can set better bounds on
   advantage and allow keys to be used for many more messages safely.}
 
-\begin{theorem}[\Salsa20/-\DAENCE/]\label{salsa20-daence}
+\begin{theorem}[\Salsa20/-\Daence/]\label{salsa20-daence}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a set of deterministic authenticated
    ciphers.
@@ -477,7 +477,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
    such that
 %
   \begin{multline*}
-    \Adv^{\muDAE}_{\DAENCE/}(A)
+    \Adv^{\muDAE}_{\Daence/}(A)
      \leq \Adv^{\muPRF}_{\XSalsa20/}(A') \\
             + \sum_u
                 \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
@@ -496,7 +496,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \]
 \end{theorem}
 
-\begin{theorem}[\ChaCha/-\DAENCE/]\label{chacha-daence}
+\begin{theorem}[\ChaCha/-\Daence/]\label{chacha-daence}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a set of deterministic authenticated
    ciphers.
@@ -513,7 +513,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
    such that
 %
   \begin{multline*}
-    \Adv^{\muDAE}_{\DAENCE/}(A)
+    \Adv^{\muDAE}_{\Daence/}(A)
      \leq \Adv^{\muPRF}_{\XChaCha/}(A') \\
             + \sum_u
                 \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
@@ -529,7 +529,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
 \begin{enumerate}
   \item Set a bound on the collision probability of $\Poly1305/^2$.
   \item Set a bound on \DAE/ advantage against an idealized version of
-     \DAENCE/.
+     \Daence/.
   \item Extend the bound to the multi-user setting.
   \item Instantiate the idealization with the actual \PRF/.
 \end{enumerate}
@@ -631,7 +631,7 @@ Let $f,g\colon \{0,1\}^{256} \to \{0,1\}^{512}$ be uniform random.
 Note that $\hat f$, $\hat f_{192}$, $f_*$, and $g_*$ are uniformly
  distributed.
 
-Define \term{\DEUCE/} to be as \DAENCE/, but with $f$ substituted for
+Define \term{\Deuce/} to be as \Daence/, but with $f$ substituted for
  $\XSalsa20/_{k_0}$:
 %
 \begin{enumerate}
@@ -642,7 +642,7 @@ Define \term{\DEUCE/} to be as \DAENCE/, but with $f$ substituted for
   \item $c := m \oplus f_*(t)$
 \end{enumerate}
 
-Define \term{\DICE/} to be as \DEUCE/, but with $g$ substituted for
+Define \term{\Dice/} to be as \Deuce/, but with $g$ substituted for
  $f$ in the pad:
 %
 \begin{enumerate}
@@ -653,7 +653,7 @@ Define \term{\DICE/} to be as \DEUCE/, but with $g$ substituted for
   \item $c := m \oplus g_*(t)$
 \end{enumerate}
 
-Finally, define \term{\DUNCE/} to be as \DICE/, but with the
+Finally, define \term{\Dunce/} to be as \Dice/, but with the
  decryption oracle modified to return $\bot$ for every input.
 
 \begin{lemma}[Single-user idealized security]\label{su-ideal}
@@ -664,7 +664,7 @@ Finally, define \term{\DUNCE/} to be as \DICE/, but with the
    messages.
   Then
   \[
-    \Adv^{\DAE}_{\DEUCE/}(A)
+    \Adv^{\DAE}_{\Deuce/}(A)
     \leq \frac{(E + D)^2 + D + \binom{E}{2}}{2^{192}}
          + \collisionbound(\ell_a, \ell_m)
            \cdot
@@ -672,29 +672,29 @@ Finally, define \term{\DUNCE/} to be as \DICE/, but with the
   \]
 \end{lemma}
 
-\paragraph*{Distinguishing \DEUCE/ from \DICE/: independent tags and pads.}
+\paragraph*{Distinguishing \Deuce/ from \Dice/: independent tags and pads.}
 \leavevmode\hfill\break
-\DICE/ is simply \DEUCE/ with two independent functions for deriving a
+\Dice/ is simply \Deuce/ with two independent functions for deriving a
  tag $t$ from a hash $h$ and for deriving a pad from a tag.
 Only in the event $C_{th}$ of a collision between one of the values of
- $h$ and one of the values of $t \concat j$ do \DICE/ and \DEUCE/ have
+ $h$ and one of the values of $t \concat j$ do \Dice/ and \Deuce/ have
  different distributions, since if the $h$ do not overlap with the
  $t \concat j$, then the $f(t \concat j)$ and $g(t \concat j)$ are
  both uniform random strings independent of the $\hat f_{192}(h)$.
-And since $f(t \concat j)$ does not figure into \DICE/, a collision
+And since $f(t \concat j)$ does not figure into \Dice/, a collision
  between a value of $h$ and a value of $t \concat j$ value cannot
  affect the outcome, so
- $\Pr[A(\DICE/) \given \lnot C_{th}] = \Pr[A(\DICE/)]$.
+ $\Pr[A(\Dice/) \given \lnot C_{th}] = \Pr[A(\Dice/)]$.
 Thus,
 %
 \begin{align*}
-  \Pr[A(\DEUCE/)]
-  &= \Pr[A(\DEUCE/) \given C_{th}] \Pr[C_{th}] \\
+  \Pr[A(\Deuce/)]
+  &= \Pr[A(\Deuce/) \given C_{th}] \Pr[C_{th}] \\
   &\qquad
-     + \Pr[A(\DEUCE/) \given \lnot C_{th}] \Pr[\lnot C_{th}] \\
-  &\leq \Pr[C_{th}] + \Pr[A(\DEUCE/) \given \lnot C_{th}] \\
-  &= \Pr[C_{th}] + \Pr[A(\DICE/) \given \lnot C_{th}] \\
-  &= \Pr[C_{th}] + \Pr[A(\DICE/)].
+     + \Pr[A(\Deuce/) \given \lnot C_{th}] \Pr[\lnot C_{th}] \\
+  &\leq \Pr[C_{th}] + \Pr[A(\Deuce/) \given \lnot C_{th}] \\
+  &= \Pr[C_{th}] + \Pr[A(\Dice/) \given \lnot C_{th}] \\
+  &= \Pr[C_{th}] + \Pr[A(\Dice/)].
 \end{align*}
 
 How often do collisions occur?
@@ -715,32 +715,32 @@ The values of $t$ are independent uniform 192-bit strings, and there
 Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
  we have
 \[
-  \lvert\Pr[A(\DEUCE/)] - \Pr[A(\DICE/)]\rvert
+  \lvert\Pr[A(\Deuce/)] - \Pr[A(\Dice/)]\rvert
   \leq \Pr[C_{th}]
   \leq \frac{(E + D)^2}{2^{192}}.
 \]
 
-\paragraph*{Distinguishing \DICE/ from \DUNCE/: bounding forgery
+\paragraph*{Distinguishing \Dice/ from \Dunce/: bounding forgery
   probability.}
 \leavevmode\hfill\break
-The decryption oracle of \DICE/ returns anything other than
+The decryption oracle of \Dice/ returns anything other than
  $\bot$ only in the event $F$ that $A$ forges a ciphertext not
  returned by the encryption oracle.
-Conditional on $\lnot F$, \DICE/ and \DUNCE/ otherwise have the same
+Conditional on $\lnot F$, \Dice/ and \Dunce/ otherwise have the same
  distribution---the encryption oracle is the same and the decryption
  oracle always returns $\bot$ in both cases---so
 %
 \begin{align*}
-  \Pr[A(\DICE/)]
-  &= \Pr[A(\DICE/) \given F] \Pr[F]
-     + \Pr[A(\DICE/) \given \lnot F] \Pr[\lnot F] \\
-  &\leq \Pr[F] + \Pr[A(\DICE/) \given \lnot F] \\
-  &= \Pr[F] + \Pr[A(\DUNCE/)],
+  \Pr[A(\Dice/)]
+  &= \Pr[A(\Dice/) \given F] \Pr[F]
+     + \Pr[A(\Dice/) \given \lnot F] \Pr[\lnot F] \\
+  &\leq \Pr[F] + \Pr[A(\Dice/) \given \lnot F] \\
+  &= \Pr[F] + \Pr[A(\Dunce/)],
 \end{align*}
 %
  and thus
 \[
-  \lvert\Pr[A(\DICE/)] - \Pr[A(\DUNCE/)]\rvert
+  \lvert\Pr[A(\Dice/)] - \Pr[A(\Dunce/)]\rvert
   \leq \Pr[F].
 \]
 
@@ -791,7 +791,7 @@ The string $f(h')$ is a uniform random 192-bit string independent of
 Hence
 %
 \begin{align*}
-  \lvert\Pr[A(\DICE/)] &- \Pr[A(\DUNCE/)]\rvert
+  \lvert\Pr[A(\Dice/)] &- \Pr[A(\Dunce/)]\rvert
    \leq \Pr[F] \\
   &\leq D \cdot \Pr\bigl[t' = f(h')
             \given t_i = f(h_i), c_i = m_i \oplus g_*(t_i)\bigr] \\
@@ -801,7 +801,7 @@ Hence
         + D E \cdot \collisionbound(\ell_a, \ell_m).
 \end{align*}
 
-\paragraph*{Distinguishing \DUNCE/ from uniform random.}
+\paragraph*{Distinguishing \Dunce/ from uniform random.}
 Let $U_1$ be a pathological `\DAE/' whose encryption oracle returns an
  independent uniform random tag and ciphertext for each distinct
  input, and whose decryption oracle returns $\bot$ for every input.
@@ -809,7 +809,7 @@ Suppose $A$ submits distinct encryption queries
  $(a_1, m_1), \dotsc, (a_E, m_E)$
  giving answers
  $t_1 \concat c_1, \dotsc, t_E \concat c_E$.
-If the oracle is \DUNCE/, then all the strings $t_i = f(h_i)$ and
+If the oracle is \Dunce/, then all the strings $t_i = f(h_i)$ and
  $c_i = m_i \oplus g_*(t_i)$ are independent uniform random---and thus
  the oracle is indistinguishable from $U_1$---except in the event
  $C_h$ of a collision $h_i = h_j$ for some $i \ne j$, or in the event
@@ -841,8 +841,8 @@ If the $h_i$ are all distinct, there is a collision among the $t_i$
 Thus,
 %
 \begin{align*}
-  \Pr[A(\DUNCE/)]
-  &\leq \Pr\bigl[A(\DUNCE/) \given
+  \Pr[A(\Dunce/)]
+  &\leq \Pr\bigl[A(\Dunce/) \given
             \lnot (C_h \mathrel{\text{or}} C_t)\bigr]
         + \Pr[C_h \mathrel{\text{or}} C_t] \\
   &= \Pr[A(U_1)] + \Pr[C_h \mathrel{\text{or}} C_t] \\
@@ -853,7 +853,7 @@ Thus,
 %
  so that
 \[
-  \lvert\Pr[A(\DUNCE/)] - \Pr[A(U_1)]\rvert
+  \lvert\Pr[A(\Dunce/)] - \Pr[A(U_1)]\rvert
   \leq \binom{E}{2}
        \biggl(\collisionbound(\ell_a, \ell_m) + \frac{1}{2^{192}}\biggr).
 \]
@@ -861,10 +861,10 @@ Thus,
 \paragraph*{Summing it up.}
 
 \begin{align*}
-  \lvert\Pr&[A(\DEUCE/)] - \Pr[A(U_1)]\rvert \\
-  &\leq \lvert\Pr[A(\DEUCE/)] - \Pr[A(\DICE/)]\rvert
-          + \lvert\Pr[A(\DICE/)] - \Pr[A(\DUNCE/)]\rvert \\
-  &\qquad + \lvert\Pr[A(\DUNCE/)] - \Pr[A(U_1)]\rvert \\
+  \lvert\Pr&[A(\Deuce/)] - \Pr[A(U_1)]\rvert \\
+  &\leq \lvert\Pr[A(\Deuce/)] - \Pr[A(\Dice/)]\rvert
+          + \lvert\Pr[A(\Dice/)] - \Pr[A(\Dunce/)]\rvert \\
+  &\qquad + \lvert\Pr[A(\Dunce/)] - \Pr[A(U_1)]\rvert \\
   &\leq \frac{(E + D)^2}{2^{192}}
           + \frac{D}{2^{192}} + D E \cdot \collisionbound(\ell_a, \ell_m)
           + \binom{E}{2}
@@ -889,7 +889,7 @@ Thus,
   Then
 %
   \begin{multline*}
-    \Adv^{\muDAE}_{\DEUCE/}(A)
+    \Adv^{\muDAE}_{\Deuce/}(A)
     \leq \sum_u \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
                      {2^{192}} \\
            + \collisionbound(\ell_a(u), \ell_m(u))
@@ -907,8 +907,8 @@ Thus,
    the users each with their own independent function $f$ and keys
    $k_1,\dotsc,k_4$ is the sum over all users of $C_{th}$ for each
    user separately.
-  Consequently, the multi-user \DAE/ advantage against \DEUCE/---that
-   is, the statistical distance under $A$ from \DEUCE/ to a
+  Consequently, the multi-user \DAE/ advantage against \Deuce/---that
+   is, the statistical distance under $A$ from \Deuce/ to a
    pathological `\DAE/' collection $U$---is at most the sum of the
    single-user \DAE/ advantages.
 \end{proof}
@@ -931,15 +931,15 @@ Thus,
    different $(\ell_a(u), \ell_m(u))$-byte inputs,
    such that
   \[
-    \lvert\Pr[A(\DAENCE/)] - \Pr[A(\DEUCE/)]\rvert
+    \lvert\Pr[A(\Daence/)] - \Pr[A(\Deuce/)]\rvert
     = \Adv^{\muPRF}_{\XSalsa20/}(A').
   \]
 \end{lemma}
 
 \begin{proof}
-  \DEUCE/ is simply \DAENCE/ with a uniform random function $f$
+  \Deuce/ is simply \Daence/ with a uniform random function $f$
    substituted for $\XSalsa20/_{k_0}$, so if $A$ can distinguish a
-   collection of \DAENCE/ users from a collection of \DEUCE/ users then
+   collection of \Daence/ users from a collection of \Deuce/ users then
    it can be used in an algorithm $A'$ to distinguish a collection of
    $\XSalsa20/_{k_0}$ users from a collection of $f$ users (recall
    $f\colon \{0,1\}^{256} \to \{0,1\}^{512}$ is a
@@ -959,12 +959,12 @@ Thus,
     \item $c := m \oplus \mathcal O_*(u, t)$
   \end{enumerate}
   %
-  Then $A'(\XSalsa20/_{k_0}) = A(\DAENCE/)$ and $A'(f) = A(\DEUCE/)$
+  Then $A'(\XSalsa20/_{k_0}) = A(\Daence/)$ and $A'(f) = A(\Deuce/)$
    (with `$k_0$' and `$f$' understood to mean a collection of
    independent keys/functions), so
   %
   \begin{align*}
-    \lvert\Pr[A(\DAENCE/)] - \Pr[A(\DEUCE/)]\rvert
+    \lvert\Pr[A(\Daence/)] - \Pr[A(\Deuce/)]\rvert
     &= \lvert\Pr[A'(\XSalsa20/_{k_0})] - \Pr[A'(f)]\rvert \\
     &= \Adv^{\muPRF}_{\XSalsa20/}(A').
     \qedhere
@@ -977,10 +977,10 @@ Thus,
   By stringing all the inequalities together, we complete the proof:
 %
   \begin{align*}
-    \Adv^{\muDAE}_{\DAENCE/}(A)
-    &= \lvert\Pr[A(\DAENCE/)] - \Pr[A(U)]\rvert \\
-    &\leq \lvert\Pr[A(\DAENCE/)] - \Pr[A(\DEUCE/)]\rvert \\
-    &\qquad + \lvert\Pr[A(\DEUCE/)] - \Pr[A(U)]\rvert \\
+    \Adv^{\muDAE}_{\Daence/}(A)
+    &= \lvert\Pr[A(\Daence/)] - \Pr[A(U)]\rvert \\
+    &\leq \lvert\Pr[A(\Daence/)] - \Pr[A(\Deuce/)]\rvert \\
+    &\qquad + \lvert\Pr[A(\Deuce/)] - \Pr[A(U)]\rvert \\
     &\leq \Adv^{\muPRF}_{\XSalsa20/}(A') \\
     &\qquad
        + \sum_u \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
@@ -994,7 +994,7 @@ Thus,
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{chacha-daence}]
-  The \ChaCha/ version of \DAENCE/ uses
+  The \ChaCha/ version of \Daence/ uses
   \[
     \Poly1305/^2_{k_1,k_2}(
       a \concat m \concat \lvert a\rvert_8 \concat \lvert m\rvert_8)
@@ -1023,7 +1023,7 @@ Thus,
      available in many programming languages, the benefits of the
      \CAESAR/ winners do not seem to justify the engineering effort to
      make the novel cryptographic primitives as ubiquitous.
-    In contrast, \DAENCE/ requires negligible engineering effort on
+    In contrast, \Daence/ requires negligible engineering effort on
      top of \NaCl/ or \libsodium/.
 
   \item[Why not just use \AESGCMSIV/?]
@@ -1046,12 +1046,12 @@ Thus,
      accidental nonce reuse
      bugs~\cite{cperciva2011tarsnap-nonce-reuse} and virtual machine
      rollbacks, and makes applications \emph{more} vulnerable to
-     broken entropy sources than \DAENCE/ would.
+     broken entropy sources than \Daence/ would.
 
   \item[Why not a nonce-misuse-resistant authenticated cipher?]
     If you have a nonce---say a message sequence number---then you can
      use it in the associated data.
-    So out of \DAENCE/ you can build your own nonce-misuse-resistant
+    So out of \Daence/ you can build your own nonce-misuse-resistant
      authenticated cipher: just prefix a fixed-size nonce to the
      associated data!
 
@@ -1066,7 +1066,7 @@ Thus,
     The security bounds could be better if we derived a fresh key for
      each distinct nonce like \AESGCMSIV/ does.
     But \AESGCMSIV/ has weaker security bounds to begin with.
-    At the level of security that \DAENCE/ provides, there is little
+    At the level of security that \Daence/ provides, there is little
      reason to pay the interface complexity cost.
 
   \item[Why bother with \Salsa20/?  Why not just \ChaCha/?]
@@ -1074,17 +1074,17 @@ Thus,
      \ChaCha/, and for \Poly1305/ only have a one-shot
      \naclonetimeauth/ function that processes a whole message at
      once.
-    It is easy to implement \Salsa20/-\DAENCE/ in terms of this
-     interface, but not \ChaCha/-\DAENCE/.
+    It is easy to implement \Salsa20/-\Daence/ in terms of this
+     interface, but not \ChaCha/-\Daence/.
 
     On the other hand, \ChaCha//\Poly1305/ is seeing wider use after
      \IETF/ standardization in \TLS/---and systems with
      \ChaCha//\Poly1305/ will generally have the parts needed to
-     implement \ChaCha/-\DAENCE/ just as easily.
+     implement \ChaCha/-\Daence/ just as easily.
 
     There is a small security advantage to the hashing in
-     \Salsa20/-\DAENCE/; there may be a small performance advantage to
-     the hashing in \ChaCha/-\DAENCE/; but the primary advantage to
+     \Salsa20/-\Daence/; there may be a small performance advantage to
+     the hashing in \ChaCha/-\Daence/; but the primary advantage to
      defining both alternatives is to reduce the engineering costs to
      adopting either one in environments that already use \NaCl/ or
      already implement \ChaCha//\Poly1305/.
@@ -1128,7 +1128,7 @@ Thus,
      reach for it?
 
     \margintodo{Double-check bounds!}
-    With \DAENCE/, even if an application allowed messages up to the
+    With \Daence/, even if an application allowed messages up to the
      maximum length, $2^{39}$ ($2^{38}$ bytes of associated data and
      $2^{38}$ bytes of message), exposed quadrillions of legitimate
      messages ($2^{52}$) to the adversary, and the adversary attempted
@@ -1150,14 +1150,14 @@ Thus,
      the way \Poly1305/ is.
     So---even if there may be a slim performance
      improvement---switching from \Poly1305/ would substantially raise
-     the engineering costs of adopting \DAENCE/.
+     the engineering costs of adopting \Daence/.
 
   \item[How fast is it?]
     The main cost over \naclsecretbox/ is evaluating \Poly1305/ twice
      rather than once, and completing it before starting \XSalsa20/,
-     so \Salsa20/-\DAENCE/ should cost about 1--2x what
+     so \Salsa20/-\Daence/ should cost about 1--2x what
      \naclsecretbox/ costs.
-    If the analysis survives some scrutiny, we will submit \DAENCE/ to
+    If the analysis survives some scrutiny, we will submit \Daence/ to
      \SUPERCOP/\footnote{\url{https://bench.cr.yp.to/}} for reliable,
      fair measurements across a variety of machines.
 
@@ -1166,25 +1166,25 @@ Thus,
      ${\approx}2.5\,\mathrm{cpb}$ for \naclsecretbox/,
      ${\approx}1.9\,\mathrm{cpb}$ for hardware-accelerated \AESGCM/,
      and
-     ${\approx}3.6\,\mathrm{cpb}$ for \Salsa20/-\DAENCE/.
+     ${\approx}3.6\,\mathrm{cpb}$ for \Salsa20/-\Daence/.
     There is room for improvement: this naïve code makes no attempt to
      compute the two \Poly1305/'s in parallel, which may be faster
      than computing them serially---both for messages exceeding the
      \CPU/ cache, and for short messages for which setting up many
      powers of the evaluation point is not worthwhile.
 
-  \item[Why a 96-byte key (or 64-byte for \ChaCha/-\DAENCE/)?]
-    For \ChaCha/-\DAENCE/, in addition to \ChaCha/ we use two
+  \item[Why a 96-byte key (or 64-byte for \ChaCha/-\Daence/)?]
+    For \ChaCha/-\Daence/, in addition to \ChaCha/ we use two
      independent \Poly1305/ instances---each requiring 16-byte keys,
      for a total of $32 + 2\cdot16 = 64$ bytes of key material---in
      order to provide high security without nonces.
 
-    For \Salsa20/-\DAENCE/, in addition to \Salsa20/ we use
+    For \Salsa20/-\Daence/, in addition to \Salsa20/ we use
      \emph{four} independent \Poly1305/ instances---each requiring
      16-byte keys, for a total of $32 + 4\cdot16 = 96$ bytes of key
      material---primarily to support incorporating associated data
      without relying an incremental-update API for \Poly1305/.
-    This way, \Salsa20/-\DAENCE/ in order to take advantage of the
+    This way, \Salsa20/-\Daence/ in order to take advantage of the
      existing deployed \NaCl/ library which can only compute
      \Poly1305/ on an entire message.
 
@@ -1199,7 +1199,7 @@ Thus,
      the application---is not worth the cost of hundreds of additional
      cycles per message.
 
-  \item[Does \DAENCE/ support streaming?]
+  \item[Does \Daence/ support streaming?]
     If you want to stream large files, break them into bite-size
      pieces, and include the piece number and an end-of-stream flag in
      the associated data for each piece as a separate message.
@@ -1207,16 +1207,16 @@ Thus,
      willing to let an adversary waste with a forgery in a denial of
      service attack.
 
-  \item[How is the `ae' in \DAENCE/ pronounced?]
+  \item[How is the `ae' in \Daence/ pronounced?]
     Like the `a' in `data'.
 \end{description}
 
 \noindent
-We do not anticipate that \DAENCE/ will replace \ChaCha//\Poly1305/ in
+We do not anticipate that \Daence/ will replace \ChaCha//\Poly1305/ in
  major protocols such as \TLS/ designed by world-class cryptographers,
  which can easily take advantage of a message number guaranteed not to
  repeat.
-We do hope that \DAENCE/ will find its way into the repertoire of
+We do hope that \Daence/ will find its way into the repertoire of
  general-purpose application engineers who need to store messages safe
  from eavesdropping and forgery in diverse software
  environments---%
