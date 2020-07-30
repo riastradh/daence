@@ -71,6 +71,7 @@
 \def\DICE/{\operatorsc{Dice}}
 
 \def\CAESAR/{\textsc{Caesar}}
+\def\eSTREAM/{eSTREAM}
 \def\OCB/{OCB}
 \def\NaCl/{NaCl}
 \def\TweetNaCl/{TweetNaCl}
@@ -86,6 +87,12 @@
 \def\naclonetimeauth/{crypto\_onetimeauth\_poly1305}
 \def\libsodium/{libsodium}
 \def\sodiumaead/{crypto\_aead}
+\def\OpenSSL/{OpenSSL}
+\def\libgcrypt/{libgcrypt}
+\def\Nettle/{Nettle}
+\def\Rust/{Rust}
+\def\Go/{Go}
+\def\Python/{Python}
 
 \makeatletter
 \def\newlatinabbr#1#2{\def#1{\protect\@latinabbr{#2}}}
@@ -1079,6 +1086,35 @@ Thus,
      defining both alternatives is to reduce the engineering costs to
      adopting either one in environments that already use \NaCl/ or
      already implement \ChaCha//\Poly1305/.
+
+  \item[Why not \ChaCha12/?]
+    The reduced-round variant \ChaCha12/ is faster than \ChaCha20/
+     (\ie, \ChaCha/ with the default number of rounds, 20), and still
+     has a comfortable security margin from the best attacks on
+     reduced-round \ChaCha/ in the literature to date.
+    This is why, for instance, Google selected \ChaCha12/ in Adiantum
+     disk encryption~\cite{crowley-biggers2018adiantum}.
+
+    However, \ChaCha20/ is much more widely available in
+     libraries today---for example,
+     \libsodium/,
+     \OpenSSL/,
+     \Nettle/,
+     the \Rust/ \texttt{crypto::chacha20} module,
+     the \Go/ \texttt{golang.org/x/crypto/chacha20} package,
+     and
+     the \Python/ pyca cryptography.io library,
+     none of which provide \ChaCha12/.
+
+    Similarly, \Salsa{20/12}/ was selected over \Salsa{20/20}/ in the
+     \eSTREAM/ portfolio for the same performance improvement with a
+     comfortable security margin, but also seems to be much less widely
+     deployed than \Salsa{20/20}/.
+
+    So although in principle \ChaCha12/ or \Salsa{20/12}/ would improve
+     performance over \ChaCha20/ or \Salsa{20/20}/ at negligible
+     security cost, they appear to raise the engineering costs of
+     deployment in practice.
 
   \item[Why not use \Auth256/?]
     The \Auth256/~\cite{bernstein-chou2014auth256} message
