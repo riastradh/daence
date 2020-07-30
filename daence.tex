@@ -189,8 +189,8 @@ The nonce-based authenticated cipher \AESGCM/~\cite{nist-sp800-38d} is
  popular, though only with hardware support is it fast and resistant
  to timing side channels.
 
-These three nonce-based ciphers fail catastrophically in the face of
- nonce reuse.
+These nonce-based ciphers fail catastrophically in the face of nonce
+ reuse.
 They are best suited to protocols that are designed to support
  sequential message numbers, such as the record number in \TLS/.
 Some applications are unable to keep the state needed to maintain a
