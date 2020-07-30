@@ -7,6 +7,9 @@ extremely large volumes of data.  This is a JavaScript implementation
 of Salsa20-Daence, for either in-browser or node.js use, based on
 [TweetNaCl.js](https://github.com/dchest/tweetnacl-js).
 
+- **WARNING: Daence is a work in progress.  The definition and API may
+  change.  There may be bugs or mistakes in the security analysis.**
+
 To try it out, run `npm install` and then:
 
 - Load `demo.html` in your favourite web browser.

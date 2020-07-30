@@ -7,6 +7,9 @@ even for extremely large volumes of data.  This is a Rust
 implementation of Salsa20-Daence and ChaCha-Daence based on the
 [rust-crypto](https://docs.rs/rust-crypto/) crate.
 
+- **WARNING: Daence is a work in progress.  The definition and API may
+  change.  There may be bugs or mistakes in the security analysis.**
+
 To try it out, run `cargo test`, or run the example program
 `examples/main.rs` with
 

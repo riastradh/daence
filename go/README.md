@@ -9,6 +9,9 @@ of Salsa20-Daence and ChaCha-Daence based on
 the [`AEAD`](https://pkg.go.dev/crypto/cipher?tab=doc#AEAD) interface
 from [`crypto/cipher`](https://pkg.go.dev/crypto/cipher).
 
+- **WARNING: Daence is a work in progress.  The definition and API may
+  change.  There may be bugs or mistakes in the security analysis.**
+
 To try it out, run `go test ./...`.  For experiments you can import
 `mumble.net/~campbell/daence.git/go/salsa20daence` or
 `mumble.net/~campbell/daence.git/go/chachadaence`, but **WARNING: these
