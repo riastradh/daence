@@ -39,6 +39,9 @@
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
+
+\newcommand{\lemmaautorefname}{Lemma}
+
 \newcommand{\term}[1]{\textbf{#1}}
 
 \newcommand{\warning}[1]{%
@@ -457,18 +460,15 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
 
 \section{Analysis}
 
-\margintodo{Outdated---with better proof we can set better bounds on
-  advantage and allow keys to be used for many more messages safely.}
-
-\begin{theorem}[\Salsa20/-\Daence/]\label{salsa20-daence}
+\begin{theorem}[\Salsa20/-\Daence/]\label{thm-salsa20-daence}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a set of deterministic authenticated
    ciphers.
   Suppose $A$ submits $E(u)$ encryption queries and $D(u)$ decryption
    queries to the $u^{\mathit{th}}$ user of up to $\ell_a(u)$ bytes of
    associated data and $\ell_m(u)$-byte messages.
-  Then there is an algorithm $A'$ making
-   $\sum_u \bigl(1 + \lceil\ell_m(u)/64\rceil\bigr)
+  Then there is an algorithm $A'$ making at most
+   $\sum_u \bigl(2 + \lceil\ell_m(u)/64\rceil\bigr)
      \bigl(E(u) + D(u)\bigr)$
    oracle queries and having the cost of $A$ plus the cost of
    evaluating $\Poly1305/^2$ and $\oplus$ on
@@ -480,11 +480,11 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
     \Adv^{\muDAE}_{\Daence/}(A)
      \leq \Adv^{\muPRF}_{\XSalsa20/}(A') \\
             + \sum_u
-                \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
+                \frac{2 D(u) + E(u)^2 + \binom{E(u)}{2}}
                      {2^{192}} \\
                 + \collisionbound(\ell_a(u), \ell_m(u))
                   \cdot
-                  {\textstyle\bigl(D(u) E(u) + \binom{E(u)}{2}\bigr)},
+                  {\textstyle\bigl(D(u) + \binom{E(u)}{2}\bigr)},
   \end{multline*}
 %
    where
@@ -496,15 +496,15 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \]
 \end{theorem}
 
-\begin{theorem}[\ChaCha/-\Daence/]\label{chacha-daence}
+\begin{theorem}[\ChaCha/-\Daence/]\label{thm-chacha-daence}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a set of deterministic authenticated
    ciphers.
   Suppose $A$ submits $E(u)$ encryption queries and $D(u)$ decryption
    queries to the $u^{\mathit{th}}$ user of up to $\ell_a(u)$ bytes of
    associated data and $\ell_m(u)$-byte messages.
-  Then there is an algorithm $A'$ making
-   $\sum_u \bigl(1 + \lceil\ell_m(u)/64\rceil\bigr)
+  Then there is an algorithm $A'$ making at most
+   $\sum_u \bigl(2 + \lceil\ell_m(u)/64\rceil\bigr)
      \bigl(E(u) + D(u)\bigr)$
    oracle queries and having the cost of $A$ plus the cost of
    evaluating $\Poly1305/^2$ and $\oplus$ on
@@ -516,13 +516,40 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
     \Adv^{\muDAE}_{\Daence/}(A)
      \leq \Adv^{\muPRF}_{\XChaCha/}(A') \\
             + \sum_u
-                \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
+                \frac{2 D(u) + E(u)^2 + \binom{E(u)}{2}}
                      {2^{192}} \\
                 + \frac{\lceil(\ell_a(u) + \ell_m(u) + 16)/16\rceil^2}{2^{206}}
                   \cdot
-                  {\textstyle\bigl(D(u) E(u) + \binom{E(u)}{2}\bigr)}.
+                  {\textstyle\bigl(D(u) + \binom{E(u)}{2}\bigr)}.
   \end{multline*}
 \end{theorem}
+
+%% \paragraph*{Concrete bounds and safe usage limits.}
+%% We recommend that each key be used to encrypt no more than $2^{52}$
+%%  messages if an application may attain the maximum length of $2^{38}$
+%%  bytes in the associated data and $2^{38}$ bytes in the message.
+%% Such applications can withstand well over $2^{100}$ forgery attempts
+%%  before the adversary's advantage exceeds $1/2^{32}$.
+
+%% More generally, we recommend that each application set
+%%  application-specific limits on the sum $\ell_a + \ell_m$ of the
+%%  associated data and message length, according to how much memory the
+%%  application is willing to let a forger waste in a denial of service
+%%  attack before detection.
+%% Large messages should be broken into bite-sized pieces; associated data
+%%  may be used to number the pieces, with an end-of-stream marker to
+%%  detect truncation.
+
+%% Applications limited to smaller \emph{messages} can safely process a
+%%  larger \emph{number} of messages per key---\eg, applications limited
+%%  to $2^{30}$ bytes per message can safesly process $2^{60}$ messages
+%%  and withstand $2^{120}$ forgery attempts, and applications limited
+%%  to 1500 bytes per message can safely process $2^{79}$ messages and
+%%  withstand $2^{158}$ forgery attempts, before the adversary's advantage
+%%  exceeds $1/2^{32}$.
+%% In general, a single \Daence/ key is safe for up to
+%%  $2^{90}\!/(\ell_a + \ell_m)$
+%%  messages, or $2^{80}$ messages, whichever is smaller.
 
 \paragraph*{Outline of proof.}
 
@@ -531,12 +558,13 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \item Set a bound on \DAE/ advantage against an idealized version of
      \Daence/.
   \item Extend the bound to the multi-user setting.
-  \item Instantiate the idealization with the actual \PRF/.
+  \item Instantiate the idealization with the actual \PRF/, \XSalsa20/
+     or \XChaCha/.
 \end{enumerate}
 
 \subsection{Collisions under double-hashing with associated data}
 
-\begin{lemma}[Double-hashing]\label{double-hash}
+\begin{lemma}[Double-hashing]\label{lem-double-hash}
   Let $k_1, k_2$ be independent \Poly1305/ keys.
   For any distinct strings $m \ne m'$ of at most $\ell$ bytes,
   \[
@@ -569,7 +597,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \end{align*}
 \end{proof}
 
-\begin{lemma}[Hashing tuples]\label{hash-tuple}
+\begin{lemma}[Hashing tuples]\label{lem-hash-tuple}
   Let $k_1, \dotsc, k_4$ be independent \Poly1305/ keys.
   For strings $a, a'$ up to $\ell_a$ bytes and $m, m'$ up to $\ell_m$
    bytes, if $(a, m) \ne (a', m')$ then
@@ -590,7 +618,7 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
    $H^* := \Poly1305/^2_{k_3,k_4}$.
   Let $h_x := H(x)$.
   We must have either $a \ne a'$ or $m \ne m'$, or both.
-  If $a \ne a'$, then by Lemma~\ref{double-hash},
+  If $a \ne a'$, then by \autoref{lem-double-hash},
    $\Pr[(h_a, h_m) = (h_{a'}, h_{m'})]
     \leq \Pr[h_a = h_{a'}]
     \leq \collisionbound(\ell_a)$.
@@ -618,18 +646,23 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \end{align*}
 \end{proof}
 
+\newpage
+
 \subsection{Idealizing the cipher}
 
-For a function $\phi$ yielding bit strings, denote by $\phi_{192}$ the
- first 192 bits of $\phi$; denote by $\hat\phi$ the transformation so
- that if $\phi = \XSalsa20/$ then $\hat\phi = \HXSalsa20/$; and denote
- by $\phi_*(t)$ the concatenation
- $\phi(t \concat 0) \concat \phi(t \concat 1) \concat \dotsb$,
- with input counter encoded in little-endian, and with output
- understood to be as long as is needed.
-Let $f,g\colon \{0,1\}^{256} \to \{0,1\}^{512}$ be uniform random.
-Note that $\hat f$, $\hat f_{192}$, $f_*$, and $g_*$ are uniformly
- distributed.
+Let $f\colon \{0,1\}^{256} \to \{0,1\}^{512}$ be a uniform random
+ function, an idealization of $\XSalsa20/$ under a uniform random key.
+Denote by
+ $\hat f\colon \{0,1\}^{256} \to \{0,1\}^{256}$
+ the corresponding idealization of $\HXSalsa20/$, and by
+ $\hat f_{192}\colon \{0,1\}^{256} \to \{0,1\}^{192}$
+ the 192-bit truncation of $\hat f$.
+For 192-bit $t$, denote by $f_*(t)$ the concatenation
+ $f(t \concat 0) \concat f(t \concat 1) \concat f(t \concat 2) \concat \dotsb$,
+ with the 32-bit input counter encoded in little-endian and zero-padded
+ as for $\XSalsa20/$.
+Note that $\hat f$, $\hat f_{192}$, and $f_*$ are uniformly
+ distributed in their respective spaces.
 
 Define \term{\Deuce/} to be as \Daence/, but with $f$ substituted for
  $\XSalsa20/_{k_0}$:
@@ -640,23 +673,12 @@ Define \term{\Deuce/} to be as \Daence/, but with $f$ substituted for
   \item $t := \hat f_{192}(h)$
     \hfill (24-byte $t$)
   \item $c := m \oplus f_*(t)$
+  \item return $t \concat c$
 \end{enumerate}
-
-Define \term{\Dice/} to be as \Deuce/, but with $g$ substituted for
- $f$ in the pad:
 %
-\begin{enumerate}
-  \item $h := \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)$
-    \hfill (32-byte $h$)
-  \item $t := \hat f_{192}(h)$
-    \hfill (24-byte $t$)
-  \item $c := m \oplus g_*(t)$
-\end{enumerate}
+(Decryption is defined the obvious way.)
 
-Finally, define \term{\Dunce/} to be as \Dice/, but with the
- decryption oracle modified to return $\bot$ for every input.
-
-\begin{lemma}[Single-user idealized security]\label{su-ideal}
+\begin{lemma}[Single-user idealized security]\label{lem-su-ideal}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a deterministic authenticated cipher.
   Suppose $A$ makes $E$ encryption queries and $D$ decryption queries
@@ -665,155 +687,98 @@ Finally, define \term{\Dunce/} to be as \Dice/, but with the
   Then
   \[
     \Adv^{\DAE}_{\Deuce/}(A)
-    \leq \frac{(E + D)^2 + D + \binom{E}{2}}{2^{192}}
+    \leq \frac{2 D + E^2 + \binom{E}{2}}{2^{192}}
          + \collisionbound(\ell_a, \ell_m)
            \cdot
-           {\textstyle\bigl(D E + \binom{E}{2}\bigr)}.
+           {\textstyle\bigl(D + \binom{E}{2}\bigr)}.
   \]
 \end{lemma}
 
-\paragraph*{Distinguishing \Deuce/ from \Dice/: independent tags and pads.}
-\leavevmode\hfill\break
-\Dice/ is simply \Deuce/ with two independent functions for deriving a
- tag $t$ from a hash $h$ and for deriving a pad from a tag.
-Only in the event $C_{th}$ of a collision between one of the values of
- $h$ and one of the values of $t \concat j$ do \Dice/ and \Deuce/ have
- different distributions, since if the $h$ do not overlap with the
- $t \concat j$, then the $f(t \concat j)$ and $g(t \concat j)$ are
- both uniform random strings independent of the $\hat f_{192}(h)$.
-And since $f(t \concat j)$ does not figure into \Dice/, a collision
- between a value of $h$ and a value of $t \concat j$ value cannot
- affect the outcome, so
- $\Pr[A(\Dice/) \given \lnot C_{th}] = \Pr[A(\Dice/)]$.
-Thus,
-%
-\begin{align*}
-  \Pr[A(\Deuce/)]
-  &= \Pr[A(\Deuce/) \given C_{th}] \Pr[C_{th}] \\
-  &\qquad
-     + \Pr[A(\Deuce/) \given \lnot C_{th}] \Pr[\lnot C_{th}] \\
-  &\leq \Pr[C_{th}] + \Pr[A(\Deuce/) \given \lnot C_{th}] \\
-  &= \Pr[C_{th}] + \Pr[A(\Dice/) \given \lnot C_{th}] \\
-  &= \Pr[C_{th}] + \Pr[A(\Dice/)].
-\end{align*}
+\begin{proof}
 
-How often do collisions occur?
-It suffices to consider the event $C_{th_{192}}$ of a collision
- between a $t$ and just the upper 192 bits of an $h$; call it
- $h_{192}$.
-There are at most $E + D$ distinct values of $h$ and thus of
- $h_{192}$.
-The values of $t$ are independent uniform 192-bit strings, and there
- are up to $E + D$ of them, so
-\[
-  \Pr[C_{th}]
-  \leq \Pr[C_{th_{192}}]
-  \leq \sum_{i=1}^{E + D} \frac{E + D}{2^{192}}
-  = \frac{(E + D)^2}{2^{192}}.
-\]
-
-Finally, since $A$ was arbitrary and could be replaced by $\lnot A$,
- we have
-\[
-  \lvert\Pr[A(\Deuce/)] - \Pr[A(\Dice/)]\rvert
-  \leq \Pr[C_{th}]
-  \leq \frac{(E + D)^2}{2^{192}}.
-\]
-
-\paragraph*{Distinguishing \Dice/ from \Dunce/: bounding forgery
-  probability.}
-\leavevmode\hfill\break
-The decryption oracle of \Dice/ returns anything other than
- $\bot$ only in the event $F$ that $A$ forges a ciphertext not
- returned by the encryption oracle.
-Conditional on $\lnot F$, \Dice/ and \Dunce/ otherwise have the same
- distribution---the encryption oracle is the same and the decryption
- oracle always returns $\bot$ in both cases---so
-%
-\begin{align*}
-  \Pr[A(\Dice/)]
-  &= \Pr[A(\Dice/) \given F] \Pr[F]
-     + \Pr[A(\Dice/) \given \lnot F] \Pr[\lnot F] \\
-  &\leq \Pr[F] + \Pr[A(\Dice/) \given \lnot F] \\
-  &= \Pr[F] + \Pr[A(\Dunce/)],
-\end{align*}
-%
- and thus
-\[
-  \lvert\Pr[A(\Dice/)] - \Pr[A(\Dunce/)]\rvert
-  \leq \Pr[F].
-\]
-
-Assume $A$ halts after the first forgery attempt---an adversary that
- makes $D>1$ forgery attempts can be broken into one that halts after
- the first forgery attempt, and another one that simulates forgery
- failure for the first attempt before making $D-1$ more attempts.
-If the first succeeded with probability at most $p$, then by induction
- the second succeeds with probability at most $(D - 1) p$, so that the
- original succeeds with probability at most $p + (D - 1) p = D p$.
-
+Recall
+ $\Adv^{\DAE}_{\Deuce/}(A) := \lvert\Pr[A(\Deuce/)] - \Pr[A(U_1)]$
+ where $U_1$ is the pathological `DAE' whose encryption oracle always
+ answers with independent uniform random bit strings and whose
+ decryption oracle always answers with $\bot$.
 Suppose $A$ submits distinct encryption queries
  $(a_1, m_1), \dotsc, (a_E, m_E)$
  giving answers
  $t_1 \concat c_1, \dotsc, t_E \concat c_E$
  via hashes
  $h_i = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)$,
- so that $t_i = f(h_i)$ and $c_i = m_i \oplus g_*(t_i)$.
-Suppose $A$ attempts a forgery $(a', t', c')$ with
- $t' \concat c' \ne t_i \concat c_i$ for all $i$.
-Let
- $m' = c' \oplus g_*(t')$
+ so that
+ $t_i = f(h_i)$
  and
- $h' = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')$.
-The forgery succeeds if $t' = f(h')$.
-Note that $(a', m') \ne (a_i, m_i)$, for if
- $(a', m') = (a_i, m_i)$,
- then we would have
- $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, and
- $k_1,\dotsc,k_4$---$t' \concat c'$ is a deterministic function of
- $(a', m')$.
-
-The string $f(h')$ is a uniform random 192-bit string independent of
- the $t_i$ and $c_i$, except in the event $C_{h'}$ that $h'$ coincides
- with one of the $h_i$:
+ $c_i = m_i \oplus f_*(t_i)$.
+The queries to a $\Deuce/$ oracle likewise all return independent
+ uniform random bit strings for encryption or $\bot$ for decryption,
+ except in the following three events:
+%
+\begin{enumerate}
+  \item
+    $C_{th}$, the event of a collision between a hash $h_i$ and a
+     tag/counter $t_i \concat j$.
+  \item
+    $C_t$, the event of a collision between two tag values $t_i = t_j$
+     for $i \ne j$.
+  \item
+    $F$, the event of a successful forgery.
+\end{enumerate}
+%
+Let these events specifically denote the \emph{first} one that
+ happens among the sequence of queries sent to the oracles---that is,
+ $C_{th}$ is the event of a hash and tag/counter collision
+ \emph{before} any collision between tags and \emph{before} any
+ successful forgery, \etc.
+For bounds on $\Pr[C_{th}]$ and $\Pr[C_t]$, we can assume $A$ makes no
+ forgery attempts, for an adversary cannot \emph{raise} the probability
+ of these collisions \emph{before} a successful forgery by attempting
+ forgeries.
+Then
 %
 \begin{align*}
-  \Pr[C_{h'}]
-  &= \Pr[\exists i\colon h' = h_i]
-   \leq \sum_i \Pr[h' = h_i] \\
-  &= \sum_i
-       \Pr[\Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')
-             = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)] \\
-  &\leq \sum_i \collisionbound(\ell_a, \ell_m)
-   = E \cdot \collisionbound(\ell_a, \ell_m).
+  \Pr[A(\Deuce/)]
+  &\leq \Pr[A(\Deuce/) \given \lnot C_{th}, \lnot C_t, \lnot F]
+     + \Pr[C_{th}] + \Pr[C_t] + \Pr[F] \\
+  &= \Pr[A(U_1)] + \Pr[C_{th}] + \Pr[C_t] + \Pr[F],
 \end{align*}
 %
-Hence
-%
-\begin{align*}
-  \lvert\Pr[A(\Dice/)] &- \Pr[A(\Dunce/)]\rvert
-   \leq \Pr[F] \\
-  &\leq D \cdot \Pr\bigl[t' = f(h')
-            \given t_i = f(h_i), c_i = m_i \oplus g_*(t_i)\bigr] \\
-  &\leq D \cdot \bigl(\Pr[t' = f(h') \given \lnot C_{h'}]
-                      + \Pr[C_{h'}]\bigr) \\
-  &\leq \frac{D}{2^{192}}
-        + D E \cdot \collisionbound(\ell_a, \ell_m).
-\end{align*}
+ and since $A$ was arbitrary and could be replaced by $\lnot A$, we
+ have
+\[
+  \lvert\Pr[A(\Deuce/)] - \Pr[A(U_1)]\rvert
+  \leq \Pr[C_{th}] + \Pr[C_t] + \Pr[F].
+\]
 
-\paragraph*{Distinguishing \Dunce/ from uniform random.}
-Let $U_1$ be a pathological `\DAE/' whose encryption oracle returns an
- independent uniform random tag and ciphertext for each distinct
- input, and whose decryption oracle returns $\bot$ for every input.
-Suppose $A$ submits distinct encryption queries
- $(a_1, m_1), \dotsc, (a_E, m_E)$
- giving answers
- $t_1 \concat c_1, \dotsc, t_E \concat c_E$.
-If the oracle is \Dunce/, then all the strings $t_i = f(h_i)$ and
- $c_i = m_i \oplus g_*(t_i)$ are independent uniform random---and thus
- the oracle is indistinguishable from $U_1$---except in the event
- $C_h$ of a collision $h_i = h_j$ for some $i \ne j$, or in the event
- $C_t$ of a collision $t_i = t_j$ for some $i \ne j$:
+\paragraph*{Probability of hash and tag/counter collision.}
+To bound $\Pr[C_{th}]$, it suffices to bound the probability of a
+ collision in the first 192 bits of one of the $h_i$ and any one of the
+ $t_i$.
+A collision of the hash prefix with one of the tags may not
+ \emph{imply} a collision between one of the $h_i$ and one of the $t_i
+ \concat j$, but it is \emph{implied by} a collision and between one of
+ the $h_i$ and $t_i \concat j$.
+There are at most $E$ distinct values of the $h_i$, and therefore of
+ their 192-bit truncations.
+The $t_i$ are independent uniform random 192-bit strings, so
+%
+\[
+  \Pr[C_{th}]
+  \leq \sum_{i=1}^E \frac{E}{2^{192}}
+  = \frac{E^2}{2^{192}}.
+\]
+
+\paragraph*{Probability of tag collision.}
+The collision $t_i = t_j$ for $i \ne j$ in the event $C_t$ may arise
+ either from the hashes
+ $h_i = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i)$,
+ or from the tags
+ $t_i = f(h_i)$
+ in encryption queries.
+Let $C_h$ be the event of a collision in the $h_i$ (before a successful
+ forgery, and before a hash and tag/counter collision).
+Since $\Poly1305/^2$ has bounded collision probability, we have
 %
 \begin{align*}
   \Pr[C_h]
@@ -826,63 +791,120 @@ If the oracle is \Dunce/, then all the strings $t_i = f(h_i)$ and
      = \binom{E}{2} \collisionbound(\ell_a, \ell_m).
 \end{align*}
 %
-If the $h_i$ are all distinct, there is a collision among the $t_i$
+If the $h_i$ are all distinct, then the $t_i$ are uniform random bit
+ strings independent of everything else involved---which means an
+ adversary learns no new information from each query to adaptively act
+ on in subsequent queries---so there is a collision among the $t_i$
  only with probability
 %
 \begin{align*}
   \Pr[C_t \given \lnot C_h]
-    &= \Pr[\exists i<j\colon t_i = t_j \given \lnot C_h]
-     \leq \sum_{i<j} \Pr[t_i = t_j \given \lnot C_h] \\
-    &= \sum_{i<j} \Pr[f(h_i) = f(h_j) \given h_i \ne h_j]
-     \leq \sum_{i<j} \frac{1}{2^{192}}
+    &= \Pr[\exists i<j\colon t_i = t_j \given \lnot C_h] \\
+    &\leq \sum_{i<j} \Pr[t_i = t_j \given \lnot C_h] \\
+    &= \sum_{i<j} \Pr[f(h_i) = f(h_j) \given h_i \ne h_j] \\
+    &\leq \sum_{i<j} \frac{1}{2^{192}}
      = \binom{E}{2} \frac{1}{2^{192}}.
 \end{align*}
 %
 Thus,
-%
-\begin{align*}
-  \Pr[A(\Dunce/)]
-  &\leq \Pr\bigl[A(\Dunce/) \given
-            \lnot (C_h \mathrel{\text{or}} C_t)\bigr]
-        + \Pr[C_h \mathrel{\text{or}} C_t] \\
-  &= \Pr[A(U_1)] + \Pr[C_h \mathrel{\text{or}} C_t] \\
-  &\leq \Pr[A(U_1)] + \Pr[C_h] + \Pr[C_t \given \lnot C_h] \\
-  &\leq \Pr[A(U_1)] + \binom{E}{2} \collisionbound(\ell_a, \ell_m)
-        + \binom{E}{2} \frac{1}{2^{192}},
-\end{align*}
-%
- so that
 \[
-  \lvert\Pr[A(\Dunce/)] - \Pr[A(U_1)]\rvert
-  \leq \binom{E}{2}
-       \biggl(\collisionbound(\ell_a, \ell_m) + \frac{1}{2^{192}}\biggr).
+  \Pr[C_t] \leq \Pr[C_h] + \Pr[C_t \given \lnot C_h]
+    \leq \binom{E}{2} \biggl(
+        \collisionbound(\ell_a, \ell_m)
+        + \frac{1}{2^{192}}
+      \biggr).
+\]
+
+\paragraph*{Forgery probability.}
+To bound $\Pr[F]$, assume $A$ halts after the first forgery
+ attempt---an adversary that makes $D>1$ forgery attempts can be broken
+ into one that halts after the first forgery attempt, and another one
+ that simulates forgery failure for the first attempt before making
+ $D-1$ more attempts.
+If the first succeeded with probability at most $\Pr[F_0]$, then by
+ induction the second succeeds with probability at most
+ $(D - 1) \cdot \Pr[F_0]$,
+ so that the original succeeds with probability at most
+ $\Pr[F_0] + (D - 1) \cdot \Pr[F_0] = D \cdot \Pr[F_0]$.
+
+Let $(a', t' \concat c')$ be the single forgery attempt of $A$,
+ with
+ $t' \concat c' \ne t_i \concat c_i$
+ for all $i$.
+Let
+ $m' = c' \oplus g_*(t')$
+ and
+ $h' = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')$.
+The forgery succeeds if $t' = f(h')$.
+Note that $(a', m') \ne (a_i, m_i)$, for if
+ $(a', m') = (a_i, m_i)$,
+ then we would have
+ $t' \concat c' = t_i \concat c_i$, since---for fixed $f$, $g$, and
+ $k_1,\dotsc,k_4$---$t' \concat c'$ is a deterministic function of
+ $(a', m')$.
+
+Let $F_0^{\ne}$ be the event that the forgery is successful \emph{and}
+ $t' \ne t_i$ for all $i$, and let $F_0^=$ be the event that the
+ forgery is successful \emph{and} $t' = t_i$ for some $i$, so that
+ $\Pr[F_0] = \Pr[F_0^{\ne}] + \Pr[F_0^=]$.
+%
+\begin{itemize}
+  \item
+    If $t' \ne t_i$ for all $i$, we must have $h' \ne h_i$ for all $i$,
+     since $t' = f(h')$ and $t_i = f(h_i)$.
+    Hence $f(h')$ is a uniform random 192-bit string independent of all
+     the $t_i$ and $c_i$, so $t' = f(h')$ only with probability
+     $1/2^{192}$ for this forgery attempt; that is,
+    \[
+      \Pr[F_0^{\ne}] = 1/2^{192}.
+    \]
+  \item
+    If $t' = t_i$ for some $i$, then necessarily $m' \ne m_i$ for all
+     $i$, and the forgery succeeds only when $h' = h_i$, which occurs
+     with probability at most $\collisionbound(\ell_a, \ell_m)$; or, if
+     $h' \ne h_i$, when $f(h') = f(h_i)$, which occurs with probability
+     $1/2^{192}$.
+    Thus,
+    \[
+      \Pr[F_0^=] \leq \collisionbound(\ell_a, \ell_m) + 1/2^{192}.
+    \]
+\end{itemize}
+%
+Combining these, we see the probability of a forgery (before any
+ collisions) is bounded by
+\[
+  \Pr[F]
+  \leq D \cdot \Pr[F_0]
+  \leq D \cdot \Pr[F_0^{\ne}] + D \cdot \Pr[F_0^=]
+  \leq \frac{2 D}{2^{192}} + D \cdot \collisionbound(\ell_a, \ell_m).
 \]
 
 \paragraph*{Summing it up.}
 
 \begin{align*}
   \lvert\Pr&[A(\Deuce/)] - \Pr[A(U_1)]\rvert \\
-  &\leq \lvert\Pr[A(\Deuce/)] - \Pr[A(\Dice/)]\rvert
-          + \lvert\Pr[A(\Dice/)] - \Pr[A(\Dunce/)]\rvert \\
-  &\qquad + \lvert\Pr[A(\Dunce/)] - \Pr[A(U_1)]\rvert \\
-  &\leq \frac{(E + D)^2}{2^{192}}
-          + \frac{D}{2^{192}} + D E \cdot \collisionbound(\ell_a, \ell_m)
-          + \binom{E}{2}
-            \biggl(\collisionbound(\ell_a, \ell_m)
-                     + \frac{1}{2^{192}}\biggr) \\
-  &= \frac{(E + D)^2 + D + \binom{E}{2}}{2^{192}}
+  &\leq \Pr[C_{th}] + \Pr[C_t] + \Pr[F] \\
+  &\leq \frac{E^2}{2^{192}}
+     + \binom{E}{2} \biggl(
+         \collisionbound(\ell_a, \ell_m)
+         + \frac{1}{2^{192}}
+       \biggr)
+     + \frac{2 D}{2^{192}} + D \cdot \collisionbound(\ell_a, \ell_m) \\
+  &\leq \frac{2 D + E^2 + \binom{E}{2}}{2^{192}}
      + \collisionbound(\ell_a, \ell_m)
        \cdot
-       {\textstyle\bigl(D E + \binom{E}{2}\bigr)}.
-  \tag*\qed
+       {\textstyle\bigl(D + \binom{E}{2}\bigr)}.
+  \qedhere
 \end{align*}
+
+\end{proof}
 
 \subsection{Multi-user security}
 
-\begin{lemma}[Multi-user idealized security]\label{mu-ideal}
+\begin{lemma}[Multi-user idealized security]\label{lem-mu-ideal}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a \emph{set} of deterministic authenticated
-   ciphers.
+   cipher users.
   Suppose $A$ makes $E(u)$ encryption queries and $D(u)$ decryption
    queries to the $u^{\mathit{th}}$ user of up to $\ell_a(u)$ bytes of
    associated data and $\ell_m(u)$-byte messages.
@@ -890,23 +912,28 @@ Thus,
 %
   \begin{multline*}
     \Adv^{\muDAE}_{\Deuce/}(A)
-    \leq \sum_u \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
+    \leq \sum_u \frac{2 D(u) + E(u)^2 + \binom{E(u)}{2}}
                      {2^{192}} \\
            + \collisionbound(\ell_a(u), \ell_m(u))
              \cdot
-             {\textstyle\bigl(D(u) E(u) + \binom{E(u)}{2}\bigr)}.
+             {\textstyle\bigl(D(u) + \binom{E(u)}{2}\bigr)}.
   \end{multline*}
 \end{lemma}
 
 \begin{proof}
-  In the foregoing analysis of the idealized cipher in the single-user
-   setting (Lemma~\ref{su-ideal}), the probabilities of the critical
-   events---$C_{th}$, $F$, $C_{h'}$, $C_h$, and $C_t$---can be
+  In the foregoing analysis of the idealized cipher \Deuce/ in the
+   single-user setting (\autoref{lem-su-ideal}), the probabilities of
+   the critical events---$C_{th}$, $C_t$, and $F$---can be
    straightforwardly seen to sum over the users independently.
-  For example, the event $C_{th}$ of a collision in \emph{any one} of
-   the users each with their own independent function $f$ and keys
-   $k_1,\dotsc,k_4$ is the sum over all users of $C_{th}$ for each
-   user separately.
+  For example, if $C_t^u$ is the event of a tag collision for the
+   $u^{\mathit{th}}$ user, that user's $f$ and $k_i$ are independent of
+   all the other users', so each $C_t^u$ is an independent Bernoulli
+   trial, and thus the event $C_t^*$ of a tag collision in
+   \emph{any one} of the users has
+  \[
+    \Pr[C_t^*] = 1 - \prod_u (1 - \Pr[C_t^u]);
+  \]
+   this in turn is bounded by $\sum_u \Pr[C_t^u]$.
   Consequently, the multi-user \DAE/ advantage against \Deuce/---that
    is, the statistical distance under $A$ from \Deuce/ to a
    pathological `\DAE/' collection $U$---is at most the sum of the
@@ -915,15 +942,15 @@ Thus,
 
 \subsection{Instantiating the idealized cipher}
 
-\begin{lemma}[Multi-user instantiation]\label{mu-instance}
+\begin{lemma}[Multi-user instantiation]\label{lem-mu-instance}
   Let $A$ be a random decision algorithm with encryption and
    decryption oracles for a \emph{set} of deterministic authenticated
-   ciphers.
+   cipher users.
   Suppose $A$ makes $E(u)$ encryption queries and $D(u)$ decryption
    queries to the $u^{\mathit{th}}$ user of up to $\ell_a(u)$ bytes of
    associated data and $\ell_m(u)$-byte messages.
-  Then there is an algorithm $A'$ making
-   $\sum_u \bigl(1 + \lceil\ell_m(u)/64\rceil\bigr)
+  Then there is an algorithm $A'$ making at most
+   $\sum_u \bigl(2 + \lceil\ell_m(u)/64\rceil\bigr)
      \bigl(E(u) + D(u)\bigr)$
    oracle queries and having the cost of $A$ plus the cost of
    evaluating $\Poly1305/^2$ and $\oplus$ on
@@ -950,15 +977,16 @@ Thus,
    oracles for the following \DAE/ under independent uniform random keys
    $k_1,\dotsc,k_4$ for the $u^{\mathit{th}}$ user, decryption being
    defined the obvious way:
-  %
+%
   \begin{enumerate}
     \item $h := \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)$
       \hfill (32-byte $h$)
     \item $t := \hat{\mathcal O}_{192}(u, h)$
       \hfill (24-byte $t$)
     \item $c := m \oplus \mathcal O_*(u, t)$
+    \item return $t \concat c$
   \end{enumerate}
-  %
+%
   Then $A'(\XSalsa20/_{k_0}) = A(\Daence/)$ and $A'(f) = A(\Deuce/)$
    (with `$k_0$' and `$f$' understood to mean a collection of
    independent keys/functions), so
@@ -973,7 +1001,7 @@ Thus,
 
 \subsection{Tying the room together}
 
-\begin{proof}[Proof of Theorem~\ref{salsa20-daence}]
+\begin{proof}[Proof of \autoref{thm-salsa20-daence}]
   By stringing all the inequalities together, we complete the proof:
 %
   \begin{align*}
@@ -983,17 +1011,17 @@ Thus,
     &\qquad + \lvert\Pr[A(\Deuce/)] - \Pr[A(U)]\rvert \\
     &\leq \Adv^{\muPRF}_{\XSalsa20/}(A') \\
     &\qquad
-       + \sum_u \frac{\bigl(E(u) + D(u)\bigr)^2 + D(u) + \binom{E(u)}{2}}
+       + \sum_u \frac{2 D(u) + E(u)^2 + \binom{E(u)}{2}}
                      {2^{192}} \\
     &\qquad\qquad\qquad
            + \collisionbound(\ell_a(u), \ell_m(u))
              \cdot
-             {\textstyle\bigl(D(u) E(u) + \binom{E(u)}{2}\bigr)}.
+             {\textstyle\bigl(D(u) + \binom{E(u)}{2}\bigr)}.
     \qedhere
   \end{align*}
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{chacha-daence}]
+\begin{proof}[Proof of \autoref{thm-chacha-daence}]
   The \ChaCha/ version of \Daence/ uses
   \[
     \Poly1305/^2_{k_1,k_2}(
@@ -1001,8 +1029,8 @@ Thus,
     \qquad\text{instead of}\qquad
     \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m).
   \]
-  By~Lemma~\ref{double-hash}, the collision probability is bounded by
-   $\collisionbound(\ell_a + \ell_m + 16)$ rather than by
+  By \autoref{lem-double-hash}, the collision probability is bounded
+   by $\collisionbound(\ell_a + \ell_m + 16)$ rather than by
    $\collisionbound(\ell_a, \ell_m)$; the rest of the analysis carries
    over identically, with \XChaCha/ in the place of \XSalsa20/.
 \end{proof}
