@@ -72,6 +72,7 @@ crypto_auth/            SUPERCOP PRF/authenticator API (Salsa20-Daence only)
 daence.bib              bibliography
 daence.tex              definition and analysis
 go/                     Go module implementing Salsa20- and ChaCha-Daence
+js/                     JavaScript (node/browser) implementing Salsa20-Daence
 kat_chachadaence.c      reference implementation and test vector generation
 kat_chachadaence.exp    expected values of test vectors
 kat_salsa20daence.c     reference implementation and test vector generation

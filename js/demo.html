@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8"/>
+    <script src="node_modules/tweetnacl/nacl.js"></script>
+    <script src="salsa20daence.js"></script>
+    <script>
+function encode(s) {
+    return new TextEncoder().encode(s)
+}
+function decode(s) {
+    return new TextDecoder().decode(s)
+}
+function atou8(s) {
+    var a = atob(s)
+    var u8 = new Uint8Array(a.length)
+    var i
+    for (i = 0; i < a.length; i++)
+        u8[i] = a.charCodeAt(i)
+    return u8
+}
+function u8toa(u8) {
+    var i
+    var s = ''
+    for (i = 0; i < u8.length; i++)
+        s += String.fromCharCode(u8[i])
+    return btoa(s)
+}
+function carefully(f) {
+    var enode = document.getElementById('error')
+    var snode = document.getElementById('stack')
+    try {
+        f()
+        enode.innerHTML = ''
+        snode.innerHTML = ''
+    } catch (err) {
+        enode.innerHTML = 'Error: ' + err.message
+        snode.innerHTML = err.stack
+    }
+}
+function encrypt() {
+    carefully(function() {
+        var knode = document.getElementById('key')
+        var anode = document.getElementById('ad')
+        var pnode = document.getElementById('plaintext')
+        var cnode = document.getElementById('ciphertext')
+        var key = atou8(knode.value)
+        var ad = encode(anode.value)
+        var plaintext = encode(pnode.value)
+        var ciphertext = nacl.dae(plaintext, ad, key)
+        cnode.value = u8toa(ciphertext)
+    })
+}
+function decrypt() {
+    carefully(function() {
+        var knode = document.getElementById('key')
+        var anode = document.getElementById('ad')
+        var pnode = document.getElementById('plaintext')
+        var cnode = document.getElementById('ciphertext')
+        var key = atou8(knode.value)
+        var ad = encode(anode.value)
+        var ciphertext = atou8(cnode.value)
+        var plaintext = nacl.dae.open(ciphertext, ad, key)
+        if (plaintext === null)
+            throw new Error('forgery')
+        pnode.value = decode(plaintext)
+    })
+}
+    </script>
+  </head>
+  <body>
+    <h1>Salsa20-Daence</h1>
+    <p>Key (base64): <input id="key" type="text" value="P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5f"/></p>
+    <p>Associated data: <input id="ad" type="text" value="foobar"/></p>
+    <p>Plaintext:</p>
+    <div><textarea id="plaintext">hello world</textarea></div>
+    <div><button type="submit" onclick="encrypt()">Encrypt</button></div>
+    <p>Ciphertext (base64):</p>
+    <div><textarea id="ciphertext">kzSi+/jYWXwJQUhMR+V94nfd2Ip2A5EdC1IJQHutjnd0oJU=</textarea></div>
+    <div><button type="submit" onclick="decrypt()">Decrypt</button></div>
+    <p id="error" style="color: red;"></p>
+    <p><pre id="stack"></pre></p>
+  </body>
+</html>
