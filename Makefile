@@ -10,6 +10,23 @@ _CPPFLAGS = $(CPPFLAGS) \
 	-Itweetnacl \
 	-DDAENCE_GENERATE_KAT
 
+KAT2JSON = { awk ' \
+		BEGIN	{ x = ""; n = 0 } \
+		$$0 ~ /^  */ { sub(/^  */, ""); x = x $$0; next } \
+			{ if (n) print x; x = $$0; n = 1 } \
+		END	{ if (n) print x } \
+	' | awk -F= ' \
+		BEGIN	{ printf("[\n    {\n"); n = 0; c = 0 } \
+		NF == 0	{ n = 1; next } \
+			{ if (n) \
+			    printf("\n    },\n    {\n"); \
+			  else if (c) \
+			    printf(",\n"); \
+			  printf("        \"%s\": \"%s\"", $$1, $$2); \
+			  c = 1; n = 0 } \
+		END	{ printf("\n    }\n]\n") } \
+	'; }
+
 all: .PHONY
 all: daence.pdf
 all: diagdaence.pdf
@@ -78,6 +95,13 @@ check-kat_chachadaence: .PHONY
 check-kat_chachadaence: kat_chachadaence.exp
 check-kat_chachadaence: kat_chachadaence.out
 	diff -u kat_chachadaence.exp kat_chachadaence.out
+
+js/kat_salsa20daence.json: kat_salsa20daence.exp
+	$(KAT2JSON) < kat_salsa20daence.exp > $@.tmp && mv -f $@.tmp $@
+clean: clean-js/kat_salsa20daence.json
+clean-js/kat_salsa20daence.json: .PHONY
+	-rm -f clean-js/kat_salsa20daence.json
+	-rm -f clean-js/kat_salsa20daence.json.tmp
 
 kat_chachadaence.out: kat_chachadaence
 	./kat_chachadaence > $@.tmp && mv -f $@.tmp $@

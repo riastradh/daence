@@ -13,6 +13,7 @@
     },
     "main": "salsa20daence.js",
     "files": [
+        "kat_salsa20daence.json",
         "test.js"
     ],
     "dependencies": {
