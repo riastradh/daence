@@ -31,8 +31,8 @@ import (
 	"crypto/subtle"
 	"encoding/binary"
 	"errors"
-	"golang.org/x/crypto/poly1305"
 	"golang.org/x/crypto/chacha20"
+	"golang.org/x/crypto/poly1305"
 )
 
 type chachadaence struct {
