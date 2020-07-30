@@ -75,7 +75,7 @@ func Test(t *testing.T) {
 		t.Errorf("open: got %s, want %s", m0s, ms)
 	}
 
-	c0[18] ^= 0x04;
+	c0[18] ^= 0x04
 	_, err = d.Open(nil, []byte{}, c0[:], a[:])
 	if err == nil {
 		t.Errorf("open: failed to detect forgery")
