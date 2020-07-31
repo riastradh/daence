@@ -28,11 +28,11 @@ KAT2JSON = { awk ' \
 	'; }
 
 all: .PHONY
+all: check
 all: daence.pdf
 all: diagdaence.pdf
 all: diagdice.pdf
 all: diagpoly13052.pdf
-all: check
 
 check: .PHONY
 
