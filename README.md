@@ -1,15 +1,17 @@
-Daence - Deterministic Authenticated Encryption with no noNCEnse
-Taylor `Riastradh' Campbell <campbell+daence@mumble.net>
+Daence -- Deterministic Authenticated Encryption with no noNCEnse
+=================================================================
 
-   WARNING: Daence is a work in progress.  The definition and API may
-   change.  There may be bugs or mistakes in the security analysis.
+Taylor ‘Riastradh’ Campbell <campbell+daence@mumble.net>
 
-Daence is a deterministic authenticated cipher built out of Poly1305
-and either Salsa20 or ChaCha.  This repository contains a definition,
-security analysis, reference implementation in C, and test vectors for
-Daence.  This repository also contains a Go module, a Rust crate, and
-some sample Python code.
+- **WARNING: Daence is a work in progress.  The definition and API may
+  change.  There may be bugs or mistakes in the security analysis.**
 
+**Daence** is a deterministic authenticated cipher built out of
+Poly1305 and either Salsa20 or ChaCha.  This repository contains a
+definition, security analysis, reference implementation, and test
+vectors for Daence.
+
+## Usage
 
 If you and your friend share a secret 96-byte key for Salsa20-Daence:
 
@@ -18,26 +20,27 @@ If you and your friend share a secret 96-byte key for Salsa20-Daence:
   concealing the payload; you can then send it to your friend in an
   envelope with the header on it in the clear.
 
-    c = Daence-Encrypt(key, header, payload)
+  > c = Daence-Encrypt(key, header, payload)
 
 - Your friend can feed the header and authenticated ciphertext into
   Daence-Decrypt, which either returns the payload, if it was genuine,
   or reports a forgery, if it was not.  (Your friend must immediately
   drop forgeries on the floor and forget about them.)
 
-    payload = Daence-Decrypt(key, header, c) or raise Forgery!
+  > payload = Daence-Decrypt(key, header, c) or raise Forgery!
 
 Unlike AES-GCM, ChaCha/Poly1305, or crypto_secretbox_xsalsa20poly1305,
-you do not need to guarantee that every message has a unique number --
-though if you have one you can put it in the header to improve
-security.
+you do not need to guarantee that every message has a unique number or
+random initialization vector -- though if you have one you can put it
+in the header to improve security by concealing when payloads are
+repeated.
 
-Then, as long as you and your friend encrypt no more than 2^52
-messages, or 2^90/L messages if you and your friend agree on a smaller
-limit L < 2^38 on the number of bytes in each message:
+Then, as long as you and your friend encrypt no more than 2^52 messages
+(or 2^90/L messages, if you and your friend can agree on a smaller
+limit L < 2^38 on the number of bytes in each message):
 
 - An adversary has no hope of distinguishing authenticated ciphertexts
-  from uniform random noise, except for noticing when you repeat the
+  from uniform random noise -- except for noticing when you repeat the
   same (header, payload) pair under the same key.  (You can prevent
   adversaries from detecting repeated messages by putting a message
   sequence number or just randomization in the header or payload, for
@@ -56,12 +59,15 @@ terms of parts that a ChaCha/Poly1305 implementation is likely to have
 around, and has a smaller 64-byte key.)
 
 Daence won't beat speed records for ChaCha/Poly1305, NaCl
-crypto_secretbox_xsalsa20poly1305, or (hardware-accelerated) AES-GCM
--- but who cares about speed when you accidentally repeated a nonce
-and thereby leaked all your data to the adversary including the key to
+crypto_secretbox_xsalsa20poly1305, or (hardware-accelerated) AES-GCM --
+but who cares about speed when you accidentally repeated a nonce and
+thereby leaked all your data to the adversary, including the key to
 forgery?
 
 
+## What's in this repository
+
+```
 COPYING                 2-clause BSD licence
 Makefile                machine-readable instructions for building everything
 README                  you are here
@@ -88,51 +94,65 @@ t_tweetdaence.c         test program to verify tweetdaence.c
 tweetdaence.c           tweetnacl-style Salsa20-Daence in 48 lines plus header
 tweetdaence.h           header file with prototypes for tweetdaence.c
 tweetnacl/              tweetnacl-20140427 from <https://tweetnacl.cr.yp.to/>
+```
 
 
-* Building the specification and testing the implementation
+## Building the specification and testing the implementation
 
-You will need libsodium <https://libsodium.org/> and a TeX
+You will need [libsodium](https://libsodium.org/) and a TeX
 distribution.  Run
 
-   make
+```
+make
+```
 
 and let me know if anything goes wrong.  If it worked, you should have
-a shiny new copy of the definition and analysis in daence.pdf, and
+a shiny new copy of the definition and analysis in `daence.pdf`, and
 evidence that the reference implementation worked on your machine too.
 
 
-* Measuring performance with SUPERCOP <https://bench.cr.yp.to/>
+## Measuring performance with [SUPERCOP](https://bench.cr.yp.to/)
 
-   cd /path/to/supercop-YYYYMMDD
-   ln -s /path/to/daence/crypto_aead/salsa20daence crypto_aead/.
-   ln -s /path/to/daence/crypto_auth/salsa20daence crypto_auth/.
+Extract the SUPERCOP and symlink the Daence directories into it:
+
+```
+cd /path/to/supercop-YYYYMMDD
+ln -s /path/to/daence/crypto_aead/salsa20daence crypto_aead/.
+ln -s /path/to/daence/crypto_auth/salsa20daence crypto_auth/.
+```
 
 Now run SUPERCOP, as <https://bench.cr.yp.to/supercop.html> explains.
 
-If you want to measure just Salsa20-Daence, you will first need:
+Running all of SUPERCOP takes a long time.  If you want to measure just
+Salsa20-Daence, you will first need:
 
-   ./do-part init
-   ./do-part used
+```
+./do-part init
+./do-part used
+```
 
 or at least:
 
-   ./do-part init
-   ./do-part crypto_verify 16
-   ./do-part crypto_verify 32
-   ./do-part crypto_core salsa20
-   ./do-part crypto_core hsalsa20
-   ./do-part crypto_stream salsa20
-   ./do-part crypto_stream xsalsa20
-   ./do-part crypto_onetimeauth poly1305
+```
+./do-part init
+./do-part crypto_verify 16
+./do-part crypto_verify 32
+./do-part crypto_core salsa20
+./do-part crypto_core hsalsa20
+./do-part crypto_stream salsa20
+./do-part crypto_stream xsalsa20
+./do-part crypto_onetimeauth poly1305
+```
 
 Then you can measure crypto_aead/salsa20daence or
 crypto_auth/salsa20daence:
 
-   ./do-part crypto_aead salsa20daence
-   ./do-part crypto_auth salsa20daence
+```
+./do-part crypto_aead salsa20daence
+./do-part crypto_auth salsa20daence
+```
 
-Raw output will be in: ./bench/`hostname`/data
+Raw output will be in: ```./bench/`hostname`/data```
 
 (Plotting data left as an exercise for the conspiratorially-minded
 reader.)
