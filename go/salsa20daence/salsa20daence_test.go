@@ -60,13 +60,13 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	c0 := d.Seal(nil, []byte{}, m[:], a[:])
+	c0 := d.Seal(nil, []byte{}, m, a)
 	if !bytes.Equal(c0, c) {
 		c0s := hex.EncodeToString(c0)
 		t.Errorf("seal: got %s, want %s", c0s, cs)
 	}
 
-	m0, err := d.Open(nil, []byte{}, c[:], a[:])
+	m0, err := d.Open(nil, []byte{}, c, a)
 	if err != nil {
 		t.Errorf("open: %s", err)
 	}
@@ -76,7 +76,7 @@ func Test(t *testing.T) {
 	}
 
 	c0[18] ^= 0x04
-	_, err = d.Open(nil, []byte{}, c0[:], a[:])
+	_, err = d.Open(nil, []byte{}, c0, a)
 	if err == nil {
 		t.Errorf("open: failed to detect forgery")
 	}

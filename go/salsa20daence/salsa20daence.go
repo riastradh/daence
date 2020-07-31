@@ -84,7 +84,7 @@ func (d *salsa20daence) compressAuth(t, m, a []byte) {
 	salsa.HSalsa20(&u0, &h3, &d.k0, &salsa.Sigma)
 	salsa.HSalsa20(&u, &h4, &u0, &salsa.Sigma)
 
-	copy(t[:], u[0:24])
+	copy(t, u[0:24])
 }
 
 func (d *salsa20daence) Seal(dst, n, m, a []byte) []byte {

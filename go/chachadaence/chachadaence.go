@@ -89,10 +89,10 @@ func (d *chachadaence) compressAuth(t, m, a []byte) {
 	h1 := p1.Sum(nil)
 	h2 := p2.Sum(nil)
 
-	u0, _ := chacha20.HChaCha20(d.k0[:], h1[:])
-	u, _ := chacha20.HChaCha20(u0[:], h2[:])
+	u0, _ := chacha20.HChaCha20(d.k0[:], h1)
+	u, _ := chacha20.HChaCha20(u0, h2)
 
-	copy(t[:], u[0:24])
+	copy(t, u[0:24])
 }
 
 func (d *chachadaence) Seal(dst, n, m, a []byte) []byte {
@@ -147,7 +147,7 @@ func (d *chachadaence) Open(dst, n, tc, a []byte) ([]byte, error) {
 
 	subkey, _ := chacha20.HChaCha20(d.k0[:], t[0:16])
 	copy(n1[4:12], t[16:24])
-	chacha, _ := chacha20.NewUnauthenticatedCipher(subkey[:], n1[:])
+	chacha, _ := chacha20.NewUnauthenticatedCipher(subkey, n1[:])
 	chacha.XORKeyStream(m, c)
 	d.compressAuth(t_[:], m, a)
 	if subtle.ConstantTimeCompare(t_[:], t) == 0 {
