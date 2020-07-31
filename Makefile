@@ -33,6 +33,7 @@ all: daence.pdf
 all: diagdaence.pdf
 all: diagdice.pdf
 all: diagpoly13052.pdf
+all: js/kat_salsa20daence.json
 
 check: .PHONY
 
