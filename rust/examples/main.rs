@@ -80,7 +80,7 @@ fn main() -> io::Result<()> {
         if opt.encrypt {
             let m = &input;
             let mut output = vec![0; 24 + m.len()];
-            let (mut t, mut c) = output[..].split_at_mut(24);
+            let (mut t, mut c) = output.split_at_mut(24);
             cipher.encrypt(&m, &mut c, &mut t);
             output
         } else {
