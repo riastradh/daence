@@ -36,7 +36,7 @@
 
 % Nodes grouping collections of nodes together.
 \tikzset{grouping/.style={
-    rectangle, rounded corners, dashed, thick, inner sep=1em
+    rectangle, rounded corners, thick, inner sep=1em
 }}
 
 \def\Poly#1/{\operatorname{\textsc{Poly#1}}}
@@ -45,11 +45,11 @@
 
 % Inputs
 \node (a) at (-2.5, 3) [draw, datum, minimum width=5em] {$a$};
-\node (m) at ( 4,   3) [draw, datum, minimum width=10em] {$m$};
+\node (m) at ( 5,   3) [draw, datum, minimum width=10em] {$m$};
 
 % Outputs
 \node (t) at (-2,  -3) [draw, datum, minimum width=2em] {$t$};
-\node (c) at ( 4,  -3) [draw, datum, minimum width=10em] {$c$};
+\node (c) at ( 5,  -3) [draw, datum, minimum width=10em] {$c$};
 
 % Intermediate node
 \node (h) at (-2,   0) [draw, datum, minimum width=2em] {$h$};
@@ -64,19 +64,20 @@
   {$\HXSalsa20/^{\vphantom{k_0}}_{k_0}$};
  \coordinate (hxsalsa20-input) at (hxsalsa20.north);
  \coordinate (hxsalsa20-output) at (hxsalsa20.south);
-\node (prf) [draw, grouping, color=prf, fit=(poly1305) (h) (hxsalsa20)] {};
+\node (prf) [draw, grouping, dashed, color=prf, fit=(poly1305) (h) (hxsalsa20)]
+  {};
   \node at (prf.south west) [color=prf, anchor=north west]
-    {PRF};
+    {\textbf{PRF}};
 
 % Randomized cipher
-\node (xsalsa20)  at ( 2, 0) [draw, operation]
+\node (xsalsa20)  at ( 2.5, 0) [draw, operation]
   {$\XSalsa20/^{\vphantom{k_0}}_{k_0}$};
  \coordinate (xsalsa20-input) at (xsalsa20.north);
  \coordinate (xsalsa20-output) at (xsalsa20.south);
-\node (xor)       at ( 4, -1) [draw, xor, scale=2] {};
-\node (cipher) [draw, grouping, color=cipher, fit=(xsalsa20) (xor)] {};
+\node (xor)       at ( 5,  -1) [draw, xor, scale=2] {};
+\node (cipher) [draw, grouping, dotted, color=cipher, fit=(xsalsa20) (xor)] {};
   \node at (cipher.south west) [color=cipher, anchor=north west, align=left]
-    {Randomized cipher};
+    {\textbf{Randomized cipher}};
 
 % Hash inputs into authentication tag
 \draw[->] (a) -- (poly1305-ad);
