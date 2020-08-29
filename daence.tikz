@@ -7,8 +7,8 @@
 \usetikzlibrary{shapes}
 
 \input{palette.def}
-\colorlet{prf}{ReddishPurple}
-\colorlet{cipher}{BluishGreen}
+\colorlet{prf}{Vermillion}
+\colorlet{cipher}{Blue}
 
 % Nodes representing data.
 \tikzset{datum/.style={
