@@ -832,7 +832,7 @@ Let $(a', t' \concat c')$ be the single forgery attempt of $A$,
  $t' \concat c' \ne t_i \concat c_i$
  for all $i$.
 Let
- $m' = c' \oplus g_*(t')$
+ $m' = c' \oplus f_*(t')$
  and
  $h' = \Poly1305/^2_{k_1,k_2,k_3,k_4}(a', m')$.
 The forgery succeeds if $t' = f(h')$.
