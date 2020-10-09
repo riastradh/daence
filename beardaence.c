@@ -77,7 +77,6 @@ static void
 hchacha20_run(const uint8_t key[static 32], const uint8_t in[static 16],
     uint8_t out[static 32], br_chacha20_run ichacha)
 {
-	static const uint8_t zero[32];
 	static const unsigned char c[16] = "expand 32-byte k";
 	uint8_t buf[64] = {0};
 
