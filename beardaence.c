@@ -65,6 +65,7 @@ null_chacha20_run(const void *key, const void *iv, uint32_t cc, void *data,
     size_t len)
 {
 
+	(void)iv;		/* ignore */
 	if (cc != 0)
 		return cc + (len + (64 - 1))/64;
 	assert(len == 32);
@@ -131,7 +132,6 @@ br_chachadaence_encrypt(const void *key, void *data, size_t len,
     const void *aad, size_t aad_len, void *tag,
     br_chacha20_run ichacha, br_poly1305_run ipoly1305)
 {
-	uint8_t subkey[32];
 
 	compressauth(key, data, len, aad, aad_len, tag, ichacha, ipoly1305);
 	xchacha20_run(key, tag, 0, data, len, ichacha);
@@ -142,7 +142,6 @@ br_chachadaence_decrypt(const void *key, void *data, size_t len,
     const void *aad, size_t aad_len, const void *tag,
     br_chacha20_run ichacha, br_poly1305_run ipoly1305)
 {
-	uint8_t subkey[32];
 	const uint8_t *t = tag;
 	uint8_t t_[24];
 	unsigned i, d = 0;
