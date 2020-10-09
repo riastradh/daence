@@ -41,6 +41,8 @@
  *              return (t, c)
  */
 
+#define	_POSIX_C_SOURCE	200809L
+
 #include "salsa20daence.h"
 
 #include <string.h>
