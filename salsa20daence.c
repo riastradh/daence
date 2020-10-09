@@ -25,7 +25,7 @@
  */
 
 /*
- * Salsa20-DAENCE
+ * Salsa20-Daence
  * Salsa20 in Deterministic Authenticated Encryption with no noNCEnse
  *
  *      Given 32-byte k0, 16-byte k1,k2,k3,k4, header a, and

@@ -25,7 +25,7 @@
  */
 
 /*
- * ChaCha-DAENCE
+ * ChaCha-Daence
  * ChaCha in Deterministic Authenticated Encryption with no noNCEnse
  *
  *      Given 32-byte k0, 16-byte k1, 16-byte k2, header a, and
