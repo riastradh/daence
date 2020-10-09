@@ -71,6 +71,8 @@ forgery?
 COPYING                 2-clause BSD licence
 Makefile                machine-readable instructions for building everything
 README                  you are here
+beardaence.c            copypastable ChaCha-Daence using BearSSL
+beardaence.h            header file with prototypes for beardaence.c
 chachadaence.c          copypastable ChaCha-Daence using libsodium
 chachadaence.h          header file with prototypes for chachadaence.c
 crypto_aead/            SUPERCOP AEAD API (Salsa20-Daence only)
