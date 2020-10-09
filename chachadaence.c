@@ -110,7 +110,7 @@ compressauth(unsigned char t[static 24],
 
 	/*
 	 * Message compression:
-	 *	h := Poly1305^2_{k1,k2}(a || m || |a|)
+	 *	h := Poly1305^2_{k1,k2}(a || m || |a| || |m|)
 	 */
 	poly1305ad(h1, m, mlen, a, alen, k1);
 	poly1305ad(h2, m, mlen, a, alen, k2);
