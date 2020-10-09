@@ -41,10 +41,10 @@ le32dec(const void *buf)
 	const uint8_t *p = buf;
 	uint32_t v = 0;
 
-	v |= p[0] << 0;
-	v |= p[1] << 8;
-	v |= p[2] << 16;
-	v |= p[3] << 24;
+	v |= (uint32_t)p[0] << 0;
+	v |= (uint32_t)p[1] << 8;
+	v |= (uint32_t)p[2] << 16;
+	v |= (uint32_t)p[3] << 24;
 
 	return v;
 }
