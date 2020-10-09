@@ -156,6 +156,24 @@ clean-kat_salsa20daence: .PHONY
 	-rm -f $(SRCS_kat_salsa20daence:.c=.o)
 	-rm -f $(SRCS_kat_salsa20daence:.c=.d)
 
+SRCS_t_beardaence = \
+	beardaence.c \
+	t_beardaence.c \
+	# end of SRCS_t_beardaence
+DEPS_t_beardaence = $(SRCS_t_beardaence:.c=.d)
+-include $(DEPS_t_beardaence)
+LIBS_t_beardaence = \
+	-lbearssl \
+	# end of LIBS_t_beardaence
+t_beardaence: $(SRCS_t_beardaence:.c=.o)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRCS_t_beardaence:.c=.o) \
+		$(LIBS_t_beardaence)
+
+check: check-beardaence
+check-beardaence: .PHONY
+check-beardaence: t_beardaence
+	./t_beardaence
+
 SRCS_t_chachadaence = \
 	chachadaence.c \
 	t_chachadaence.c \
