@@ -30,26 +30,6 @@
 
 #include "chachadaence.h"
 
-void
-randombytes(unsigned char *p, unsigned long long n)
-{
-	static int fd = -1;
-	ssize_t nread;
-
-	if (fd == -1) {
-		if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
-			abort();
-	}
-
-	while (n) {
-		nread = read(fd, p, n);
-		if (nread == -1 || nread == 0)
-			abort();
-		p += ((size_t)nread > n ? n : (size_t)nread);
-		n -= ((size_t)nread > n ? n : (size_t)nread);
-	}
-}
-
 int
 main(void)
 {
