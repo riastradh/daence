@@ -5,7 +5,7 @@ default-target: .PHONY
 BIBTEX = bibtex
 PDFLATEX = pdflatex
 
-_CFLAGS = $(CFLAGS) -Werror -MMD -MF $*.d
+_CFLAGS = $(CFLAGS) -Werror -MMD -MF $(@:.o=.d)
 _CPPFLAGS = $(CPPFLAGS) \
 	-Itweetnacl \
 	-DDAENCE_GENERATE_KAT
