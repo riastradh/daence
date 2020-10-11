@@ -1102,10 +1102,14 @@ Combining these, we see the probability of a forgery (before any
 
   \item[Why not a nonce-misuse-resistant authenticated cipher?]
     If you have a nonce---say a message sequence number---then you can
-     use it in the associated data.
+     use it in the associated data to conceal repeated messages like a
+     nonce-based cipher does
     So out of \Daence/ you can build your own nonce-misuse-resistant
      authenticated cipher: just prefix a fixed-size nonce to the
      associated data!
+    You can also safely incorporate a \emph{secret}
+     nonce~\cite{bellare-ng-tackmann2019nonces-revisited-crypto} into
+     the encrypted payload.
 
     But there is a conceptual cost to \emph{requiring} a nonce
      parameter \emph{and} associated data---what are you supposed to
