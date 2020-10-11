@@ -113,49 +113,23 @@
 \newlatinabbr\vs{vs}
 \def\latin#1{\emph{#1}}
 
-\def\INDCPA{%
-  \ifmmode\def\next{\operatorname{IND-CPA}}%
-    \else\def\next/{\textsc{ind-cpa}}%
-  \fi\expandafter\next}
+\def\newmathcronym#1#2{%
+  \DeclareRobustCommand#1{%
+    \ifmmode\def\next{\operatorname{#2}}%
+      \else\def\next/{\textsc{\lowercase{#2}}}%
+    \fi\next}}
 
-\def\PRF{%
-  \ifmmode\def\next{\operatorname{PRF}}%
-    \else\def\next/{\textsc{prf}}%
-  \fi\next}
-
-\def\muPRF{%
-  \ifmmode\def\next{\operatorname{mu-PRF}}%
-    \else\def\next/{mu-\textsc{prf}}%
-  \fi\next}
-
-\def\PRG{%
-  \ifmmode\def\next{\operatorname{PRG}}%
-    \else\def\next/{\textsc{prg}}%
-  \fi\next}
-
-\def\SIV{%
-  \ifmmode\def\next{\operatorname{SIV}}%
-    \else\def\next/{\textsc{siv}}%
-  \fi\next}
-
-\def\DAE{%
-  \ifmmode\def\next{\operatorname{DAE}}%
-    \else\def\next/{\textsc{dae}}%
-  \fi\next}
-
-\def\AEAD{%
-  \ifmmode\def\next{\operatorname{AEAD}}%
-    \else\def\next/{\textsc{aead}}%
-  \fi\next}
-
-\def\muDAE{%
-  \ifmmode\def\next{\operatorname{mu-DAE}}%
-    \else\def\next/{mu-\textsc{dae}}%
-  \fi\next}
+\newmathcronym{\DAE}{DAE}
+\newmathcronym{\INDCPA}{IND-CPA}
+\newmathcronym{\PRF}{PRF}
+\newmathcronym{\PRP}{PRP}
+\newmathcronym{\SIV}{SIV}
 
 \DeclareMathOperator{\Adv}{Adv}
-\DeclareMathOperator{\DaenceEncrypt}{\textsc{Daence-Encrypt}}
 \DeclareMathOperator{\DaenceDecrypt}{\textsc{Daence-Decrypt}}
+\DeclareMathOperator{\DaenceEncrypt}{\textsc{Daence-Encrypt}}
+\DeclareMathOperator{\muDAE}{mu-DAE}
+\DeclareMathOperator{\muPRF}{mu-PRF}
 
 \newcommand{\Z}{\mathbb Z}
 
