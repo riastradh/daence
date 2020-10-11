@@ -76,7 +76,7 @@ poly1305ad(unsigned char h[static 16],
     const unsigned char k[static 16])
 {
 	static const unsigned char z[16] = {0};
-	unsigned char len64le[8];
+	unsigned char len64le[16];
 	crypto_onetimeauth_poly1305_state poly1305;
 	unsigned char k_[32];
 
@@ -90,10 +90,9 @@ poly1305ad(unsigned char h[static 16],
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - alen) & 0xf);
 	crypto_onetimeauth_poly1305_update(&poly1305, m, mlen);
 	crypto_onetimeauth_poly1305_update(&poly1305, z, (0x10 - mlen) & 0xf);
-	le64enc(len64le, alen);
-	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
-	le64enc(len64le, mlen);
-	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 8);
+	le64enc(&len64le[0], alen);
+	le64enc(&len64le[8], mlen);
+	crypto_onetimeauth_poly1305_update(&poly1305, len64le, 16);
 	crypto_onetimeauth_poly1305_final(&poly1305, h);
 
 	explicit_memset(&poly1305, 0, sizeof poly1305);
