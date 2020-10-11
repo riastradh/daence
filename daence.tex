@@ -57,7 +57,7 @@
   }%
 }{}}
 
-\def\operatorsc#1{{%
+\DeclareRobustCommand{\operatorsc}[1]{{%
   \ifmmode\let\next=\operatorname\else\let\next=\relax\fi\next{\textsc{#1}}}}
 \def\Salsa#1/{\operatorsc{Salsa#1}}
 \def\ChaCha#1/{\operatorsc{ChaCha#1}}
