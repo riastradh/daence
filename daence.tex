@@ -1259,11 +1259,24 @@ Combining these, we see the probability of a forgery (before any
 
   \item[Does \Daence/ support streaming?]
     If you want to stream large files, break them into bite-size
-     pieces, and include the piece number and an end-of-stream flag in
-     the associated data for each piece as a separate message.
-    Ensure the pieces are no larger than the amount of memory you are
-     willing to let an adversary waste with a forgery in a denial of
-     service attack.
+     pieces to be encrypted as separate messages.
+    In the associated data, include: a unique file name, so the pieces
+     can't be swapped between different files; a piece number, so the
+     pieces of a file can't be reordered; and an end-of-stream flag, so
+     you can detect truncation.
+
+    You should ensure the pieces are no larger than the amount of
+     memory you are willing to let an adversary waste with a forgery in
+     a denial of service attack.
+    Smaller message size limits also give better \Daence/ security.
+    Some typical message size limits:
+    \begin{itemize}
+      \item an IP packet is at most $1500$ bytes;
+      \item a TLS record is at most $2^{14}$ bytes;
+      \item a file system block is typically at most $2^{15}$ or $2^{16}$
+        bytes;
+      \item a Tarsnap file chunk can be up to around $2^{18}$ bytes.
+    \end{itemize}
 
   \item[How is the `ae' in \Daence/ pronounced?]
     Like the `a' in `data'.
