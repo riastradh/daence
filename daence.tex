@@ -226,23 +226,23 @@ The design is based on the \SIV/ construction of Rogaway and
 This means it consists of two functions:
 %
 \begin{description}
-  \item[\normalfont $c = \DaenceEncrypt(k, a, m)$] takes
+  \item[\normalfont $t \concat c = \DaenceEncrypt(k, a, m)$] takes
      a key $k$ (96-byte in \Salsa20/-\Daence/, 64-byte in
       \ChaCha/-\Daence/),
      a string $a$ of at most $2^{38}$ bytes of associated data, and
      a message $m$ of at most $2^{38}$ bytes ($256\,\mathrm{GB}$).
 
-    $\DaenceEncrypt$ returns an authenticated ciphertext $c$ which is
-     24 bytes longer than $m$.
+    $\DaenceEncrypt$ returns an authenticated ciphertext $t \concat c$
+     which is 24 bytes longer than $m$.
 
-  \item[\normalfont $m' = \DaenceDecrypt(k, a', c')$] takes a key $k$,
-     a string $a'$ of at most $2^{38}$ bytes of associated data, and an
-     alleged authenticated ciphertext $c'$ of at most $24 + 2^{38}$
-     bytes.
+  \item[\normalfont $m = \DaenceDecrypt(k, a, t \concat c)$] takes
+     a key $k$, a string $a$ of at most $2^{38}$ bytes of associated
+     data, and an alleged authenticated ciphertext $t \concat c$ of
+     at most $24 + 2^{38}$ bytes.
 
     \begin{itemize}
-      \item If $c' = \DaenceEncrypt(k, a', m)$, $\DaenceDecrypt$
-         returns $m$.
+      \item If $t \concat c = \DaenceEncrypt(k, a, m)$,
+         $\DaenceDecrypt$ returns $m$.
       \item Otherwise, $\DaenceDecrypt$ reports a forgery with high
          probability.
         In the sequel we denote this by the symbol `$\bot$'; in
@@ -394,18 +394,18 @@ Write $\Pr[A(\mathcal O)]$ for the probability $A$ accepts after
 \begin{description}
   \item[Encryption queries for a \emph{single} user]
     Given associated data $a$ and message $m$, return an authenticated
-     ciphertext $c$.
+     ciphertext $t \concat c$.
   \item[Decryption queries for a \emph{single} user]
     Given associated data $a$ and alleged authenticated ciphertext
-     $c$, return a message $m$, or $\bot$ if the alleged authenticated
-     ciphertext is deemed a forgery.
+     $t \concat c$, return a message $m$, or $\bot$ if the alleged
+     authenticated ciphertext is deemed a forgery.
   \item[Encryption queries for \emph{multiple} users]
     Given a user number $u$, associated data $a$, and message $m$,
-     return an authenticated ciphertext $c$.
+     return an authenticated ciphertext $t \concat c$.
   \item[Decryption queries for \emph{multiple} users]
     Given a user number $u$, associated data $a$, and alleged
-     authenticated ciphertext $c$, return a message $m$, or $\bot$ if
-     the alleged ciphertext is deemed a forgery.
+     authenticated ciphertext $t \concat c$, return a message $m$, or
+     $\bot$ if the alleged ciphertext is deemed a forgery.
   \item[Function queries for \emph{multiple} users]
     Given a user number $u$ and an input $x$, return an output $y$.
 \end{description}
