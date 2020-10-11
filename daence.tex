@@ -474,9 +474,9 @@ In \autoref{tab-security}, we compare the adversary's advantage against
 For 16-byte strings $k_1, \dotsc, k_4$, and a byte string $m$, define
 \[
   \Poly1305/^2_{k_1,k_2}(m)
-  := \Poly1305/_{k_1}(m) \concat \Poly1305/_{k_2}(m).
+  := \Poly1305/_{k_1}(m) \concat \Poly1305/_{k_2}(m),
 \]
-
+ a 32-byte string.
 For byte strings $a$ and $m$, define
 \[
   \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m)
@@ -490,12 +490,13 @@ For byte strings $a$ and $m$, define
 \paragraph*{\HXSalsa20/.}
 For 32-byte key $k_0$ and 16-byte inputs $i$ and $j$, define
 \[
-  \HXSalsa20/_{k_0}(i \concat j) := \HSalsa20/_{\HSalsa20/_{k_0}(i)}(j).
+  \HXSalsa20/_{k_0}(i \concat j) := \HSalsa20/_{\HSalsa20/_{k_0}(i)}(j),
 \]
-Note that \HXSalsa20/ can be defined in terms of \XSalsa20/ by
- choosing the appropriate words of the output and subtracting $j$,
- just as \HSalsa20/ can be defined in terms of
- \Salsa20/, and has comparable security~\cite{bernstein2011xsalsa}.
+ a 32-byte string.
+Note \HXSalsa20/ can be defined in terms of \XSalsa20/ by choosing the
+ appropriate words of the output and subtracting $j$, just as
+ \HSalsa20/ can be defined in terms of \Salsa20/, and has comparable
+ security~\cite{bernstein2011xsalsa}.
 
 \paragraph*{\Salsa20/-\Daence/.}
 To \term{encrypt}, given
