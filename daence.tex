@@ -93,6 +93,7 @@
 \def\libsodium/{libsodium}
 \def\sodiumaead/{crypto\_aead}
 \def\OpenSSL/{OpenSSL}
+\def\BearSSL/{BearSSL}
 \def\libgcrypt/{libgcrypt}
 \def\Nettle/{Nettle}
 \def\Rust/{Rust}
@@ -1154,9 +1155,10 @@ Combining these, we see the probability of a forgery (before any
      disk encryption~\cite{crowley-biggers2018adiantum}.
 
     However, \ChaCha20/ is much more widely available in
-     libraries today---for example,
+     libraries today---\eg,
      \libsodium/,
      \OpenSSL/,
+     \BearSSL/,
      \Nettle/,
      the \Rust/ \texttt{crypto::chacha20} module,
      the \Go/ \texttt{golang.org/x/crypto/chacha20} package,
