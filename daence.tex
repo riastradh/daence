@@ -73,6 +73,7 @@
 \def\Dunce/{\operatorsc{Dunce}}
 \def\Deuce/{\operatorsc{Deuce}}
 \def\Dice/{\operatorsc{Dice}}
+\def\NH/{NH}
 
 \def\CAESAR/{\textsc{Caesar}}
 \def\eSTREAM/{eSTREAM}
@@ -1075,6 +1076,29 @@ Combining these, we see the probability of a forgery (before any
      bugs~\cite{cperciva2011tarsnap-nonce-reuse} and virtual machine
      rollbacks, and makes applications \emph{more} vulnerable to
      broken entropy sources than \Daence/ would.
+
+  \item[Why not a prior \ChaCha//\Poly1305/-based design?]
+    There have been past designs for nonce-misuse-resistant
+     ciphers built with \ChaCha/ and \Poly1305/, such as HS1-SIV in
+     \CAESAR/~\cite{krovetz2015hs1siv}
+     and \XChaCha20/-HMAC-SHA256-SIV proposed as a now-withdrawn
+     internet-draft~\cite{madden-generalised-siv-00}.
+
+    HS1-SIV relies on nonstandard security assumptions about \ChaCha/,
+     requires a large key of 176 bytes at the low end or 368 bytes
+     for security comparable to \Daence/, and by using polynomial
+     evaluation modulo $2^{61} - 1$ can't take advantage of existing
+     high-speed constant-time \Poly1305/ logic---it is not just a few
+     lines of code to call out to \ChaCha/ and \Poly1305/.
+
+    \XChaCha20/-HMAC-SHA256-SIV is a more conservative design, but it
+     uses the expensive and overpowered HMAC-SHA256 rather than taking
+     advantage of cheap \Poly1305/ code that is likely to be hanging
+     out in the neighbourhood of \ChaCha/ code.
+
+    Further, despite being flavours of \SIV/, both HS1-SIV and
+     \XChaCha20/-HMAC-SHA256-SIV still require nonces, which we feel is
+     an unnecessary complication, addressed below.
 
   \item[Why not a nonce-misuse-resistant authenticated cipher?]
     If you have a nonce---say a message sequence number---then you can

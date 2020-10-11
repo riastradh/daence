@@ -125,6 +125,16 @@
     url = "https://cr.yp.to/papers.html#xsalsa",
 }
 
+@Misc{krovetz2015hs1siv,
+    author = {Ted Krovetz},
+    title = {{HS1-SIV} (v2)},
+    howpublished = {\CAESAR/ candidate},
+    year = 2015,
+    month = JUL,
+    day = 27,
+    url = "https://competitions.cr.yp.to/round2/hs1sivv2.pdf",
+}
+
 % Multi-user AE security definition.
 @Misc{bellare-tackmann2016mu-ae,
     author = {Mihir Bellare and Bj{\"o}rn Tackmann},
@@ -294,6 +304,24 @@
 	year =		2019,
 	month =		apr,
 	abstract =	{This memo specifies two authenticated encryption algorithms that are nonce misuse resistant -- that is, they do not fail catastrophically if a nonce is repeated. This document is the product of the Crypto Forum Research Group.},
+}
+
+% IETF Internet-Drafts
+
+@techreport{madden-generalised-siv-00,
+	number =	{draft-madden-generalised-siv-00},
+	type =		{Internet-Draft},
+	institution =	{Internet Engineering Task Force},
+	publisher =	{Internet Engineering Task Force},
+	note =		{Work in Progress},
+	url =		{https://datatracker.ietf.org/doc/html/draft-madden-generalised-siv-00},
+        author =	{Neil Madden},
+	title =		{{Synthetic IV (SIV) for non-AES ciphers and MACs}},
+	pagetotal =	14,
+	year =		2018,
+	month =		nov,
+	day =		22,
+	abstract =	{This document specifies how the Synthetic Initialization Vector (SIV) block cipher mode of operation can be adapted to non-AES ciphers and message authentication codes (MACs), with block sizes and MAC tag sizes other than 128 bits. Concrete instantiations are defined using the XChaCha20 nonce-extended stream cipher combined with HMAC-SHA256.},
 }
 
 % NIST Standards
