@@ -1196,8 +1196,8 @@ Combining these, we see the probability of a forgery (before any
      \Poly1305/ by a larger hash.
 
     What about performance?
-    Software performance of \Auth256/ is not better than software
-     performance of \Poly1305/.
+    \Auth256/, even at its best on very long messages, is not faster
+     than \Poly1305/ in software.
     Maybe \Auth256/ would improve on $\Poly1305/^2$---it's not clear,
      \latin{a priori}, and since \Auth256/ requires a message-length
      key the cost would have to figure in key generation.
