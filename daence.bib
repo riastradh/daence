@@ -347,6 +347,22 @@
 
 % IETF Internet-Drafts
 
+@techreport{irtf-cfrg-xchacha-03,
+	number =	{draft-irtf-cfrg-xchacha-03},
+	type =		{Internet-Draft},
+	institution =	{Internet Engineering Task Force},
+	publisher =	{Internet Engineering Task Force},
+	note =		{Work in Progress},
+	url =		{https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-xchacha-03},
+        author =	{Scott Arciszewski},
+	title =		{{XChaCha: eXtended-nonce ChaCha and AEAD\_XChaCha20\_Poly1305}},
+	pagetotal =	18,
+	year =		2020,
+	month =		jan,
+	day =		10,
+	abstract =	{The eXtended-nonce ChaCha cipher construction (XChaCha) allows for ChaCha-based ciphersuites to accept a 192-bit nonce with similar guarantees to the original construction, except with a much lower probability of nonce misuse occurring. This helps for long running TLS connections. This also enables XChaCha constructions to be stateless, while retaining the same security assumptions as ChaCha. This document defines XChaCha20, which uses HChaCha20 to convert the key and part of the nonce into a subkey, which is in turn used with the remainder of the nonce with ChaCha20 to generate a pseudorandom keystream (e.g. for message encryption). This document also defines AEAD\_XChaCha20\_Poly1305, a variant of {[}RFC8439{]} that utilizes the XChaCha20 construction in place of ChaCha20.},
+}
+
 @techreport{madden-generalised-siv-00,
 	number =	{draft-madden-generalised-siv-00},
 	type =		{Internet-Draft},

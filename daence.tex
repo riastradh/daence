@@ -336,38 +336,39 @@ To \term{encrypt}, given
     \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
   \item $t \concat \_ :=
       \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))$
-    \hfill (24-byte $t$)
-  \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
-      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+    \hfill (trunc.\ to 24-byte $t$)
+  \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \concat 0) \concat
+      \XSalsa20/_{k_0}(t \concat 1) \concat \dotsb\bigr)$
 \end{enumerate}
 %
 The authenticated ciphertext is $t \concat c$.
 
-To \term{verify and decrypt}, given
+To \term{decrypt}, given
  a 96-byte key $k$,
  associated data $a$ of at most $2^{38}$ bytes, and
- an alleged authenticated ciphertext $t' \concat c'$ of $24$
+ an alleged authenticated ciphertext $t \concat c$ of $24$
  to $24 + 2^{38}$ bytes, compute:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
     \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
-  \item $m' := c' \oplus \bigl(\XSalsa20/_{k_0}(t \mathbin\| 0) \concat
-      \XSalsa20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+  \item $m := c \oplus \bigl(\XSalsa20/_{k_0}(t \concat 0) \concat
+      \XSalsa20/_{k_0}(t \concat 1) \concat \dotsb\bigr)$
   \item $t' \concat \_ :=
-      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m'))$
-    \hfill (24-byte $t'$)
+      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))$
+    \hfill (trunc.\ to 24-byte $t'$)
 \end{enumerate}
 %
-If $t' \stackrel?= t$, return $m'$; otherwise erase $m'$ and report a
+If $t' \stackrel?= t$, return $m$; otherwise erase $m$ and report a
  forgery.
 
 \paragraph*{\ChaCha/-\Daence/.}
-Rather than hash associated data separately, implementations of
- \ChaCha//\Poly1305/ as used in \TLS/ and implemented in \libsodium/
- \sodiumaead/ support passing multiple strings into \Poly1305/,
- zero-padded as $\underline a$ and $\underline m$ to multiples of
- 16 bytes with 8-byte little-endian lengths:
+\ChaCha/-\Daence/ has a 64-byte key, replaces \Salsa20/ by \ChaCha/
+ (extended \XChaCha/~\cite{irtf-cfrg-xchacha-03}), and tweaks the
+ encoding to match \ChaCha//\Poly1305/~\cite{rfc7539} by zero-padding
+ the associated data and message to multiples 16 bytes as
+ $\underline a$ and $\underline m$ and appending 8-byte little-endian
+ lengths:
 %
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 := k$
@@ -378,11 +379,18 @@ Rather than hash associated data separately, implementations of
           \underline a \concat \underline m
             \concat \lvert a\rvert_8 \concat \lvert m\rvert_8))$
     \hfill (24-byte $t$)
-  \item $c := m \oplus \bigl(\XChaCha20/_{k_0}(t \mathbin\| 0) \concat
-      \XChaCha20/_{k_0}(t \mathbin\| 1) \concat \dotsb\bigr)$
+  \item $c := m \oplus \bigl(\XChaCha/_{k_0}(t, 0) \concat
+      \XChaCha/_{k_0}(t, 1) \concat \dotsb\bigr)$
 \end{enumerate}
 %
-The corresponding decryption operation is derived similarly.
+The \XChaCha/ input $(t, n)$ is encoded as
+ $t_0 \concat n \concat 0^4 \concat t_1$,
+ where
+ $t_0$ is the first 16 bytes of $t$,
+ $n$ is a 4-byte little-endian block counter,
+ $0^4$ is four zero bytes, and
+ $t_1$ is the last 8 bytes of $t$.
+Decryption is derived similarly.
 
 \section{Security notions}
 
