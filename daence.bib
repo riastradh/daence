@@ -10,6 +10,17 @@
     url = "https://cr.yp.to/papers.html#hash127",
 }
 
+% PMAC
+@InProceedings{black-rogaway2002pmac-eurocrypt,
+    author = {John Black and Phillip Rogaway},
+    title = {A Block-Cipher Mode of Operation
+        for Parallelizable Message Authentication},
+    pages = "384--397",
+    crossref = "eurocrypt2002",
+    url = "https://link.springer.com/chapter/10.1007/3-540-46035-7_25",
+    doi = "10.1007/3-540-46035-7_25",
+}
+
 % crypto_secretbox_xsalsa20poly1305 authenticated cipher
 @Unpublished{bernstein2009naclcrypto,
     author = {Daniel J. Bernstein},
@@ -58,6 +69,17 @@
     crossref = "fse2005",
     url = "https://cr.yp.to/papers.html#poly1305",
     doi = "10.1007/11502760_3",
+}
+
+% Better PRF/PRP-switching bound.
+@Unpublished{bernstein2005permutations,
+    author = {Daniel J. Bernstein},
+    title = {Stronger security bounds for permutations},
+    year = 2005,
+    month = MAR,
+    day = 23,
+    note = {Manuscript},
+    url = "https://cr.yp.to/papers.html\#permutations",
 }
 
 % SIV mode.
@@ -125,6 +147,27 @@
     url = "https://cr.yp.to/papers.html#xsalsa",
 }
 
+% Corrected AES-GCM security theorem.
+@Misc{iwata-ohashi-minematsu2012gcmsecurity,
+    author = {Testu Iwata and Keisuke Ohashi and Kazuhiko Minematsu},
+    title = {Breaking and Repairing {GCM} Security Proofs},
+    year = 2012,
+    howpublished = {Cryptology ePrint Archive: Report 2012/438},
+    note = {Full version of
+        \cite{iwata-ohashi-minematsu2012gcmsecurity-crypto},
+        last updated 2012-08-01},
+    url = "https://eprint.iacr.org/2012/438",
+}
+
+@InProceedings{iwata-ohashi-minematsu2012gcmsecurity-crypto,
+    author = {Testu Iwata and Keisuke Ohashi and Kazuhiko Minematsu},
+    title = {Breaking and Repairing {GCM} Security Proofs},
+    pages = "39--49",
+    crossref = "crypto2012",
+    url = "https://link.springer.com/chapter/10.1007/978-3-642-32009-5_3",
+    doi = "10.1007/978-3-642-32009-5_3",
+}
+
 @Misc{krovetz2015hs1siv,
     author = {Ted Krovetz},
     title = {{HS1-SIV} (v2)},
@@ -156,6 +199,27 @@
     note = {Paywalled version of \cite{bellare-tackmann2016mu-ae}},
     url = "https://link.springer.com/chapter/10.1007/978-3-662-53018-4_10",
     doi = "10.1007/978-3-662-53018-4_10",
+}
+
+% Corrected AES-GCM-SIV security theorem.
+@Article{iwata-seurin2017gcmsivsecurity,
+    author = {Tetsu Iwata and Yannick Seurin},
+    title = {Reconsidering the Security Bound of {AES-GCM-SIV}},
+    pages = "240--267",
+    journal = {Transactions on Symmetric Cryptology},
+    number = 4,
+    year = 2017,
+    month = DEC,
+    publisher = "IACR",
+    doi = "10.13154/tosc.v2017.i4.240-267",
+}
+
+@Misc{arcieri2018aespmacsiv,
+    author = {Tony Arcieri},
+    title = {{AES PMAC SIV}},
+    year = 2018,
+    note = {Retrieved 2020-10-08},
+    url = "https://github.com/miscreant/meta/wiki/AES-PMAC-SIV",
 }
 
 @Article{crowley-biggers2018adiantum,
@@ -223,6 +287,24 @@
     doi = "10.1007/b137506",
 }
 
+@Proceedings{eurocrypt2002,
+    editor = {Lars R. Knudsen},
+    title = {Advances in Cryptology---{EUROCRYPT}~2002,
+        International Conference on the Theory and
+        Applications of Cryptographic Techniques},
+    booktitle = {Advances in Cryptology---{EUROCRYPT}~2002,
+        International Conference on the Theory and
+        Applications of Cryptographic Techniques},
+    year = 2002,
+    month = APR,
+    series = {Lecture Notes in Computer Science},
+    volume = 2332,
+    isbn = "978-3-540-43553-2",
+    publisher = {Springer-Verlang},
+    url = "https://link.springer.com/book/10.1007/3-540-46035-7",
+    doi = "10.1007/3-540-46035-7",
+}
+
 @Proceedings{eurocrypt2006,
     editor = {Serge Vaudenay},
     title = {Advances in Cryptology---{EUROCRYPT}~2006,
@@ -280,6 +362,22 @@
     isbn = "978-3-662-53017-7",
     url = "https://link.springer.com/book/10.1007/978-3-662-53018-4",
     doi = "10.1007/978-3-662-53018-4",
+}
+
+@Proceedings{crypto2012,
+    title = {Advances in Cryptology---{CRYPTO}~2012,
+        32nd Annual Cryptology Conference},
+    booktitle = {Advances in Cryptology---{CRYPTO}~2012,
+        32nd Annual Cryptology Conference},
+    editor = {Reihaneh Safavi-Naini and Ran Canetti},
+    year = 2012,
+    month = AUG,
+    day = "19--23",
+    series = {Lecture Notes in Computer Science},
+    volume = 7417,
+    isbn = "978-3-642-32008-8",
+    url = "https://link.springer.com/book/10.1007/978-3-642-32009-5",
+    doi = "10.1007/978-3-642-32009-5",
 }
 
 @Proceedings{crypto2019i,

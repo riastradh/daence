@@ -3,6 +3,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{booktabs}
 \usepackage[T1]{fontenc}
 \usepackage[final=true,backref=page,colorlinks=true]{hyperref}[2016/05/21]
 \usepackage{ifdraft}
@@ -10,6 +11,9 @@
 \usepackage[final]{listings}
 \usepackage[final]{microtype}
 \usepackage[numbers]{natbib}
+\usepackage{xcolor}
+
+\input{palette.def}
 
 \title{\Daence/:
   \Salsa20/ and \ChaCha/ in Deterministic Authenticated Encryption \\
@@ -43,6 +47,11 @@
 \newcommand{\lemmaautorefname}{Lemma}
 
 \newcommand{\term}[1]{\textbf{#1}}
+
+% Kludge for bold italic numerals.  Numerals turn out to be in the same
+% place in OML encoding as they are in T1 encoding, so even though T1
+% is not normally fit for math, it happens to work out here.
+\DeclareMathAlphabet{\mathbfit}{T1}{lmr}{bx}{it}
 
 \newcommand{\warning}[1]{%
   \ifdraft{\textbf{\textcolor{red}{\textsc{Warning}: #1}}}
@@ -79,13 +88,25 @@
 \def\NaCl/{NaCl}
 \def\TweetNaCl/{TweetNaCl}
 \def\IETF/{IETF}
+\def\NIST/{NIST}
 \def\TLS/{TLS}
 \def\IV/{\textsc{iv}}
 \def\CPU/{\textsc{cpu}}
 \def\SUPERCOP/{\textsc{supercop}}
 \def\Tarsnap/{Tarsnap}
+\def\GHASH/{\textsc{ghash}}
+\def\POLYVAL/{\textsc{polyval}}
+\def\GCM/{\textsc{gcm}}
+\def\GCMSIV/{\textsc{gcm\nobreakdash-siv}}
+\def\AES/{AES}
+\def\AESCTR/{AES\nobreakdash-CTR}
+\def\AESSIV/{AES\nobreakdash-CTR}
+\def\AESCMAC/{AES\nobreakdash-CMAC}
+\def\AESPMAC/{AES\nobreakdash-PMAC}
+\def\AESSIV/{AES\nobreakdash-SIV}
 \def\AESGCM/{AES\nobreakdash-GCM}
 \def\AESGCMSIV/{AES\nobreakdash-GCM\nobreakdash-SIV}
+\def\AESPMACSIV/{AES\nobreakdash-PMAC\nobreakdash-SIV}
 \def\naclsecretbox/{crypto\_secretbox\_xsalsa20poly1305}
 \def\naclonetimeauth/{crypto\_onetimeauth\_poly1305}
 \def\libsodium/{libsodium}
@@ -266,6 +287,186 @@ Under any key $k$ independently:
      after flooding your system with up to $2^{100}$ forgery
      attempts---is less than $1/2^{32}$.
 \end{enumerate}
+
+\section{Usage limits}
+
+We recommend that each key be used to encrypt no more than $2^{52}$
+ messages if an application may attain the maximum length of $2^{38}$
+ bytes in the associated data and $2^{38}$ bytes in the message.
+Such applications can withstand well over $2^{100}$ forgery attempts
+ before the adversary's advantage exceeds $1/2^{32}$.
+
+For better security, we recommend that each application set
+ application-specific limits on the sum $\ell_a + \ell_m$ of the
+ associated data and message length.
+This limit should be chosen according to how much memory the
+ application is willing to let a forger waste in a denial of service
+ attack before detection.
+For example:
+\begin{itemize}
+  \item an IP packet (on a path with the standard ethernet MTU)
+     is at most $1500$ bytes;
+  \item a TLS record is at most $2^{14}$ bytes;
+  \item a file system block is typically at most $2^{15}$ or $2^{16}$ bytes;
+  \item a Tarsnap file chunk can be up to around $2^{18}$ bytes.
+\end{itemize}
+Applications limited to smaller \emph{messages} can safely process a
+ larger \emph{number} of messages per key---\eg, applications limited
+ to $2^{30}$ bytes per message can safely process $2^{60}$ messages and
+ withstand $2^{120}$ forgery attempts, and applications limited to 1500
+ bytes per message can safely process $2^{79}$ messages and withstand
+ $2^{158}$ forgery attempts, before the adversary's advantage exceeds
+ $1/2^{32}$.
+In general, a single \Daence/ key is safe for up to
+ $2^{90}\!/(\ell_a + \ell_m)$
+ messages, or $2^{80}$ messages, whichever is smaller.
+
+In \autoref{tab-security}, we compare the adversary's advantage against
+ \Daence/ to several obvious alternatives, for various maximum message
+ sizes and numbers of messages:
+
+\begin{description}
+  \item[\AESSIV/] (`\SIV/')
+     a deterministic authenticated cipher in the \SIV/ construction,
+     built out of \AESCTR/ and \AESCMAC/.
+    (A variant, \AESPMACSIV/~\cite{arcieri2018aespmacsiv}, uses
+     \AESPMAC/~\cite{black-rogaway2002pmac-eurocrypt} instead of
+     \AESCMAC/ for better parallelism and essentially the same
+     security.)
+
+    Security
+     (\cite[\S4, Theorem~2]{rogaway-shrimpton2006keywrap};
+      \cite[\S5, Theorem~3]{rogaway-shrimpton2006keywrap},
+       with $p=1$; and
+      \cite[\S2, Theorem~2.2]{bernstein2005permutations})
+     is dominated by the birthday bound on the 128-bit block size of
+     \AES/.
+    \Daence/ avoids this bottleneck by using a native \PRF/---\Salsa20/
+     or \ChaCha/---instead of approximating one by a \PRP/ like \AES/.
+
+  \item[\AESGCMSIV/] (`\GCMSIV/')
+     a nonce-misuse-resistant authenticated cipher built out of
+     \AESCTR/ and the polynomial evaluation hash \POLYVAL/ related to
+     \AESGCM/'s \GHASH/.
+
+    We consider both \AESGCMSIV/'s \emph{deterministic} security with a
+     fixed nonce
+     (\cite[\S4, Theorem~3]{iwata-seurin2017gcmsivsecurity}, with
+      256-bit \AES/ keys and $Q = 1$ distinct nonces)
+     as well as its \emph{randomized} security
+     (\cite[\S3.3, Corollary~1]{iwata-seurin2017gcmsivsecurity},
+      with 256-bit \AES/ keys and random nonces).
+
+    Obviously \AESGCMSIV/'s randomized security, with no misuse, is
+     better; we consider both because the cipher is advertised as
+     `misuse-resistant'---if misused to the point that the same nonce
+     is used for every message, whether because of entropy failure or
+     virtual machine rollbacks or coding errors, \AESGCMSIV/ gives the
+     deterministic security.
+    The margin of this paper is too small to fit a neat visual
+     representation of all the dimensions in which nonce reuse might
+     occur---maximum reuses per nonce, average reuses per nonce, \etc.
+    \begin{itemize}
+      \item For \emph{deterministic security}, \AESGCMSIV/ is dominated
+         by the birthday bound on the 128-bit block size of \AES/---and
+         the birthday bound on the 128-bit tag size \emph{multiplied}
+         by the maximum message length, because of \POLYVAL/ collision
+         probability.
+
+        \Daence/ avoids these bottlenecks by using a native \PRF/ and
+         by using a much larger universal hash family to derive a
+         192-bit tag.
+
+      \item For \emph{randomized security with no misuse}, \AESGCMSIV/
+         avoids the birthday bound on the block and tag size by
+         deriving a fresh \AES/ key for each message---at high cost
+         (whether or not it is misused) to performance and side channel
+         security in implementations that cannot rely on hardware \AES/
+         acceleration.
+    \end{itemize}
+    The deterministic security bound could be made tighter by
+     judiciously incorporating the better \PRF//\PRP/ switching lemma
+     of~\cite[\S2, Theorem~2.2]{bernstein2005permutations}
+     in~\cite[Appendix~A, Lemma~2]{iwata-seurin2017gcmsivsecurity},
+     but it would remain slightly worse than \AESSIV/ because
+     \POLYVAL/'s collision probability contributes a factor of the
+     maximum message length.
+
+  \item[\AESGCM/] (`\GCM/')
+     a nonce-based authenticated cipher built out of \AESCTR/ and the
+     polynomial evaluation hash \GHASH/.
+
+    Security
+     (\cite[Appendix~C, Eq.~(22)]{iwata-ohashi-minematsu2012gcmsecurity})
+     is dominated by the birthday bound on the 128-bit block size of
+     \AES/.
+    No misuse-resistance---repeating a nonce is fatal.
+
+  \item[\ChaCha//\Poly1305/] (`\textsc{c/p}')
+     a nonce-based authenticated cipher built out of \ChaCha/ and
+     \Poly1305/.
+
+    Security
+     (\cite[\S9, Security notes]{bernstein2009naclcrypto})
+     is \emph{not} affected by any birthday bound, but the \Poly1305/
+     forgery advantage denominator, $2^{103}$, is smaller than for
+     \GHASH/, $2^{128}$, which is why advantage against
+     \ChaCha//\Poly1305/ starts higher but rises slower than \AESGCM/.
+    No misuse-resistance---repeating a nonce is fatal.
+
+    Unlike \ChaCha//\Poly1305/, \Daence/ \emph{is} subject to the
+     birthday bound (on the \SIV/ tag size) because it has no
+     nonce---but it drives the denominator up to $2^{206}$ by running
+     two independent \Poly1305/ instances in parallel, which still
+     leaves room to truncate the tag to 192 bits.
+\end{description}
+
+\begin{table}
+  \caption{Comparison of adversary's advantage for various
+     authenticated ciphers.}
+  \label{tab-security}
+
+  We suppose for the sake of presentation on two-dimensional paper that
+   the adversary can attempt about a million times as many forgeries
+   ($2^{20}$) as there are legitimate messages encrypted by the user;
+   users for whom this is not accurate can use the theorems below to
+   compute safe usage limits.
+
+  Advantage bounds above $2^{-32}$ are
+   \textcolor{Vermillion}{\textbf{\textit{highlighted}}};
+   this somewhat arbitrary cutoff is derived from \NIST/ guidance on
+   \AESGCM/~\cite[\S8, p.~18]{nist-sp800-38d}.
+
+  \begin{center}
+  \begin{minipage}{\textwidth}
+  \renewcommand{\footnoterule}{}
+  \newcommand{\bad}[1]{\textcolor{Vermillion}{\mathbfit{#1}}}
+  \centerline{%
+  \begin{tabular}{rccccccc}
+    \multicolumn{2}{c}{}
+    & \multicolumn{3}{c}{deterministic}
+    & \multicolumn{1}{c}{randomized}
+    & \multicolumn{2}{c}{nonce-based}
+    \\
+    max bytes per msg
+    & msgs
+    % deterministic
+    & \Daence/
+    & \SIV/
+    & \GCMSIV/
+    % randomized
+    & \GCMSIV/
+    % nonce-based
+    & \GCM/
+    & \textsc{c/p}
+    \\
+    \cmidrule(lr){1-2} \cmidrule(lr){3-5} \cmidrule(lr){6-6} \cmidrule(lr){7-8}
+    \input{adv}
+  \end{tabular}%
+  }
+  \end{minipage}
+  \end{center}
+\end{table}
 
 \section{Definition}
 

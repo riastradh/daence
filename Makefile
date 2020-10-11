@@ -4,6 +4,7 @@ default-target: .PHONY
 
 BIBTEX = bibtex
 PDFLATEX = pdflatex
+PYTHON = python3.7
 
 _CFLAGS = $(CFLAGS) -Werror -MMD -MF $(@:.o=.d)
 _CPPFLAGS = $(CPPFLAGS) \
@@ -39,6 +40,7 @@ check: .PHONY
 
 clean: .PHONY
 
+daence.pdf: adv.tex
 daence.pdf: daence.bib
 daence.pdf: daence.tex
 daence.pdf: kat_salsa20daence.c
@@ -61,6 +63,14 @@ clean-daence.pdf: .PHONY
 	-rm -f daence.log
 	-rm -f daence.out
 	-rm -f daence.pdf
+
+adv.tex: adv.py
+	$(PYTHON) adv.py > $@.tmp && mv -f $@.tmp $@
+
+clean: clean-adv.tex
+clean-adv.tex: .PHONY
+	-rm -f adv.tex
+	-rm -f adv.tex.tmp
 
 diagdaence.pdf: daence.tikz
 diagdaence.pdf: diagdaence.tex
