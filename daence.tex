@@ -513,9 +513,10 @@ To \term{encrypt}, given
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 \concat k_3 \concat k_4 := k$
     \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
-  \item $t \concat \_ :=
-      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))$
-    \hfill (trunc.\ to 24-byte $t$)
+  \item $t := \trunc_{192}\bigl(
+      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))
+    \bigr)$
+    \hfill (24-byte $t$)
   \item $c := m \oplus \bigl(\XSalsa20/_{k_0}(t \concat 0) \concat
       \XSalsa20/_{k_0}(t \concat 1) \concat \dotsb\bigr)$
 \end{enumerate}
@@ -533,9 +534,10 @@ To \term{decrypt}, given
     \hfill (32-byte $k_0$; 16-byte $k_1, \dotsc, k_4$)
   \item $m := c \oplus \bigl(\XSalsa20/_{k_0}(t \concat 0) \concat
       \XSalsa20/_{k_0}(t \concat 1) \concat \dotsb\bigr)$
-  \item $t' \concat \_ :=
-      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))$
-    \hfill (trunc.\ to 24-byte $t'$)
+  \item $t' := \trunc_{192}\bigl(
+      \HXSalsa20/_{k_0}(\Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m))
+    \bigr)$
+    \hfill (24-byte $t'$)
 \end{enumerate}
 %
 If $t' \stackrel?= t$, return $m$; otherwise erase $m$ and report a
@@ -552,12 +554,12 @@ If $t' \stackrel?= t$, return $m$; otherwise erase $m$ and report a
 \begin{enumerate}
   \item $k_0 \concat k_1 \concat k_2 := k$
     \hfill (32-byte $k_0$, 16-byte $k_1$, 16-byte $k_2$)
-  \item $t \concat \_ :=
+  \item $t := \trunc_{192}\bigl(
       \HXChaCha/_{k_0}(
         \Poly1305/^2_{k_1,k_2}(
           \underline a \concat \underline m
-            \concat \lvert a\rvert_8 \concat \lvert m\rvert_8))$
-    \hfill (24-byte $t$)
+            \concat \lvert a\rvert_8 \concat \lvert m\rvert_8))
+    \bigr)$
   \item $c := m \oplus \bigl(\XChaCha/_{k_0}(t, 0) \concat
       \XChaCha/_{k_0}(t, 1) \concat \dotsb\bigr)$
 \end{enumerate}
