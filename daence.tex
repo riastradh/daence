@@ -364,9 +364,13 @@ In \autoref{tab-security}, we compare the adversary's advantage against
     Obviously \AESGCMSIV/'s randomized security, with no misuse, is
      better; we consider both because the cipher is advertised as
      `misuse-resistant'---if misused to the point that the same nonce
-     is used for every message, whether because of entropy failure or
-     virtual machine rollbacks or coding errors, \AESGCMSIV/ gives the
-     deterministic security.
+     is used for every message, whether because of entropy
+     failure~%
+     \cite{debian-dsa-1571-1-openssl}%
+     \cite{hdwh2012miningpsqs}
+     or virtual machine
+     rollbacks or coding errors, \AESGCMSIV/ gives the deterministic
+     security.
     The margin of this paper is too small to fit a neat visual
      representation of all the dimensions in which nonce reuse might
      occur---maximum reuses per nonce, average reuses per nonce, \etc.

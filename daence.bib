@@ -48,6 +48,7 @@
     doi = "10.1007/3-540-46035-7_25",
 }
 
+% Poly1305 definition.
 @InProceedings{bernstein2005poly1305,
     author = {Daniel J. Bernstein},
     title = {The {Poly1305-AES} message-authentication code},
@@ -71,7 +72,7 @@
 % SIV mode.
 @Misc{rogaway-shrimpton2006keywrap,
     author = {Phillip Rogaway and Thomas Shrimpton},
-    title = {Deterministic Authenticated-Encryption:
+    title = {Deterministic Au\-then\-ti\-cated-En\-cryp\-tion:
         A Provable-Security Treatment of the Key-Wrap Problem},
     year = 2006,
     note = {Full version of \cite{rogaway-shrimpton2006keywrap-eurocrypt},
@@ -99,7 +100,7 @@
     doi = "10.1007/978-3-540-74619-5_26",
 }
 
-% Salsa20 definition
+% Salsa20 eSTREAM paper.
 @InCollection{bernstein2007salsa20,
     author = {Daniel J. Bernstein},
     title = {The {Salsa20} family of stream ciphers},
@@ -109,6 +110,7 @@
     doi = "10.1007/978-3-540-68351-3_8",
 }
 
+% ChaCha definition.
 @Misc{bernstein2008chacha,
     author = {Daniel J. Bernstein},
     title = {{ChaCha}, a variant of {Salsa20}},
@@ -120,7 +122,18 @@
     url = "https://cr.yp.to/papers.html#chacha",
 }
 
-% crypto_secretbox_xsalsa20poly1305 authenticated cipher
+% Debian OpenSSL debacle -- bad entropy sources in the wild.
+@Misc{debian-dsa-1571-1-openssl,
+    title = {{DSA-1571-1 openssl}---predictable random number generator},
+    howpublished = {Debian Security Advisory},
+    year = 2008,
+    month = MAY,
+    day = 13,
+    url = "https://www.debian.org/security/2008/dsa-1571",
+    key = "DSA-1571-1",
+}
+
+% crypto_secretbox_xsalsa20poly1305 authenticated cipher.
 @Unpublished{bernstein2009naclcrypto,
     author = {Daniel J. Bernstein},
     title = {Cryptography in {NaCl}},
@@ -130,6 +143,7 @@
     url = "https://cr.yp.to/papers.html#naclcrypto",
 }
 
+% Tarsnap AES-CTR nonce reuse bug.
 @Misc{cperciva2011tarsnap-nonce-reuse,
     author = {Colin Percival},
     title = {{Tarsnap} critical security bug},
@@ -140,6 +154,7 @@
     url = "https://www.daemonology.net/blog/2011-01-18-tarsnap-critical-security-bug.html",
 }
 
+% XSalsa20 definition.
 @Misc{bernstein2011xsalsa,
     author = {Daniel J. Bernstein},
     title = {Extending the {Salsa20} nonce},
@@ -171,6 +186,17 @@
     doi = "10.1007/978-3-642-32009-5_3",
 }
 
+% Bad entropy sources in the wild.
+@InProceedings{hdwh2012miningpsqs,
+    author = {Nadia Heninger and Zakir Durumeric and Eric Wustrow and
+        Alex J. Halderman},
+    title = {Mining your {P}s and {Q}s:
+        Detection of Widespread Weak Keys in Network Devices},
+    pages = "205--220",
+    crossref = "usenix-security2012",
+    url = "https://www.usenix.org/conference/usenixsecurity12/technical-sessions/presentation/heninger",
+}
+
 % Auth256, a 256-bit polynomial evaluation authenticator.
 @InProceedings{bernstein-chou2014auth256,
     author = {Daniel J. Bernstein and Tung Chou},
@@ -193,6 +219,16 @@
     url = "https://competitions.cr.yp.to/round2/hs1sivv2.pdf",
 }
 
+% Modern multi-user security lemma.
+@InProceedings{bellare-bernstein-tessaro2016amac-mu,
+    author = {Mihir Bellare and Daniel J. Bernstein and Stefano Tessaro},
+    title = {Hash-Function Based {PRF}s: {AMAC} and Its Multi-User Security},
+    pages = "566--595",
+    crossref = "eurocrypt2016",
+    url = "https://link.springer.com/chapter/10.1007/978-3-662-49890-3_22",
+    doi = "10.1007/978-3-662-49890-3_22",
+}
+
 % Multi-user AE security definition.
 @Misc{bellare-tackmann2016mu-ae,
     author = {Mihir Bellare and Bj{\"o}rn Tackmann},
@@ -203,16 +239,6 @@
     note = {ePrint of \cite{bellare-tackmann2016mu-ae-crypto},
         last updated 2017-11-27},
     url = "https://eprint.iacr.org/2016/564",
-}
-
-% Modern multi-user security lemma.
-@InProceedings{bellare-bernstein-tessaro2016amac-mu,
-    author = {Mihir Bellare and Daniel J. Bernstein and Stefano Tessaro},
-    title = {Hash-Function Based {PRF}s: {AMAC} and Its Multi-User Security},
-    pages = "566--595",
-    crossref = "eurocrypt2016",
-    url = "https://link.springer.com/chapter/10.1007/978-3-662-49890-3_22",
-    doi = "10.1007/978-3-662-49890-3_22",
 }
 
 @InProceedings{bellare-tackmann2016mu-ae-crypto,
@@ -456,6 +482,16 @@
     publisher = {Springer},
     url = "https://link.springer.com/book/10.1007/978-3-319-13051-4",
     doi = "10.1007/978-3-319-13051-4",
+}
+
+@Proceedings{usenix-security2012,
+    title = {21st {USENIX} Security Symposium---{USENIX} Security 2012},
+    booktitle = {21st {USENIX} Security Symposium---{USENIX} Security 2012},
+    year = 2012,
+    month = AUG,
+    day = "8--10",
+    isbn = "978-931971-95-9",
+    publisher = {{USENIX}},
 }
 
 % IETF RFCs -- https://datatracker.ietf.org/doc/rfcNNNN/bibtex/
