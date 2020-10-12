@@ -1110,8 +1110,8 @@ Combining these, we see the probability of a forgery (before any
 \paragraph*{Summing it up.}
 
 \begin{align*}
-  \lvert\Pr&[A(\Deuce/)] - \Pr[A(U_1)]\rvert
-   \leq \Pr[C_{th}] + \Pr[C_t] + \Pr[F] \\
+  \lvert\Pr&[A(\Deuce/)] - \Pr[A(U_1)]\rvert \\
+  &\leq \Pr[C_{th}] + \Pr[C_t] + \Pr[F] \\
   &\leq \frac{E^2}{2^{192}}
      + \binom{E}{2} \biggl(
          \collisionbound(\ell_a, \ell_m)
