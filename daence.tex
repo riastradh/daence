@@ -1303,15 +1303,16 @@ Thus, the best strategy at breaking the idealized cipher---recall this
      competition\footnote{\CAESAR/: Competition for Authenticated
         Encryption: Security, Applicability, and Robustness.
        \url{https://competitions.cr.yp.to/caesar.html}}
-     was too broad and dragged on for too long, and in the end failed
-     to gain the traction it needed.
+     was too broad and dragged on for too long, and in the
+     end---although it produced a wealth of valuable research---it
+     failed to gain the traction it needed for real-world deployment.
     While \NaCl/, \IETF/ \ChaCha//\Poly1305/, and \AESGCM/ are
      ubiquitous today, with a variety of high-quality implementations
      available in many programming languages, the benefits of the
      \CAESAR/ winners do not seem to justify the engineering effort to
      make the novel cryptographic primitives as ubiquitous.
-    In contrast, \Daence/ requires negligible engineering effort on
-     top of \NaCl/ or \libsodium/.
+    In contrast, \Daence/ requires negligible effort on top of \NaCl/
+     or \libsodium/.
 
   \item[Why not just use \AESGCMSIV/?]
     \AESGCMSIV/ is optimized for applications that can
