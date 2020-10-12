@@ -339,11 +339,10 @@ In \autoref{tab-security}, we compare the adversary's advantage against
      \AESCMAC/ for better parallelism and essentially the same
      security.)
 
-    Security
-     (\cite[\S4, Theorem~2]{rogaway-shrimpton2006keywrap};
-      \cite[\S5, Theorem~3]{rogaway-shrimpton2006keywrap},
-       with $p=1$; and
-      \cite[\S2, Theorem~2.2]{bernstein2005permutations})
+    Security~%
+     \cite[\S4, Theorem~2]{rogaway-shrimpton2006keywrap}%
+     \cite[\S5, Theorem~3, with $p=1$]{rogaway-shrimpton2006keywrap}%
+     \cite[\S2, Theorem~2.2]{bernstein2005permutations}
      is dominated by the birthday bound on the 128-bit block size of
      \AES/.
     \Daence/ avoids this bottleneck by using a native \PRF/---\Salsa20/
@@ -355,12 +354,12 @@ In \autoref{tab-security}, we compare the adversary's advantage against
      \AESGCM/'s \GHASH/.
 
     We consider both \AESGCMSIV/'s \emph{deterministic} security with a
-     fixed nonce
-     (\cite[\S4, Theorem~3]{iwata-seurin2017gcmsivsecurity}, with
-      256-bit \AES/ keys and $Q = 1$ distinct nonces)
-     as well as its \emph{randomized} security
-     (\cite[\S3.3, Corollary~1]{iwata-seurin2017gcmsivsecurity},
-      with 256-bit \AES/ keys and random nonces).
+     fixed nonce~%
+     \cite[\S4, Theorem~3, with 256-bit \AES/ keys and $Q=1$ distinct
+       nonces]{iwata-seurin2017gcmsivsecurity}
+     as well as its \emph{randomized} security~%
+     \cite[\S3.3, Corollary~1, with 256-bit \AES/ keys and random
+       nonces]{iwata-seurin2017gcmsivsecurity}.
 
     Obviously \AESGCMSIV/'s randomized security, with no misuse, is
      better; we consider both because the cipher is advertised as
@@ -392,7 +391,7 @@ In \autoref{tab-security}, we compare the adversary's advantage against
     The deterministic security bound could be made tighter by
      judiciously incorporating the better \PRF//\PRP/ switching lemma
      of~\cite[\S2, Theorem~2.2]{bernstein2005permutations}
-     in~\cite[Appendix~A, Lemma~2]{iwata-seurin2017gcmsivsecurity},
+     into~\cite[Appendix~A, Lemma~2]{iwata-seurin2017gcmsivsecurity},
      but it would remain slightly worse than \AESSIV/ because
      \POLYVAL/'s collision probability contributes a factor of the
      maximum message length.
@@ -401,8 +400,8 @@ In \autoref{tab-security}, we compare the adversary's advantage against
      a nonce-based authenticated cipher built out of \AESCTR/ and the
      polynomial evaluation hash \GHASH/.
 
-    Security
-     (\cite[Appendix~C, Eq.~(22)]{iwata-ohashi-minematsu2012gcmsecurity})
+    Security~%
+     \cite[Appendix~C, Eq.~(22)]{iwata-ohashi-minematsu2012gcmsecurity}
      is dominated by the birthday bound on the 128-bit block size of
      \AES/.
     No misuse-resistance---repeating a nonce is fatal.
@@ -411,8 +410,8 @@ In \autoref{tab-security}, we compare the adversary's advantage against
      a nonce-based authenticated cipher built out of \ChaCha/ and
      \Poly1305/.
 
-    Security
-     (\cite[\S9, Security notes]{bernstein2009naclcrypto})
+    Security~%
+     \cite[\S9, Security notes]{bernstein2009naclcrypto}
      is \emph{not} affected by any birthday bound, but the \Poly1305/
      forgery advantage denominator, $2^{103}$, is smaller than for
      \GHASH/, $2^{128}$, which is why advantage against
