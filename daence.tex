@@ -290,7 +290,7 @@ Under any key $k$ independently:
      attempts---is less than $1/2^{32}$.
 \end{enumerate}
 
-\section{Usage limits}
+\subsection{Safe usage limits}
 
 We recommend that each key be used to encrypt no more than $2^{52}$
  messages if an application may attain the maximum length of $2^{38}$
@@ -322,6 +322,8 @@ Applications limited to smaller \emph{messages} can safely process a
 In general, a single \Daence/ key is safe for up to
  $2^{90}\!/(\ell_a + \ell_m)$
  messages, or $2^{80}$ messages, whichever is smaller.
+
+\subsection{Comparison to alternative ciphers}
 
 In \autoref{tab-security}, we compare the adversary's advantage against
  \Daence/ to several obvious alternatives, for various maximum message
