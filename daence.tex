@@ -1285,7 +1285,9 @@ Thus, the best strategy at breaking the idealized cipher---recall this
   \[
     \Poly1305/^2_{k_1,k_2}(
       a \concat m \concat \lvert a\rvert_8 \concat \lvert m\rvert_8)
-    \qquad\text{instead of}\qquad
+  \]
+  instead of
+  \[
     \Poly1305/^2_{k_1,k_2,k_3,k_4}(a, m).
   \]
   By \autoref{lem-double-hash}, the collision probability is bounded
@@ -1294,7 +1296,6 @@ Thus, the best strategy at breaking the idealized cipher---recall this
    over identically, with \XChaCha/ in the place of \XSalsa20/.
 \end{proof}
 
-\newpage
 \section{Shaving IAQs---Infrequently Asked Questions}
 
 \begin{description}
