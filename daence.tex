@@ -1519,26 +1519,40 @@ Thus, the best strategy at breaking the idealized cipher---recall this
      the application---is not worth the cost of hundreds of additional
      cycles per message.
 
-  \item[Does \Daence/ support streaming?]
-    If you want to stream large files, break them into bite-size
+  \item[Can \Daence/ do streaming or random access?]
+    \hskip 0pt plus 1em
+    If you want to handle large files, break them into bite-size
      pieces to be encrypted as separate messages.
-    In the associated data, include: a unique file name, so the pieces
-     can't be swapped between different files; a piece number, so the
-     pieces of a file can't be reordered; and an end-of-stream flag, so
-     you can detect truncation.
-
     You should ensure the pieces are no larger than the amount of
      memory you are willing to let an adversary waste with a forgery in
      a denial of service attack.
-    Smaller message size limits also give better \Daence/ security.
-    Some typical message size limits:
+    In the associated data or message (depending on whether you need to
+     keep it secret), include:
     \begin{itemize}
-      \item an IP packet is at most $1500$ bytes;
-      \item a TLS record is at most $2^{14}$ bytes;
-      \item a file system block is typically at most $2^{15}$ or $2^{16}$
-        bytes;
-      \item a Tarsnap file chunk can be up to around $2^{18}$ bytes.
+      \item
+         a unique file name, so the pieces can't be swapped around
+         between multiple different files;
+      \item
+         a piece number or byte position within the file, so the pieces
+         of a single file can't be reordered;
+         and
+      \item
+         a flag indicating whether the piece is the last one in the
+         file or not, so files can't be truncated without your
+         noticing.
     \end{itemize}
+    Alternatively, instead of an end-of-file flag in each piece, you
+     might include a manifest at the beginning of the stream specifying
+     the file's size, if it is available then.
+
+    This provides `nOAE' security~\cite{hrrv2015online-ae-crypto} like
+     the `STREAM' construction.
+    Additionally incorporating the tag of the previous message
+     (or, really, any tag-sized substring of the previous ciphertext)
+     into the associated data of the next one provides `OAE2' security,
+     like the `CHAIN' construction, which provides a weak defence
+     against reusing a file name for two different files, at the cost
+     of losing random access.
 
   \item[How is the `ae' in \Daence/ pronounced?]
     Like the `a' in `data'.
