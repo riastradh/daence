@@ -1,3 +1,30 @@
+% Papers.  Sort chronologically by date, then lexicographically
+% by authors, then lexicographically by title.
+
+% Sec. 1.5: `[L]et $H$ be a collection of almost universal$_2$ hash
+% functions, meaning that for any fixed but distinct $x, x'$, the
+% probability that $h(x) = h(x')$ is small, when $h$ is drawn randomly
+% from $H$.  Then $G_{a,h}(x) = F_a(h(x))$ is also a VI_PRF family.'
+@Misc{bellare-canetti-krawczyk1996cascade,
+    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
+    title = {Pseudorandom Functions Revisited:
+        The Cascade Construction and its Concrete Security},
+    year = 1996,
+    note = {Full version of \cite{bellare-canetti-krawczyk1996cascade-fosc}},
+    url = "https://cseweb.ucsd.edu/~mihir/papers/cascade.html",
+}
+
+% Sec. 1.5, same as full version.
+@InProceedings{bellare-canetti-krawczyk1996cascade-fosc,
+    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
+    title = {Pseudorandom functions revisited:
+        the cascade construction and its concrete security},
+    pages = "514--523",
+    crossref = "ieee-focs1996",
+    url = "https://ieeexplore.ieee.org/document/548510",
+    doi = "10.1109/SFCS.1996.548510",
+}
+
 % Primarily about Hash127 polynomial evaluation message
 % authentication.  Used here for f(n) + h(m) vs f(h(m)) vs f(n, h(m))
 % structure of authenticators -- specifically f(h(m)).
@@ -19,47 +46,6 @@
     crossref = "eurocrypt2002",
     url = "https://link.springer.com/chapter/10.1007/3-540-46035-7_25",
     doi = "10.1007/3-540-46035-7_25",
-}
-
-% crypto_secretbox_xsalsa20poly1305 authenticated cipher
-@Unpublished{bernstein2009naclcrypto,
-    author = {Daniel J. Bernstein},
-    title = {Cryptography in {NaCl}},
-    year = 2009,
-    month = MAR,
-    day = 10,
-    url = "https://cr.yp.to/papers.html#naclcrypto",
-}
-
-@Misc{cperciva2011tarsnap-nonce-reuse,
-    author = {Colin Percival},
-    title = {{Tarsnap} critical security bug},
-    year = 2011,
-    month = JAN,
-    day = 18,
-    howpublished = {{Daemonic Dispatches} blog},
-    url = "https://www.daemonology.net/blog/2011-01-18-tarsnap-critical-security-bug.html",
-}
-
-% Salsa20 definition
-@InCollection{bernstein2007salsa20,
-    author = {Daniel J. Bernstein},
-    title = {The {Salsa20} family of stream ciphers},
-    pages = "84--97",
-    crossref = "estream2008finalists",
-    url = "https://cr.yp.to/papers.html#salsafamily",
-    doi = "10.1007/978-3-540-68351-3_8",
-}
-
-% Auth256, a 256-bit polynomial evaluation authenticator.
-@InProceedings{bernstein-chou2014auth256,
-    author = {Daniel J. Bernstein and Tung Chou},
-    title = {Faster binary-field multiplication and faster binary-field
-        {MAC}s},
-    pages = "92--111",
-    crossref = "sac2014",
-    url = "https://cr.yp.to/papers.html#auth256",
-    doi = "10.1007/978-3-319-13051-4_6",
 }
 
 @InProceedings{bernstein2005poly1305,
@@ -102,30 +88,6 @@
     doi = "10.1007/11761679_23",
 }
 
-% Sec. 1.5: `[L]et $H$ be a collection of almost universal$_2$ hash
-% functions, meaning that for any fixed but distinct $x, x'$, the
-% probability that $h(x) = h(x')$ is small, when $h$ is drawn randomly
-% from $H$.  Then $G_{a,h}(x) = F_a(h(x))$ is also a VI_PRF family.'
-@Misc{bellare-canetti-krawczyk1996cascade,
-    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
-    title = {Pseudorandom Functions Revisited:
-        The Cascade Construction and its Concrete Security},
-    year = 1996,
-    note = {Full version of \cite{bellare-canetti-krawczyk1996cascade-fosc}},
-    url = "https://cseweb.ucsd.edu/~mihir/papers/cascade.html",
-}
-
-% Sec. 1.5, same as full version.
-@InProceedings{bellare-canetti-krawczyk1996cascade-fosc,
-    author = {Mihir Bellare and Ran Canetti and Hugo Krawczyk},
-    title = {Pseudorandom functions revisited:
-        the cascade construction and its concrete security},
-    pages = "514--523",
-    crossref = "ieee-focs1996",
-    url = "https://ieeexplore.ieee.org/document/548510",
-    doi = "10.1109/SFCS.1996.548510",
-}
-
 % Argument about assuming no forgeries.
 @InProceedings{dodis-pietrzak2007randmac,
     author = {Yevgeniy Dodis and Krzysztof Pietrzak},
@@ -137,6 +99,16 @@
     doi = "10.1007/978-3-540-74619-5_26",
 }
 
+% Salsa20 definition
+@InCollection{bernstein2007salsa20,
+    author = {Daniel J. Bernstein},
+    title = {The {Salsa20} family of stream ciphers},
+    pages = "84--97",
+    crossref = "estream2008finalists",
+    url = "https://cr.yp.to/papers.html#salsafamily",
+    doi = "10.1007/978-3-540-68351-3_8",
+}
+
 @Misc{bernstein2008chacha,
     author = {Daniel J. Bernstein},
     title = {{ChaCha}, a variant of {Salsa20}},
@@ -146,6 +118,26 @@
     month = JAN,
     day = 20,
     url = "https://cr.yp.to/papers.html#chacha",
+}
+
+% crypto_secretbox_xsalsa20poly1305 authenticated cipher
+@Unpublished{bernstein2009naclcrypto,
+    author = {Daniel J. Bernstein},
+    title = {Cryptography in {NaCl}},
+    year = 2009,
+    month = MAR,
+    day = 10,
+    url = "https://cr.yp.to/papers.html#naclcrypto",
+}
+
+@Misc{cperciva2011tarsnap-nonce-reuse,
+    author = {Colin Percival},
+    title = {{Tarsnap} critical security bug},
+    year = 2011,
+    month = JAN,
+    day = 18,
+    howpublished = {{Daemonic Dispatches} blog},
+    url = "https://www.daemonology.net/blog/2011-01-18-tarsnap-critical-security-bug.html",
 }
 
 @Misc{bernstein2011xsalsa,
@@ -179,6 +171,18 @@
     doi = "10.1007/978-3-642-32009-5_3",
 }
 
+% Auth256, a 256-bit polynomial evaluation authenticator.
+@InProceedings{bernstein-chou2014auth256,
+    author = {Daniel J. Bernstein and Tung Chou},
+    title = {Faster binary-field multiplication and faster binary-field
+        {MAC}s},
+    pages = "92--111",
+    crossref = "sac2014",
+    url = "https://cr.yp.to/papers.html#auth256",
+    doi = "10.1007/978-3-319-13051-4_6",
+}
+
+% HS1-SIV definition
 @Misc{krovetz2015hs1siv,
     author = {Ted Krovetz},
     title = {{HS1-SIV} (v2)},
@@ -235,6 +239,7 @@
     doi = "10.13154/tosc.v2017.i4.240-267",
 }
 
+% AES-PMAC-SIV
 @Misc{arcieri2018aespmacsiv,
     author = {Tony Arcieri},
     title = {{AES PMAC SIV}},
@@ -243,6 +248,7 @@
     url = "https://github.com/miscreant/meta/wiki/AES-PMAC-SIV",
 }
 
+% Adiantum
 @Article{crowley-biggers2018adiantum,
     author = {Paul Crowley and Eric Biggers},
     title = {Adiantum: length-preserving encryption for entry-level
@@ -254,7 +260,7 @@
     doi = "10.13154/tosc.v2018.i4.39-61",
 }
 
-% Secret message numbers.
+% Secret message numbers
 @Misc{bellare-ng-tackmann2019nonces-revisited,
     author = {Mihir Bellare and Ruth Ng and Bj{\"o}rn Tackmann},
     title = {Nonces are Noticed: {AEAD} Revisited},
@@ -277,51 +283,54 @@
     doi = "10.1007/978-3-030-26948-7_9",
 }
 
-% Books and proceedings
+% Books and proceedings.  Sort lexicographically by publication, then
+% chronologically.
 
-@Book{estream2008finalists,
-    editor = {Matthew Robshaw and Olivier Billet},
-    title = {New Stream Cipher Designs},
-    booktitle = {New Stream Cipher Designs},
-    year = 2008,
+@Proceedings{crypto2012,
+    title = {Advances in Cryptology---{CRYPTO}~2012,
+        32nd Annual Cryptology Conference},
+    booktitle = {Advances in Cryptology---{CRYPTO}~2012,
+        32nd Annual Cryptology Conference},
+    editor = {Reihaneh Safavi-Naini and Ran Canetti},
+    year = 2012,
+    month = AUG,
+    day = "19--23",
     series = {Lecture Notes in Computer Science},
-    volume = 4986,
-    isbn = "978-3-540-68350-6",
-    publisher = {Springer-Verlag},
-    url = "https://link.springer.com/book/10.1007/978-3-540-68351-3",
-    doi = "10.1007/978-3-540-68351-3",
+    volume = 7417,
+    isbn = "978-3-642-32008-8",
+    url = "https://link.springer.com/book/10.1007/978-3-642-32009-5",
+    doi = "10.1007/978-3-642-32009-5",
 }
 
-@Proceedings{fse2005,
-    editor = {Henri Gilbert and Helena Handschuh},
-    title = {Fast Software Encryption---{FSE}~2005,
-        12th International Workshop},
-    booktitle = {Fast Software Encryption---{FSE}~2005,
-        12th International Workshop},
-    year = 2005,
-    month = FEB,
+@Proceedings{crypto2016,
+    title = {Advances in Cryptology---{CRYPTO}~2016,
+        36th Annual International Cryptology Conference, Part~I},
+    booktitle = {Advances in Cryptology---{CRYPTO}~2016,
+        36th Annual International Cryptology Conference, Part~I},
+    editor = {Matthew Robshaw and Jonathan Katz},
+    year = 2016,
+    month = AUG,
     series = {Lecture Notes in Computer Science},
-    volume = 3557,
-    isbn = "3-540-26541-4",
-    publisher = {Springer-Verlag},
-    url = "https://link.springer.com/book/10.1007/b137506",
-    doi = "10.1007/b137506",
+    volume = 9814,
+    isbn = "978-3-662-53017-7",
+    url = "https://link.springer.com/book/10.1007/978-3-662-53018-4",
+    doi = "10.1007/978-3-662-53018-4",
 }
 
-@Proceedings{fse2007,
-    editor = {Alex Biryukov},
-    title = {Fast Software Encryption---{FSE}~2007,
-        14th International Workshop},
-    booktitle = {Fast Software Encryption---{FSE}~2007,
-        14th International Workshop},
-    year = 2007,
-    month = MAR,
+@Proceedings{crypto2019i,
+    title = {Advances in Cryptology---{CRYPTO}~2019,
+        39th Annual International Cryptology Conference, Part~I},
+    booktitle = {Advances in Cryptology---{CRYPTO}~2019,
+        39th Annual International Cryptology Conference, Part~I},
+    editor = {Alexandra Boldyreva and Daniele Micciancio},
+    year = 2019,
+    month = AUG,
     series = {Lecture Notes in Computer Science},
-    volume = 4593,
-    isbn = "978-3-540-74617-1",
-    publisher = {Springer-Verlag},
-    url = "https://link.springer.com/book/10.1007/978-3-540-74619-5",
-    doi = "10.1007/978-3-540-74619-5",
+    volume = 11692,
+    isbn = "978-3-030-26947-0",
+    publisher = {Springer},
+    url = "https://link.springer.com/book/10.1007/978-3-030-26948-7",
+    doi = "10.1007/978-3-030-26948-7",
 }
 
 @Proceedings{eurocrypt2002,
@@ -378,6 +387,51 @@
     doi = "10.1007/978-3-662-49890-3",
 }
 
+@Book{estream2008finalists,
+    editor = {Matthew Robshaw and Olivier Billet},
+    title = {New Stream Cipher Designs},
+    booktitle = {New Stream Cipher Designs},
+    year = 2008,
+    series = {Lecture Notes in Computer Science},
+    volume = 4986,
+    isbn = "978-3-540-68350-6",
+    publisher = {Springer-Verlag},
+    url = "https://link.springer.com/book/10.1007/978-3-540-68351-3",
+    doi = "10.1007/978-3-540-68351-3",
+}
+
+@Proceedings{fse2005,
+    editor = {Henri Gilbert and Helena Handschuh},
+    title = {Fast Software Encryption---{FSE}~2005,
+        12th International Workshop},
+    booktitle = {Fast Software Encryption---{FSE}~2005,
+        12th International Workshop},
+    year = 2005,
+    month = FEB,
+    series = {Lecture Notes in Computer Science},
+    volume = 3557,
+    isbn = "3-540-26541-4",
+    publisher = {Springer-Verlag},
+    url = "https://link.springer.com/book/10.1007/b137506",
+    doi = "10.1007/b137506",
+}
+
+@Proceedings{fse2007,
+    editor = {Alex Biryukov},
+    title = {Fast Software Encryption---{FSE}~2007,
+        14th International Workshop},
+    booktitle = {Fast Software Encryption---{FSE}~2007,
+        14th International Workshop},
+    year = 2007,
+    month = MAR,
+    series = {Lecture Notes in Computer Science},
+    volume = 4593,
+    isbn = "978-3-540-74617-1",
+    publisher = {Springer-Verlag},
+    url = "https://link.springer.com/book/10.1007/978-3-540-74619-5",
+    doi = "10.1007/978-3-540-74619-5",
+}
+
 @Proceedings{ieee-focs1996,
     title = {Proceedings of the 37th Conference on Foundations of
         Computer Science---{FOSC}~1996},
@@ -402,53 +456,6 @@
     publisher = {Springer},
     url = "https://link.springer.com/book/10.1007/978-3-319-13051-4",
     doi = "10.1007/978-3-319-13051-4",
-}
-
-@Proceedings{crypto2016,
-    title = {Advances in Cryptology---{CRYPTO}~2016,
-        36th Annual International Cryptology Conference, Part~I},
-    booktitle = {Advances in Cryptology---{CRYPTO}~2016,
-        36th Annual International Cryptology Conference, Part~I},
-    editor = {Matthew Robshaw and Jonathan Katz},
-    year = 2016,
-    month = AUG,
-    series = {Lecture Notes in Computer Science},
-    volume = 9814,
-    isbn = "978-3-662-53017-7",
-    url = "https://link.springer.com/book/10.1007/978-3-662-53018-4",
-    doi = "10.1007/978-3-662-53018-4",
-}
-
-@Proceedings{crypto2012,
-    title = {Advances in Cryptology---{CRYPTO}~2012,
-        32nd Annual Cryptology Conference},
-    booktitle = {Advances in Cryptology---{CRYPTO}~2012,
-        32nd Annual Cryptology Conference},
-    editor = {Reihaneh Safavi-Naini and Ran Canetti},
-    year = 2012,
-    month = AUG,
-    day = "19--23",
-    series = {Lecture Notes in Computer Science},
-    volume = 7417,
-    isbn = "978-3-642-32008-8",
-    url = "https://link.springer.com/book/10.1007/978-3-642-32009-5",
-    doi = "10.1007/978-3-642-32009-5",
-}
-
-@Proceedings{crypto2019i,
-    title = {Advances in Cryptology---{CRYPTO}~2019,
-        39th Annual International Cryptology Conference, Part~I},
-    booktitle = {Advances in Cryptology---{CRYPTO}~2019,
-        39th Annual International Cryptology Conference, Part~I},
-    editor = {Alexandra Boldyreva and Daniele Micciancio},
-    year = 2019,
-    month = AUG,
-    series = {Lecture Notes in Computer Science},
-    volume = 11692,
-    isbn = "978-3-030-26947-0",
-    publisher = {Springer},
-    url = "https://link.springer.com/book/10.1007/978-3-030-26948-7",
-    doi = "10.1007/978-3-030-26948-7",
 }
 
 % IETF RFCs -- https://datatracker.ietf.org/doc/rfcNNNN/bibtex/
