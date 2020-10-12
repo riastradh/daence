@@ -9,14 +9,15 @@
 % Nodes representing data.
 \tikzset{datum/.style={
     shape=rectangle,
+    rounded corners=0.5ex,
     minimum height=4ex,
 }}
 
 % Nodes representing operations on data.
 \tikzset{operation/.style={
     shape=trapezium,
-    trapezium left angle=-70,
-    trapezium right angle=-70,
+    trapezium left angle=-65,
+    trapezium right angle=-65,
     minimum height=4ex,
 }}
 

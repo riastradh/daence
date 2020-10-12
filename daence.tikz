@@ -13,14 +13,15 @@
 % Nodes representing data.
 \tikzset{datum/.style={
     shape=rectangle,
+    rounded corners=0.5ex,
     minimum height=4ex,
 }}
 
 % Nodes representing operations on data.
 \tikzset{operation/.style={
     shape=trapezium,
-    trapezium left angle=-70,
-    trapezium right angle=-70,
+    trapezium left angle=-65,
+    trapezium right angle=-65,
     minimum height=4ex,
 }}
 
@@ -51,20 +52,17 @@
 \node (t) at (-2,  -3) [draw, datum, minimum width=2em] {$t$};
 \node (c) at ( 5,  -3) [draw, datum, minimum width=10em] {$c$};
 
-% Intermediate node
-\node (h) at (-2,   0) [draw, datum, minimum width=2em] {$h$};
-
 % PRF
-\node (poly1305)  at (-2, 1) [draw, operation]
+\node (poly1305)  at (-2, 0.75) [draw, operation]
   {$\Poly1305/^2_{k_1,\dotsc,k_4}$};
  \coordinate (poly1305-ad) at ($(poly1305.north) - (1/2,0)$);
  \coordinate (poly1305-msg) at ($(poly1305.north) + (1/2,0)$);
  \coordinate (poly1305-hash) at (poly1305.south);
-\node (hxsalsa20) at (-2,-1) [draw, operation]
+\node (hxsalsa20) at (-2,-0.75) [draw, operation]
   {$\HXSalsa20/^{\vphantom{k_0}}_{k_0}$};
  \coordinate (hxsalsa20-input) at (hxsalsa20.north);
  \coordinate (hxsalsa20-output) at (hxsalsa20.south);
-\node (prf) [draw, grouping, dashed, color=prf, fit=(poly1305) (h) (hxsalsa20)]
+\node (prf) [draw, grouping, dashed, color=prf, fit=(poly1305) (hxsalsa20)]
   {};
   \node at (prf.south west) [color=prf, anchor=north west]
     {\textbf{PRF}};
@@ -83,15 +81,15 @@
 \draw[->] (a) -- (poly1305-ad);
 \draw[->] (m) |- ($(poly1305-msg) + (0,2/3)$) -- (poly1305-msg);
 
-\draw[->] (poly1305-hash) -- (h);
-\draw[->] (h) -- (hxsalsa20-input);
+\draw[->] (poly1305-hash) -- (hxsalsa20-input);
 \draw[->] (hxsalsa20-output) -- (t);
 
 % Snake the line from t into XSalsa20 along a vertical line placed
 % evenly between the two major components.
 \draw[->]
-  let \p1 = ($(prf.north east) !1/2! (cipher.north west)$)
-  in (t) -| (\x1,1) -| (xsalsa20-input);
+  let \p1 = ($(hxsalsa20-output) !1/2! (t.north)$) in
+  let \p2 = ($(prf.north east) !1/2! (cipher.north west)$) in
+    (hxsalsa20-output) -| (\x1,\y1) -| (\x2,1) -| (xsalsa20-input);
 
 % Encrypt message with pad derived from authentication tag
 \draw[->] (xsalsa20-output) |- (xor);

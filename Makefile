@@ -32,7 +32,7 @@ all: .PHONY
 all: check
 all: daence.pdf
 all: diagdaence.pdf
-all: diagdice.pdf
+all: diagdeuce.pdf
 all: diagpoly13052.pdf
 all: js/kat_salsa20daence.json
 
@@ -82,15 +82,15 @@ clean-diagdaence.pdf: .PHONY
 	-rm -f diagdaence.log
 	-rm -f diagdaence.pdf
 
-diagdice.pdf: diagdice.tex
-diagdice.pdf: dice.tikz
-diagdice.pdf: palette.def
-	$(PDFLATEX) \\nonstopmode\\input diagdice
-clean: clean-diagdice.pdf
-clean-diagdice.pdf: .PHONY
-	-rm -f diagdice.aux
-	-rm -f diagdice.log
-	-rm -f diagdice.pdf
+diagdeuce.pdf: diagdeuce.tex
+diagdeuce.pdf: deuce.tikz
+diagdeuce.pdf: palette.def
+	$(PDFLATEX) \\nonstopmode\\input diagdeuce
+clean: clean-diagdeuce.pdf
+clean-diagdeuce.pdf: .PHONY
+	-rm -f diagdeuce.aux
+	-rm -f diagdeuce.log
+	-rm -f diagdeuce.pdf
 
 diagpoly13052.pdf: diagpoly13052.tex
 diagpoly13052.pdf: poly13052.tikz
