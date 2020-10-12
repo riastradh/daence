@@ -1500,9 +1500,9 @@ Thus, the best strategy at breaking the idealized cipher---recall this
      16-byte keys, for a total of $32 + 4\cdot16 = 96$ bytes of key
      material---primarily to support incorporating associated data
      without relying an incremental-update API for \Poly1305/.
-    This way, \Salsa20/-\Daence/ in order to take advantage of the
-     existing deployed \NaCl/ library which can only compute
-     \Poly1305/ on an entire message.
+    This way, \Salsa20/-\Daence/ can take advantage of the existing
+     deployed \NaCl/ library which can only compute \Poly1305/ on an
+     entire message.
 
     We could start from a 32-byte master key and then derive subkeys
      from it.
