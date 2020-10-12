@@ -712,33 +712,6 @@ The single-user $\Adv^{\DAE}_E(A)$ is defined similarly.
   \end{multline*}
 \end{theorem}
 
-%% \paragraph*{Concrete bounds and safe usage limits.}
-%% We recommend that each key be used to encrypt no more than $2^{52}$
-%%  messages if an application may attain the maximum length of $2^{38}$
-%%  bytes in the associated data and $2^{38}$ bytes in the message.
-%% Such applications can withstand well over $2^{100}$ forgery attempts
-%%  before the adversary's advantage exceeds $1/2^{32}$.
-
-%% More generally, we recommend that each application set
-%%  application-specific limits on the sum $\ell_a + \ell_m$ of the
-%%  associated data and message length, according to how much memory the
-%%  application is willing to let a forger waste in a denial of service
-%%  attack before detection.
-%% Large messages should be broken into bite-sized pieces; associated data
-%%  may be used to number the pieces, with an end-of-stream marker to
-%%  detect truncation.
-
-%% Applications limited to smaller \emph{messages} can safely process a
-%%  larger \emph{number} of messages per key---\eg, applications limited
-%%  to $2^{30}$ bytes per message can safesly process $2^{60}$ messages
-%%  and withstand $2^{120}$ forgery attempts, and applications limited
-%%  to 1500 bytes per message can safely process $2^{79}$ messages and
-%%  withstand $2^{158}$ forgery attempts, before the adversary's advantage
-%%  exceeds $1/2^{32}$.
-%% In general, a single \Daence/ key is safe for up to
-%%  $2^{90}\!/(\ell_a + \ell_m)$
-%%  messages, or $2^{80}$ messages, whichever is smaller.
-
 \paragraph*{Outline of proof.}
 
 \begin{enumerate}
