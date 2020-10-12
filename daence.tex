@@ -1166,8 +1166,8 @@ Combining these, we see the probability of a forgery (before any
 \end{proof}
 
 \paragraph*{Discussion.}
-The generic single-user-to-multi-user security lemma%
- ~\cite[Lemma~3.3]{bellare-canetti-krawczyk1996cascade}
+The generic single-user-to-multi-user advantage bound lemma%
+ ~\cite[Lemma~3.3]{bellare-canetti-krawczyk1996cascade}%
   \cite[Lemma~1]{bellare-bernstein-tessaro2016amac-mu}
  shows that if an adversary making a total of $q$ queries to \emph{one}
  user has advantage at most $\epsilon$, then an adversary making a
@@ -1181,6 +1181,7 @@ Loosely, where the generic would be
  we show
  $\sum_u (\cdots)^2\!/2^\lambda$
  instead.
+How does this work?
 
 In \Deuce/, a query to a never-before-queried user gives a response
  independent of all prior query responses, and so queries to new users
