@@ -884,18 +884,17 @@ Setting aside forgery attempts (decryption queries) for the moment,
   (a_E, m_E) \mapsto t_E \concat c_E,
 \]
  where
-%
-\begin{align*}
+\[
+\begin{aligned}
   h_i &= \Poly1305/^2_{k_1,k_2,k_3,k_4}(a_i, m_i), \\
   t_i &= \trunc_{192}(\hat f(h_i)) = \trunc_{192}(G(f(h_i), h_i)), \\
   c_i &= m_i \oplus f_*(t_i)
        = m_i \oplus \bigl(
            f(t_i \concat 0) \concat
            f(t_i \concat 1) \concat
-           f(t_i \concat 2) \concat
          \dotsb\bigr).
-\end{align*}
-%
+\end{aligned}
+\]
 Note that for each $i$, both $t_i$ and $c_i$ are uniform random on
  their own.
 Further, as long as all the \emph{inputs} to $f$, via $\hat f$ and
