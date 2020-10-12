@@ -140,6 +140,7 @@
 
 \newmathcronym{\DAE}{DAE}
 \newmathcronym{\INDCPA}{IND-CPA}
+\newmathcronym{\INTRUP}{INT-RUP}
 \newmathcronym{\PRF}{PRF}
 \newmathcronym{\PRP}{PRP}
 \newmathcronym{\SIV}{SIV}
@@ -1553,6 +1554,40 @@ Thus, the best strategy at breaking the idealized cipher---recall this
      like the `CHAIN' construction, which provides a weak defence
      against reusing a file name for two different files, at the cost
      of losing random access.
+
+  \item[Does \Daence/ have \INTRUP/ security?]
+    Yes.
+
+    Loosely, \INTRUP/~\cite{ablmmy2014intrup} means that even if the
+     legitimate user reveals unverified plaintext in decryption
+     queries, the adversary can't forge a message that passes
+     verification.
+
+    In the analysis above, the hashes $h_i$ are distributed with
+     maximum probability around $1/2^{200}$ and independent of the tags
+     and ciphertexts, except in the low-probability event of one of the
+     collisions discussed in the analysis, so the probability that a
+     decryption query reveals a key stream
+     $f(t \concat 0) \concat f(t \concat 1) \concat f(t \concat 2)
+      \concat \dotsb$
+     any of whose blocks are related to a valid message's tag is low,
+     even when the adversary chooses $t$.
+    (Filling out the quantitative details is left as an exercise for
+     the reader.)
+
+    Nevertheless, we recommend zeroing any forgery immediately so this
+     doesn't come up.
+    \Daence/ is \emph{not} `plaintext-aware'---releasing unverified
+     plaintext to a decryption query may enable the adversary to
+     decrypt other messages.
+
+    The primary motivation for \INTRUP/ (and plaintext-awareness) is as
+     a safety net for the temptation of `streaming' decryption
+     \emph{before} verification.
+    But if you just break large files into bite-size authenticated
+     pieces as described above, you get the nOAE or OAE2 security you
+     would have wanted for streaming without any temptation to skip
+     verification.
 
   \item[Isn't \Daence/ kind of boring?]
     Yes.
