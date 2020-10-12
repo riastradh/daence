@@ -184,6 +184,12 @@ check-beardaence: .PHONY
 check-beardaence: t_beardaence
 	./t_beardaence
 
+clean: clean-beardaence
+clean-beardaence: .PHONY
+	-rm -f t_beardaence
+	-rm -f $(SRCS_t_beardaence:.c=.o)
+	-rm -f $(SRCS_t_beardaence:.c=.d)
+
 SRCS_t_chachadaence = \
 	chachadaence.c \
 	t_chachadaence.c \
