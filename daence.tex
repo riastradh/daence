@@ -498,10 +498,11 @@ For 32-byte key $k_0$ and 16-byte inputs $i$ and $j$, define
   \HXSalsa20/_{k_0}(i \concat j) := \HSalsa20/_{\HSalsa20/_{k_0}(i)}(j),
 \]
  a 32-byte string.
-Note \HXSalsa20/ can be defined in terms of \XSalsa20/ by choosing the
- appropriate words of the output and subtracting $j$, just as
- \HSalsa20/ can be defined in terms of \Salsa20/, and has comparable
- security~\cite{bernstein2011xsalsa}.
+Note there is a public function $G$ such that
+ $\HXSalsa20/_{k_0}(i \concat j) = G(\XSalsa20/_{k_0}(i \concat j), j)$,
+ just as \HSalsa20/ can be defined in terms of
+ \Salsa20/~\cite{bernstein2011xsalsa} by
+ $\HSalsa20/_{k_0}(i) = G(\Salsa20/_{k_0}(i), i)$.
 
 \paragraph*{\Salsa20/-\Daence/.}
 To \term{encrypt}, given
