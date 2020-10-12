@@ -71,6 +71,7 @@ forgery?
 COPYING                 2-clause BSD licence
 Makefile                machine-readable instructions for building everything
 README                  you are here
+adv.py                  script to compute security bounds for various ciphers
 beardaence.c            copypastable ChaCha-Daence using BearSSL
 beardaence.h            header file with prototypes for beardaence.c
 chachadaence.c          copypastable ChaCha-Daence using libsodium

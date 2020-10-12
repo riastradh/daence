@@ -18,6 +18,7 @@
 *.o
 
 # our crud
+/adv.tex
 /kat_chachadaence
 /kat_salsa20daence
 /t_beardaence
