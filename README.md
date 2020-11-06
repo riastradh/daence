@@ -3,13 +3,13 @@ Daence -- Deterministic Authenticated Encryption with no noNCEnse
 
 Taylor ‘Riastradh’ Campbell <campbell+daence@mumble.net>
 
-- **WARNING: Daence is a work in progress.  The definition and API may
-  change.  There may be bugs or mistakes in the security analysis.**
-
 **Daence** is a deterministic authenticated cipher built out of
-Poly1305 and either Salsa20 or ChaCha.  This repository contains a
-definition, security analysis, reference implementation, and test
-vectors for Daence.
+Poly1305 and either Salsa20 or ChaCha.  This repository contains the
+source code for https://eprint.iacr.org/2020/067 -- the definition,
+security analysis, reference implementation, and test vectors for
+Daence -- as well as implementations in C (based on primitives in
+either NaCl/TweetNaCl, SUPERCOP, libsodium, or BearSSL), Go,
+JavaScript, and Rust, and a toy implementation in Python.
 
 ## Usage
 
