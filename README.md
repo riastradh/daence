@@ -11,6 +11,8 @@ Daence -- as well as implementations in C (based on primitives in
 either NaCl/TweetNaCl, SUPERCOP, libsodium, or BearSSL), Go,
 JavaScript, and Rust, and a toy implementation in Python.
 
+- **WARNING: Daence is new and this software has only been lightly tested.**
+
 ## Usage
 
 If you and your friend share a secret 96-byte key for Salsa20-Daence:

@@ -7,8 +7,7 @@ extremely large volumes of data.  `chachadaence.py` is a Python
 illustration of ChaCha-Daence, **NOT FIT FOR USE IN PRODUCTION**, based
 on the pyca [cryptography.io](https://cryptography.io) library.
 
-- **WARNING: Daence is a work in progress.  The definition and API may
-  change.  There may be bugs or mistakes in the security analysis.**
+- **WARNING: Daence is new and this software has only been lightly tested.**
 
 > **WARNING: This is ONLY FOR ILLUSTRATION.  The pyca cryptography.io
 > library doesn't provide HChaCha, and although it provides the ChaCha
