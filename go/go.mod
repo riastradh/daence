@@ -1,4 +1,4 @@
-module mumble.net/~campbell/git/daence.git/go
+module mumble.net/~campbell/daence.git/go
 
 go 1.14
 
