@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-package chachadaence
+package chachadaence // mumble.net/~campbell/daence/go/chachadaence
 
 import (
 	"crypto/cipher"

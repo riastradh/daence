@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-package salsa20daence
+package salsa20daence // mumble.net/~campbell/daence/go/salsa20daence
 
 import (
 	"crypto/cipher"
