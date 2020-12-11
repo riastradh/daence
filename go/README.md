@@ -12,12 +12,12 @@ from [`crypto/cipher`](https://pkg.go.dev/crypto/cipher).
 - **WARNING: Daence is new and this software has only been lightly tested.**
 
 To try it out, run `go test ./...`.  For experiments you can import
-`mumble.net/~campbell/daence.git/go/salsa20daence` or
-`mumble.net/~campbell/daence.git/go/chachadaence`, but **WARNING: these
+`mumble.net/~campbell/daence/go/salsa20daence` or
+`mumble.net/~campbell/daence/go/chachadaence`, but **WARNING: these
 URLs are not yet permanent.**
 
 ```
-import "mumble.net/~campbell/daence.git/go/chachadaence"
+import "mumble.net/~campbell/daence/go/chachadaence"
 
 func main() {
 	key := [64]byte{0x01, ...}
