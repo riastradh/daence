@@ -164,8 +164,8 @@ def aesgcm(lgL, lgE, lgD):
 
 
 def chacha20poly1305(lgL, lgE, lgD):
-    # https://cr.yp.to/highspeed/naclcrypto-20090310.pdf, p. 45
-    # https://eprint.iacr.org/2014/613, 4
+    # https://cr.yp.to/highspeed/naclcrypto-20090310.pdf, p. 30
+    # https://eprint.iacr.org/2014/613, middle of p. 4
     return lgD + lg(8) + lgL - 4 - 106
 
 
