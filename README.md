@@ -104,8 +104,8 @@ tweetnacl/              tweetnacl-20140427 from <https://tweetnacl.cr.yp.to/>
 
 ## Building the specification and testing the implementation
 
-You will need [libsodium](https://libsodium.org/) and a TeX
-distribution.  Run
+You will need [libsodium](https://libsodium.org/),
+[BearSSL](https://bearssl.org), and a TeX distribution.  Run
 
 ```
 make
