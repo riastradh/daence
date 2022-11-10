@@ -73,7 +73,7 @@ for (let i = 0; i < kat.length; i++) {
         t.deepEqual(c0, c)
         const m0 = salsa20daence.open(c, a, k)
         t.deepEqual(m0, m)
-        c0[19] ^= 0x02;
+        c0[19] ^= 0x02
         t.equal(salsa20daence.open(c0, a, k), null)
 
         const abuf = new Uint8Array(a.length + 2)
