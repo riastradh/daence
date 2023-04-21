@@ -4,7 +4,7 @@ default-target: .PHONY
 
 BIBTEX = bibtex
 PDFLATEX = pdflatex
-PYTHON = python3.7
+PYTHON = python3
 
 _CFLAGS = $(CFLAGS) -Werror -MMD -MF $(@:.o=.d)
 _CPPFLAGS = $(CPPFLAGS) \
